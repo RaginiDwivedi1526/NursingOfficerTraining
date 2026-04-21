@@ -15,7 +15,20 @@ router.get('/', async (req, res) => {
     if (examType) filter.examType = examType;
 
     const tests = await Test.find(filter).select('-questions.correctAnswer -questions.explanation').sort('-createdAt');
+    console.log(`[DEBUG] GET /api/tests - Found ${tests.length} tests in database (filter: ${JSON.stringify(filter)})`);
     res.json(tests);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// GET /api/tests/results/my - Get user's test results (must be BEFORE /:id)
+router.get('/results/my', protect, async (req, res) => {
+  try {
+    const results = await TestResult.find({ user: req.user._id })
+      .populate('test', 'title topic difficulty')
+      .sort('-completedAt');
+    res.json(results);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -24,10 +37,26 @@ router.get('/', async (req, res) => {
 // GET /api/tests/:id - Get test with questions (for taking test)
 router.get('/:id', protect, async (req, res) => {
   try {
-    const test = await Test.findById(req.params.id).select('-questions.correctAnswer -questions.explanation');
-    if (!test) return res.status(404).json({ message: 'Test not found' });
+    const { id } = req.params;
+    console.log(`[DEBUG] Attempting to fetch test with ID: ${id}`);
+    
+    // Validate ObjectId format to prevent crash
+    const mongoose = require('mongoose');
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      console.log(`[DEBUG] Invalid ID format requested: ${id}`);
+      return res.status(404).json({ message: 'Test not found (Invalid ID format)' });
+    }
+
+    const test = await Test.findById(id).select('-questions.correctAnswer -questions.explanation');
+    if (!test) {
+      console.log(`[DEBUG] Test with ID ${id} NOT FOUND in database.`);
+      return res.status(404).json({ message: 'Test not found' });
+    }
+    
+    console.log(`[DEBUG] Test found: ${test.title}`);
     res.json(test);
   } catch (error) {
+    console.error(`[DEBUG] Error fetching test ${req.params.id}:`, error.message);
     res.status(500).json({ message: error.message });
   }
 });
@@ -89,35 +118,24 @@ router.post('/:id/submit', protect, async (req, res) => {
       topicPerformance
     });
 
-    // Update user's weekly scores
-    const currentWeek = Math.ceil((Date.now() - new Date(req.user.createdAt).getTime()) / (7 * 24 * 60 * 60 * 1000));
+    // Update user's weekly scores (guard against missing createdAt)
+    const userCreatedAt = req.user.createdAt ? new Date(req.user.createdAt).getTime() : Date.now();
+    const currentWeek = Math.max(1, Math.ceil((Date.now() - userCreatedAt) / (7 * 24 * 60 * 60 * 1000)));
     await User.findByIdAndUpdate(req.user._id, {
       $push: { weeklyScores: { week: currentWeek, score, date: new Date() } }
     });
 
-    // Return result with correct answers for review
-    const testWithAnswers = await Test.findById(req.params.id);
+    // Return result with correct answers for review (reuse already-fetched test)
     res.status(201).json({
       result,
-      correctAnswers: testWithAnswers.questions.map(q => ({
+      correctAnswers: test.questions.map(q => ({
         questionId: q._id,
         correctAnswer: q.correctAnswer,
         explanation: q.explanation
       }))
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-// GET /api/tests/results/my - Get user's test results
-router.get('/results/my', protect, async (req, res) => {
-  try {
-    const results = await TestResult.find({ user: req.user._id })
-      .populate('test', 'title topic difficulty')
-      .sort('-completedAt');
-    res.json(results);
-  } catch (error) {
+    console.error('Submit test error:', error);
     res.status(500).json({ message: error.message });
   }
 });

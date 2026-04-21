@@ -3,18 +3,34 @@ const User = require('../models/User');
 
 const protect = async (req, res, next) => {
   let token;
+  
+  // Debug: verify JWT_SECRET is loaded
+  if (!process.env.JWT_SECRET) {
+    console.error('[CRITICAL] JWT_SECRET is not defined in environment variables!');
+  }
+
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
       token = req.headers.authorization.split(' ')[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       req.user = await User.findById(decoded.id).select('-password');
-      next();
+      
+      if (!req.user) {
+        console.warn(`[AUTH] Token valid but user ${decoded.id} not found in DB.`);
+        return res.status(401).json({ message: 'User no longer exists. Please log in again.' });
+      }
+      
+      return next();
     } catch (error) {
-      res.status(401).json({ message: 'Not authorized, token failed' });
+      console.error('[AUTH] Token Verification Failed:', error.name, '-', error.message);
+      if (error.name === 'TokenExpiredError') {
+        return res.status(401).json({ message: 'Session expired. Please log in again.' });
+      }
+      return res.status(401).json({ message: 'Not authorized, token failed' });
     }
   }
   if (!token) {
-    res.status(401).json({ message: 'Not authorized, no token' });
+    return res.status(401).json({ message: 'Not authorized, no token' });
   }
 };
 

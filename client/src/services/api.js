@@ -11,6 +11,20 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
+// Handle global response errors (e.g. 401 Unauthorized)
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      console.warn('Authentication failed - clearing session');
+      localStorage.removeItem('nursingUser');
+      // We don't force a reload here to avoid infinite loops if it happens on login
+      // But we can let individual components handle the redirect
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Auth
 export const register = (data) => API.post('/auth/register', data);
 export const login = (data) => API.post('/auth/login', data);

@@ -11,6 +11,7 @@ function TakeTest() {
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
   const startTime = useRef(Date.now());
@@ -24,6 +25,7 @@ function TakeTest() {
         setTimeLeft(data.duration * 60);
       } catch (err) {
         console.error(err);
+        setError(err.response?.data?.message || 'Failed to load test. Please check your connection.');
       } finally {
         setLoading(false);
       }
@@ -31,17 +33,36 @@ function TakeTest() {
     fetchTest();
   }, [id]);
 
-  // Timer
+  // Auto-submit when timer runs out (no confirm dialog needed)
+  const autoSubmit = async () => {
+    if (submitting || !test) return;
+    setSubmitting(true);
+    const totalTimeTaken = Math.round((Date.now() - startTime.current) / 1000);
+    const formattedAnswers = test.questions.map((q, i) => ({
+      questionId: q._id,
+      selectedAnswer: answers[i]?.selectedAnswer ?? -1,
+      timeTaken: answers[i]?.timeTaken || 0
+    }));
+    try {
+      const { data } = await submitTest(id, { answers: formattedAnswers, timeTaken: totalTimeTaken });
+      navigate(`/result/${data.result._id}`, { state: { result: data.result, correctAnswers: data.correctAnswers, test } });
+    } catch (err) {
+      alert('Failed to submit test. Please try again.');
+      setSubmitting(false);
+    }
+  };
+
+  // Timer — dependency on `timeLeft` (not the boolean `timeLeft > 0`)
   useEffect(() => {
     if (timeLeft <= 0) return;
     const timer = setInterval(() => {
       setTimeLeft(prev => {
-        if (prev <= 1) { clearInterval(timer); handleSubmit(); return 0; }
+        if (prev <= 1) { clearInterval(timer); autoSubmit(); return 0; }
         return prev - 1;
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [timeLeft > 0]);
+  }, [timeLeft]);
 
   const formatTime = (seconds) => {
     const m = Math.floor(seconds / 60);
@@ -69,8 +90,9 @@ function TakeTest() {
   };
 
   const handleSubmit = async () => {
-    if (submitting) return;
-    const confirmed = window.confirm(`You have answered ${Object.keys(answers).length}/${test.questions.length} questions. Submit?`);
+    if (submitting || !test) return;
+    const answered = Object.keys(answers).length;
+    const confirmed = window.confirm(`You have answered ${answered}/${test.questions.length} questions. Submit now?`);
     if (!confirmed) return;
     setSubmitting(true);
 
@@ -85,12 +107,37 @@ function TakeTest() {
       const { data } = await submitTest(id, { answers: formattedAnswers, timeTaken: totalTimeTaken });
       navigate(`/result/${data.result._id}`, { state: { result: data.result, correctAnswers: data.correctAnswers, test } });
     } catch (err) {
-      alert('Failed to submit test');
+      alert('Failed to submit test. Please try again.');
       setSubmitting(false);
     }
   };
 
   if (loading) return <div className="page-container"><div className="loading"><div className="spinner"></div></div></div>;
+  
+  if (error) {
+    const isAuthError = error.includes('Session expired') || error.includes('token failed') || error.includes('not found in DB');
+    
+    const handleReLogin = () => {
+      localStorage.removeItem('nursingUser');
+      window.location.href = '/login';
+    };
+
+    return (
+      <div className="page-container">
+        <div style={{padding: '60px', textAlign: 'center'}}>
+          <p style={{fontSize: '48px', marginBottom: '20px'}}>⚠️</p>
+          <h2 style={{color: 'var(--navy)', marginBottom: '12px'}}>Authentication Required</h2>
+          <p style={{color: 'var(--gray)', marginBottom: '24px'}}>{error}</p>
+          {isAuthError ? (
+            <button className="btn-primary" onClick={handleReLogin}>Login Again</button>
+          ) : (
+            <button className="btn-primary" onClick={() => window.location.reload()}>Try Again</button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   if (!test) return <div className="page-container"><p style={{padding: '40px', textAlign: 'center'}}>Test not found</p></div>;
 
   const q = test.questions[currentQ];

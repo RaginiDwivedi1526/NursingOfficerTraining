@@ -1,11 +1,13 @@
 const Test = require('./models/Test');
 
 const seedTests = async () => {
+  console.log('[DEBUG] Starting database seeding check...');
   const count = await Test.countDocuments();
   if (count > 0) {
-    console.log('📚 Tests already seeded');
+    console.log(`📚 Database already has ${count} tests. Skipping seeding.`);
     return;
   }
+  console.log('[DEBUG] No tests found. Seeding sample tests...');
 
   const sampleTests = [
     {
