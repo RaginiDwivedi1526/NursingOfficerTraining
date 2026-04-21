@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NursingOfficer Training – India's #1 Nursing Exam Prep Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root {
+    --navy: #0d2b5e;
+    --navy-light: #163a7a;
+    --crimson: #c0392b;
+    --crimson-light: #e74c3c;
+    --gold: #f39c12;
+    --white: #ffffff;
+    --off-white: #f8f9fc;
+    --gray: #6b7280;
+    --light-gray: #e8edf5;
+    --dark: #0a1628;
+    --success: #27ae60;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--dark);
+    background: var(--white);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid var(--light-gray);
+    padding: 0 5%;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 72px;
+    box-shadow: 0 2px 20px rgba(13,43,94,0.08);
+    transition: all 0.3s;
+  }
+  nav.scrolled { box-shadow: 0 4px 30px rgba(13,43,94,0.15); }
+  .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  .nav-logo-icon {
+    width: 44px; height: 44px;
+    background: var(--navy);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .nav-logo-text { display: flex; flex-direction: column; line-height: 1.1; }
+  .nav-logo-text span:first-child { font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--navy); }
+  .nav-logo-text span:last-child { font-size: 12px; color: var(--crimson); font-weight: 600; letter-spacing: 0.5px; }
+  .nav-links { display: flex; gap: 8px; align-items: center; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--navy); font-size: 14px; font-weight: 500; padding: 6px 14px; border-radius: 8px; transition: all 0.2s; }
+  .nav-links a:hover { background: var(--light-gray); color: var(--crimson); }
+  .nav-cta { background: var(--crimson); color: var(--white) !important; border-radius: 8px !important; padding: 8px 20px !important; font-weight: 600 !important; }
+  .nav-cta:hover { background: var(--crimson-light) !important; color: var(--white) !important; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(192,57,43,0.3); }
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 6px; }
+  .hamburger span { display: block; width: 24px; height: 2px; background: var(--navy); border-radius: 2px; transition: all 0.3s; }
+
+  /* ─── HERO ─── */
+  #home {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--dark) 0%, var(--navy) 50%, #1a4080 100%);
+    position: relative;
+    display: flex; align-items: center;
+    overflow: hidden;
+    padding-top: 72px;
+  }
+  .hero-bg-pattern {
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(192,57,43,0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(243,156,18,0.1) 0%, transparent 40%),
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  .hero-floating-badges {
+    position: absolute; top: 15%; right: 5%;
+    display: flex; flex-direction: column; gap: 12px;
+    animation: floatRight 4s ease-in-out infinite;
+  }
+  @keyframes floatRight { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+  .floating-badge {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    padding: 10px 16px;
+    color: white;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex; align-items: center; gap: 8px;
+    white-space: nowrap;
+  }
+  .floating-badge .dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .hero-content { position: relative; z-index: 2; padding: 80px 5%; max-width: 700px; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(192,57,43,0.2); border: 1px solid rgba(192,57,43,0.5);
+    color: #ff8a7a; border-radius: 50px; padding: 6px 16px; font-size: 13px; font-weight: 600;
+    margin-bottom: 28px; letter-spacing: 0.3px;
+  }
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    line-height: 1.15;
+    color: var(--white);
+    margin-bottom: 24px;
+    font-weight: 900;
+  }
+  .hero-title .highlight { color: var(--gold); font-style: italic; }
+  .hero-sub { font-size: 17px; color: rgba(255,255,255,0.75); margin-bottom: 40px; max-width: 520px; line-height: 1.7; }
+  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 48px; }
+  .btn-primary {
+    background: var(--crimson); color: var(--white);
+    padding: 14px 32px; border-radius: 10px; font-size: 16px; font-weight: 700;
+    text-decoration: none; border: none; cursor: pointer;
+    transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px;
+    box-shadow: 0 4px 20px rgba(192,57,43,0.4);
+  }
+  .btn-primary:hover { background: var(--crimson-light); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(192,57,43,0.5); }
+  .btn-secondary {
+    background: rgba(255,255,255,0.1); color: var(--white);
+    padding: 14px 32px; border-radius: 10px; font-size: 16px; font-weight: 600;
+    text-decoration: none; border: 1px solid rgba(255,255,255,0.3); cursor: pointer;
+    transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px;
+    backdrop-filter: blur(10px);
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); }
+  .hero-stats { display: flex; gap: 32px; flex-wrap: wrap; }
+  .stat { color: var(--white); }
+  .stat-num { font-family: var(--font-display); font-size: 2rem; font-weight: 900; display: block; color: var(--gold); }
+  .stat-label { font-size: 13px; color: rgba(255,255,255,0.6); }
+
+  /* ─── SECTION COMMONS ─── */
+  section { padding: 90px 5%; }
+  .section-tag { display: inline-block; background: rgba(192,57,43,0.1); color: var(--crimson); font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 14px; border-radius: 50px; margin-bottom: 16px; border: 1px solid rgba(192,57,43,0.2); }
+  .section-title { font-family: var(--font-display); font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 900; color: var(--navy); line-height: 1.2; margin-bottom: 16px; }
+  .section-sub { font-size: 16px; color: var(--gray); max-width: 580px; line-height: 1.7; }
+  .section-header { margin-bottom: 56px; }
+  .center { text-align: center; }
+  .center .section-sub { margin: 0 auto; }
+
+  /* ─── WHY CHOOSE ─── */
+  #features { background: var(--off-white); }
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+  .feature-card {
+    background: var(--white); border-radius: 16px; padding: 32px;
+    border: 1px solid var(--light-gray);
+    transition: all 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .feature-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--navy), var(--crimson));
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .feature-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(13,43,94,0.12); border-color: transparent; }
+  .feature-card:hover::before { opacity: 1; }
+  .feature-icon { width: 52px; height: 52px; background: linear-gradient(135deg, var(--navy), var(--navy-light)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 20px; }
+  .feature-card h3 { font-size: 18px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+  .feature-card p { font-size: 14px; color: var(--gray); line-height: 1.6; }
+
+  /* ─── COURSES ─── */
+  #courses { background: var(--white); }
+  .courses-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 28px; }
+  .course-card {
+    border-radius: 20px; overflow: hidden;
+    border: 1px solid var(--light-gray);
+    transition: all 0.3s;
+    background: var(--white);
+  }
+  .course-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(13,43,94,0.15); border-color: transparent; }
+  .course-img {
+    height: 180px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 64px; position: relative;
+  }
+  .course-img.blue { background: linear-gradient(135deg, var(--navy), var(--navy-light)); }
+  .course-img.red { background: linear-gradient(135deg, #c0392b, #e74c3c); }
+  .course-img.gold { background: linear-gradient(135deg, #d35400, #f39c12); }
+  .course-badge-pill {
+    position: absolute; top: 14px; left: 14px;
+    background: rgba(255,255,255,0.95); color: var(--navy);
+    font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 50px;
+    letter-spacing: 0.5px;
+  }
+  .course-body { padding: 24px; }
+  .course-body h3 { font-size: 19px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+  .course-body p { font-size: 14px; color: var(--gray); margin-bottom: 20px; line-height: 1.6; }
+  .course-meta { display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+  .meta-pill { font-size: 12px; color: var(--gray); background: var(--off-white); padding: 4px 10px; border-radius: 6px; display: flex; align-items: center; gap: 5px; }
+  .course-btn {
+    display: block; text-align: center; background: var(--navy); color: var(--white);
+    padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 14px;
+    transition: all 0.2s;
+  }
+  .course-btn:hover { background: var(--crimson); transform: translateY(-1px); }
+
+  /* ─── AI PERFORMANCE ─── */
+  #ai-performance {
+    background: linear-gradient(135deg, var(--dark) 0%, var(--navy) 100%);
+    position: relative; overflow: hidden;
+  }
+  #ai-performance::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at 70% 50%, rgba(192,57,43,0.2) 0%, transparent 60%);
+  }
+  .ai-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; position: relative; z-index: 1; }
+  .ai-content .section-tag { background: rgba(243,156,18,0.2); color: #f9c74f; border-color: rgba(243,156,18,0.3); }
+  .ai-content .section-title { color: var(--white); }
+  .ai-content .section-sub { color: rgba(255,255,255,0.7); }
+  .ai-features { display: flex; flex-direction: column; gap: 16px; margin-top: 32px; }
+  .ai-feat {
+    display: flex; align-items: flex-start; gap: 14px;
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px; padding: 16px;
+    transition: all 0.3s;
+  }
+  .ai-feat:hover { background: rgba(255,255,255,0.12); transform: translateX(4px); }
+  .ai-feat-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+  .ai-feat-text h4 { color: var(--white); font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .ai-feat-text p { color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.5; }
+
+  /* Dashboard Mock */
+  .dashboard-mock {
+    background: #1a2b4a;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+  }
+  .mock-topbar {
+    background: #0d1e38;
+    padding: 12px 20px;
+    display: flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .mock-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .mock-dot.r { background: #ff5f57; }
+  .mock-dot.y { background: #febc2e; }
+  .mock-dot.g { background: #28c840; }
+  .mock-title-bar { margin-left: 10px; color: rgba(255,255,255,0.5); font-size: 12px; font-family: var(--font-body); }
+  .mock-body { padding: 20px; }
+  .mock-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+  .mock-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #c0392b, #e74c3c); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .mock-welcome { color: rgba(255,255,255,0.9); font-size: 13px; font-weight: 600; }
+  .mock-welcome span { color: rgba(255,255,255,0.5); font-weight: 400; font-size: 11px; display: block; }
+
+  .mock-score-ring {
+    text-align: center; margin-bottom: 20px;
+  }
+  .ring-wrap { position: relative; display: inline-block; }
+  .ring-wrap svg { transform: rotate(-90deg); }
+  .ring-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+  .ring-num { font-size: 24px; font-weight: 900; color: white; font-family: var(--font-display); }
+  .ring-label { font-size: 10px; color: rgba(255,255,255,0.5); }
+
+  .mock-topics { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .mock-topic-row { display: flex; align-items: center; gap: 10px; }
+  .mock-topic-label { color: rgba(255,255,255,0.7); font-size: 11px; width: 100px; flex-shrink: 0; }
+  .mock-bar-bg { flex: 1; height: 8px; background: rgba(255,255,255,0.08); border-radius: 50px; overflow: hidden; }
+  .mock-bar-fill { height: 100%; border-radius: 50px; transition: width 1s ease; }
+  .mock-bar-pct { color: rgba(255,255,255,0.7); font-size: 11px; font-weight: 600; width: 32px; text-align: right; flex-shrink: 0; }
+
+  .mock-ai-box {
+    background: rgba(243,156,18,0.1); border: 1px solid rgba(243,156,18,0.3);
+    border-radius: 10px; padding: 12px; margin-bottom: 12px;
+  }
+  .mock-ai-header { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+  .mock-ai-header span { font-size: 11px; color: #f9c74f; font-weight: 700; }
+  .mock-ai-text { color: rgba(255,255,255,0.75); font-size: 11px; line-height: 1.5; }
+
+  .mock-suggestions { display: flex; flex-direction: column; gap: 6px; }
+  .mock-sug { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); border-radius: 8px; padding: 8px 10px; }
+  .mock-sug-icon { font-size: 14px; }
+  .mock-sug-text { color: rgba(255,255,255,0.75); font-size: 11px; }
+
+  /* ─── PRICING ─── */
+  #pricing { background: var(--off-white); }
+  .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 24px; max-width: 1100px; margin: 0 auto; }
+  .price-card {
+    background: var(--white); border-radius: 20px; padding: 32px 24px;
+    border: 2px solid var(--light-gray);
+    position: relative; transition: all 0.3s;
+    display: flex; flex-direction: column;
+  }
+  .price-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(13,43,94,0.12); }
+  .price-card.featured { border-color: var(--crimson); background: linear-gradient(135deg, var(--navy) 0%, var(--dark) 100%); }
+  .price-card.featured * { color: rgba(255,255,255,0.85) !important; }
+  .price-card.featured h3, .price-card.featured .price-amount { color: var(--white) !important; }
+  .featured-pill {
+    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+    background: var(--crimson); color: var(--white); font-size: 11px; font-weight: 700;
+    padding: 4px 16px; border-radius: 50px; white-space: nowrap; letter-spacing: 0.5px;
+  }
+  .price-tier { font-size: 12px; font-weight: 700; color: var(--gray); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+  .price-card h3 { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 6px; }
+  .price-amount { font-family: var(--font-display); font-size: 2.4rem; font-weight: 900; color: var(--navy); }
+  .price-amount .currency { font-size: 1.2rem; vertical-align: top; margin-top: 8px; display: inline-block; }
+  .price-amount .per { font-size: 14px; color: var(--gray); font-weight: 400; font-family: var(--font-body); }
+  .price-divider { height: 1px; background: var(--light-gray); margin: 24px 0; }
+  .price-card.featured .price-divider { background: rgba(255,255,255,0.15); }
+  .price-features { list-style: none; display: flex; flex-direction: column; gap: 10px; flex: 1; margin-bottom: 24px; }
+  .price-features li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--dark); }
+  .price-features li::before { content: '✓'; color: var(--success); font-weight: 700; flex-shrink: 0; }
+  .price-features li.no::before { content: '✗'; color: #ccc; }
+  .price-features li.no { color: var(--gray); }
+  .price-btn {
+    display: block; text-align: center; padding: 13px; border-radius: 10px;
+    font-weight: 700; font-size: 15px; text-decoration: none; transition: all 0.2s;
+    border: 2px solid var(--navy); color: var(--navy);
+  }
+  .price-btn:hover { background: var(--navy); color: var(--white); }
+  .price-card.featured .price-btn { background: var(--crimson); color: var(--white); border-color: var(--crimson); }
+  .price-card.featured .price-btn:hover { background: var(--crimson-light); border-color: var(--crimson-light); }
+
+  /* ─── TEST SERIES ─── */
+  #tests { background: var(--white); }
+  .tests-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+  .test-visual { position: relative; }
+  .test-card-stack { position: relative; }
+  .test-card-main {
+    background: linear-gradient(135deg, var(--navy), var(--navy-light));
+    border-radius: 20px; padding: 32px; color: white; position: relative; z-index: 2;
+  }
+  .test-card-behind {
+    position: absolute; top: -10px; left: 10px; right: -10px; bottom: 10px;
+    background: rgba(192,57,43,0.4); border-radius: 20px; z-index: 1;
+  }
+  .test-progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .test-q-num { font-size: 13px; color: rgba(255,255,255,0.6); }
+  .test-timer {
+    background: rgba(192,57,43,0.3); border: 1px solid rgba(192,57,43,0.5);
+    color: #ff8a7a; font-size: 13px; font-weight: 600; padding: 4px 12px; border-radius: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .test-question { font-size: 16px; font-weight: 600; margin-bottom: 20px; line-height: 1.5; }
+  .test-options { display: flex; flex-direction: column; gap: 10px; }
+  .test-option {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px; padding: 12px 16px; font-size: 14px; cursor: pointer;
+    transition: all 0.2s; display: flex; align-items: center; gap: 12px;
+  }
+  .test-option.correct { background: rgba(39,174,96,0.2); border-color: rgba(39,174,96,0.5); color: #5dcc8a; }
+  .test-option-letter { width: 26px; height: 26px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .test-info-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 32px; }
+  .test-info-card { background: var(--off-white); border-radius: 14px; padding: 20px; border: 1px solid var(--light-gray); }
+  .test-info-card .num { font-family: var(--font-display); font-size: 2rem; font-weight: 900; color: var(--navy); }
+  .test-info-card .lbl { font-size: 13px; color: var(--gray); margin-top: 4px; }
+
+  /* ─── TESTIMONIALS ─── */
+  #testimonials { background: var(--off-white); }
+  .testi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+  .testi-card {
+    background: var(--white); border-radius: 16px; padding: 28px;
+    border: 1px solid var(--light-gray); transition: all 0.3s;
+    position: relative;
+  }
+  .testi-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(13,43,94,0.1); }
+  .testi-quote { font-size: 32px; color: var(--crimson); line-height: 1; margin-bottom: 12px; font-family: Georgia, serif; }
+  .testi-text { font-size: 15px; color: var(--dark); line-height: 1.7; margin-bottom: 20px; font-style: italic; }
+  .testi-author { display: flex; align-items: center; gap: 12px; }
+  .testi-avatar { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .testi-name { font-weight: 700; font-size: 14px; color: var(--navy); }
+  .testi-role { font-size: 12px; color: var(--gray); }
+  .testi-stars { color: var(--gold); font-size: 14px; letter-spacing: 1px; margin-bottom: 12px; }
+  .testi-exam-badge { position: absolute; top: 20px; right: 20px; background: rgba(39,174,96,0.1); border: 1px solid rgba(39,174,96,0.3); color: var(--success); font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 50px; }
+
+  /* ─── LIVE CLASSES ─── */
+  #live { background: var(--white); }
+  .live-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+  .schedule-card { background: var(--off-white); border-radius: 20px; padding: 32px; border: 1px solid var(--light-gray); }
+  .schedule-header { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+  .live-dot { width: 10px; height: 10px; background: var(--crimson); border-radius: 50%; animation: pulse 1.5s infinite; }
+  .schedule-header h3 { font-size: 18px; font-weight: 700; color: var(--navy); }
+  .schedule-list { display: flex; flex-direction: column; gap: 14px; }
+  .schedule-item {
+    background: var(--white); border-radius: 12px; padding: 16px;
+    border: 1px solid var(--light-gray);
+    display: flex; align-items: center; gap: 14px;
+  }
+  .schedule-time { background: var(--navy); color: var(--white); font-size: 12px; font-weight: 700; padding: 6px 10px; border-radius: 8px; text-align: center; min-width: 60px; line-height: 1.3; }
+  .schedule-info h4 { font-size: 14px; font-weight: 700; color: var(--navy); }
+  .schedule-info p { font-size: 12px; color: var(--gray); margin-top: 2px; }
+  .schedule-join { margin-left: auto; background: var(--crimson); color: var(--white); padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; text-decoration: none; transition: all 0.2s; }
+  .schedule-join:hover { background: var(--crimson-light); }
+
+  /* ─── CONTACT ─── */
+  #contact { background: linear-gradient(135deg, var(--navy), var(--dark)); position: relative; overflow: hidden; }
+  #contact::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 50%, rgba(192,57,43,0.2) 0%, transparent 60%); }
+  .contact-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; position: relative; z-index: 1; }
+  .contact-info .section-title { color: var(--white); }
+  .contact-info .section-sub { color: rgba(255,255,255,0.7); }
+  .contact-links { display: flex; flex-direction: column; gap: 16px; margin-top: 32px; }
+  .contact-link {
+    display: flex; align-items: center; gap: 14px;
+    color: rgba(255,255,255,0.8); text-decoration: none; font-size: 15px;
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px; padding: 14px 20px; transition: all 0.2s;
+  }
+  .contact-link:hover { background: rgba(255,255,255,0.15); color: var(--white); transform: translateX(4px); }
+  .contact-link-icon { font-size: 20px; }
+  .contact-form-wrap { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 20px; padding: 36px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; color: rgba(255,255,255,0.75); font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px; padding: 12px 16px; color: var(--white); font-size: 14px; font-family: var(--font-body);
+    transition: all 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--crimson); background: rgba(255,255,255,0.12); }
+  .form-group select option { background: var(--navy); color: var(--white); }
+  .form-group textarea { resize: vertical; min-height: 100px; }
+  .form-group input::placeholder, .form-group textarea::placeholder { color: rgba(255,255,255,0.35); }
+
+  /* ─── FOOTER ─── */
+  footer { background: var(--dark); padding: 56px 5% 28px; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
+  .footer-brand p { color: rgba(255,255,255,0.5); font-size: 14px; margin-top: 16px; line-height: 1.7; max-width: 260px; }
+  .footer-social { display: flex; gap: 10px; margin-top: 20px; }
+  .social-btn { width: 36px; height: 36px; background: rgba(255,255,255,0.08); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: all 0.2s; text-decoration: none; }
+  .social-btn:hover { background: var(--crimson); transform: translateY(-2px); }
+  .footer-col h4 { color: var(--white); font-size: 14px; font-weight: 700; margin-bottom: 16px; }
+  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .footer-links a { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--crimson); }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-bottom p { color: rgba(255,255,255,0.4); font-size: 13px; }
+  .footer-bottom-links { display: flex; gap: 20px; }
+  .footer-bottom-links a { color: rgba(255,255,255,0.4); font-size: 13px; text-decoration: none; transition: color 0.2s; }
+  .footer-bottom-links a:hover { color: var(--white); }
+
+  /* ─── ANNOUNCEMENT BAR ─── */
+  .announce-bar {
+    background: linear-gradient(90deg, var(--crimson), #d35400);
+    color: var(--white); text-align: center; padding: 10px 20px;
+    font-size: 13px; font-weight: 600;
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1001;
+    letter-spacing: 0.3px;
+  }
+  .announce-bar span { background: rgba(255,255,255,0.2); padding: 2px 10px; border-radius: 50px; margin-left: 10px; font-size: 12px; }
+
+  /* Adjust nav for announce bar */
+  body.has-announce nav { top: 40px; }
+  body.has-announce #home { padding-top: 112px; }
+
+  /* ─── SCROLL ANIMATIONS ─── */
+  .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+  /* ─── BADGE STRIP ─── */
+  .badge-strip { background: var(--navy); padding: 20px 5%; overflow: hidden; position: relative; }
+  .badge-track { display: flex; gap: 40px; align-items: center; animation: scroll-track 20s linear infinite; white-space: nowrap; }
+  @keyframes scroll-track { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+  .badge-item { color: rgba(255,255,255,0.7); font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+  .badge-item::before { content: '◆'; color: var(--crimson); font-size: 8px; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .ai-layout, .tests-layout, .live-layout, .contact-layout { grid-template-columns: 1fr; gap: 40px; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .hero-floating-badges { display: none; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    section { padding: 60px 5%; }
+    .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+    .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+    .pricing-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body class="has-announce">
+
+<!-- ANNOUNCEMENT BAR -->
+<div class="announce-bar">
+  🎉 Batch 2025 Registration Open — Early Bird Discount Available <span>Limited Seats</span>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#home" class="nav-logo">
+    <div class="nav-logo-icon">🏥</div>
+    <div class="nav-logo-text">
+      <span>NursingOfficer</span>
+      <span>Training.com</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#courses">Courses</a></li>
+    <li><a href="#ai-performance">AI Analytics</a></li>
+    <li><a href="#tests">Test Series</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#live">Live Classes</a></li>
+    <li><a href="#contact" class="nav-cta">Enroll Now</a></li>
+  </ul>
+  <div class="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="home">
+  <div class="hero-bg-pattern"></div>
+  <div class="hero-floating-badges">
+    <div class="floating-badge"><div class="dot"></div> 50+ Students Enrolled Today</div>
+    <div class="floating-badge">🏆 #1 Nursing Exam Platform</div>
+    <div class="floating-badge">📱 Hindi + English Content</div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-badge">🩺 India's Most Advanced Nursing Prep</div>
+    <h1 class="hero-title">
+      Crack Nursing Officer &amp;<br>
+      <span class="highlight">NCLEX</span> Exams<br>
+      with AI-Powered Training
+    </h1>
+    <p class="hero-sub">
+      Live classes, recorded lectures, smart MCQ tests, and an AI system that detects your weak areas and builds a personalized study plan — all in one platform.
+    </p>
+    <div class="hero-actions">
+      <a href="#courses" class="btn-primary">🚀 Start Free Trial</a>
+      <a href="#live" class="btn-secondary">📺 Watch Demo</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">15,000+</span><span class="stat-label">Students Trained</span></div>
+      <div class="stat"><span class="stat-num">92%</span><span class="stat-label">Selection Rate</span></div>
+      <div class="stat"><span class="stat-num">500+</span><span class="stat-label">MCQ Tests</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- BADGE STRIP -->
+<div class="badge-strip">
+  <div class="badge-track">
+    <div class="badge-item">AIIMS Delhi</div>
+    <div class="badge-item">ESIC Nursing</div>
+    <div class="badge-item">Railway Nursing</div>
+    <div class="badge-item">NCLEX-RN</div>
+    <div class="badge-item">NCLEX-PN</div>
+    <div class="badge-item">State PSC Nursing</div>
+    <div class="badge-item">Army Nursing</div>
+    <div class="badge-item">NHM Nursing</div>
+    <!-- repeat -->
+    <div class="badge-item">AIIMS Delhi</div>
+    <div class="badge-item">ESIC Nursing</div>
+    <div class="badge-item">Railway Nursing</div>
+    <div class="badge-item">NCLEX-RN</div>
+    <div class="badge-item">NCLEX-PN</div>
+    <div class="badge-item">State PSC Nursing</div>
+    <div class="badge-item">Army Nursing</div>
+    <div class="badge-item">NHM Nursing</div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-header center fade-up">
+    <div class="section-tag">Why Choose Us</div>
+    <h2 class="section-title">Everything You Need to <br>Ace Your Nursing Exam</h2>
+    <p class="section-sub">A complete ecosystem for nursing aspirants — from learning to testing to getting selected.</p>
+  </div>
+  <div class="features-grid fade-up">
+    <div class="feature-card">
+      <div class="feature-icon">🤖</div>
+      <h3>AI Performance Tracking</h3>
+      <p>Our AI engine analyzes every test attempt, identifies your weak topics, and generates a personalized improvement plan automatically.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📹</div>
+      <h3>Live + Recorded Classes</h3>
+      <p>Attend live doubt-clearing sessions or watch recorded lectures at your own pace. Available in both Hindi and English.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📝</div>
+      <h3>Smart MCQ Test Series</h3>
+      <p>500+ topic-wise tests with auto-scoring, timers, and detailed explanations. Simulate real exam conditions daily.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Progress Analytics Dashboard</h3>
+      <p>Visualize your week-by-week growth with charts, topic accuracy graphs, and rank comparisons with other students.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💬</div>
+      <h3>WhatsApp Community</h3>
+      <p>Join an exclusive WhatsApp group for daily MCQs, announcements, and peer support from fellow nursing aspirants.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎓</div>
+      <h3>1-on-1 Mentorship</h3>
+      <p>Book personal mentorship sessions with expert faculty. Get career guidance, doubt solving, and interview preparation.</p>
+    </div>
+  </div>
+</section>
+
+<!-- COURSES -->
+<section id="courses">
+  <div class="section-header fade-up">
+    <div class="section-tag">Our Courses</div>
+    <h2 class="section-title">Comprehensive Courses for<br>Every Nursing Aspirant</h2>
+    <p class="section-sub">Structured programs covering all major nursing entrance exams in India and globally.</p>
+  </div>
+  <div class="courses-grid fade-up">
+    <div class="course-card">
+      <div class="course-img blue">
+        <div class="course-badge-pill">🔥 Most Popular</div>
+        🏥
+      </div>
+      <div class="course-body">
+        <h3>Nursing Officer (Government)</h3>
+        <p>Complete preparation for AIIMS, ESIC, Railway, Army, NHM &amp; State PSC Nursing Officer exams with subject-wise modules.</p>
+        <div class="course-meta">
+          <span class="meta-pill">📚 200+ Videos</span>
+          <span class="meta-pill">⏱ 6 Months</span>
+          <span class="meta-pill">📝 300 Tests</span>
+        </div>
+        <a href="#pricing" class="course-btn">View Course →</a>
+      </div>
+    </div>
+    <div class="course-card">
+      <div class="course-img red">
+        <div class="course-badge-pill">🌍 International</div>
+        🌐
+      </div>
+      <div class="course-body">
+        <h3>NCLEX-RN / NCLEX-PN Prep</h3>
+        <p>US-based NCLEX preparation with Next Generation NCLEX (NGN) format, clinical judgment modules &amp; CAT simulation.</p>
+        <div class="course-meta">
+          <span class="meta-pill">📚 150+ Videos</span>
+          <span class="meta-pill">⏱ 4 Months</span>
+          <span class="meta-pill">📝 200 Tests</span>
+        </div>
+        <a href="#pricing" class="course-btn">View Course →</a>
+      </div>
+    </div>
+    <div class="course-card">
+      <div class="course-img gold">
+        <div class="course-badge-pill">⭐ Pro Feature</div>
+        🧠
+      </div>
+      <div class="course-body">
+        <h3>AI-Powered Full Combo</h3>
+        <p>Both courses combined with AI performance analytics, personalized study plan, daily MCQ alerts &amp; mentor access.</p>
+        <div class="course-meta">
+          <span class="meta-pill">📚 350+ Videos</span>
+          <span class="meta-pill">⏱ 12 Months</span>
+          <span class="meta-pill">🤖 AI Analytics</span>
+        </div>
+        <a href="#pricing" class="course-btn">View Course →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AI PERFORMANCE SECTION -->
+<section id="ai-performance">
+  <div class="ai-layout">
+    <div class="ai-content fade-up">
+      <div class="section-tag">🤖 AI-Powered Analytics</div>
+      <h2 class="section-title">Your Personal AI<br>Performance Coach</h2>
+      <p class="section-sub" style="color:rgba(255,255,255,0.7)">After every test, our AI engine analyzes your performance, detects weak areas, and gives you a step-by-step improvement plan — automatically.</p>
+      <div class="ai-features">
+        <div class="ai-feat">
+          <div class="ai-feat-icon">🎯</div>
+          <div class="ai-feat-text">
+            <h4>Weakness Detection</h4>
+            <p>AI identifies which topics and sub-topics you're struggling with based on your test history and error patterns.</p>
+          </div>
+        </div>
+        <div class="ai-feat">
+          <div class="ai-feat-icon">📈</div>
+          <div class="ai-feat-text">
+            <h4>Progress Tracking Graph</h4>
+            <p>See your week-by-week score improvement visually. Stay motivated with measurable progress every week.</p>
+          </div>
+        </div>
+        <div class="ai-feat">
+          <div class="ai-feat-icon">🧠</div>
+          <div class="ai-feat-text">
+            <h4>Smart Test Recommendations</h4>
+            <p>AI suggests which test to attempt next based on your weak areas — no more random practice.</p>
+          </div>
+        </div>
+        <div class="ai-feat">
+          <div class="ai-feat-icon">📋</div>
+          <div class="ai-feat-text">
+            <h4>Personalized Daily Study Plan <span style="background:rgba(243,156,18,0.3);color:#f9c74f;font-size:10px;padding:2px 8px;border-radius:50px;margin-left:6px;font-weight:700;">PRO</span></h4>
+            <p>Premium users get a daily topic-wise schedule, revision reminders, and AI-generated study roadmap.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD MOCK -->
+    <div class="dashboard-mock fade-up">
+      <div class="mock-topbar">
+        <div class="mock-dot r"></div>
+        <div class="mock-dot y"></div>
+        <div class="mock-dot g"></div>
+        <div class="mock-title-bar">AI Performance Dashboard — Student View</div>
+      </div>
+      <div class="mock-body">
+        <div class="mock-header">
+          <div class="mock-avatar">👩</div>
+          <div class="mock-welcome">Priya Sharma<span>Nursing Officer Aspirant • Batch 2025</span></div>
+        </div>
+
+        <!-- Score Ring -->
+        <div class="mock-score-ring">
+          <div class="ring-wrap">
+            <svg width="110" height="110" viewBox="0 0 110 110">
+              <circle cx="55" cy="55" r="45" stroke="rgba(255,255,255,0.08)" stroke-width="10" fill="none"/>
+              <circle cx="55" cy="55" r="45" stroke="url(#ringGrad)" stroke-width="10" fill="none"
+                stroke-dasharray="282.6" stroke-dashoffset="76.3" stroke-linecap="round"/>
+              <defs>
+                <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#c0392b"/>
+                  <stop offset="100%" stop-color="#f39c12"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="ring-center">
+              <div class="ring-num">72%</div>
+              <div class="ring-label">Overall Score</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Topic bars -->
+        <div class="mock-topics">
+          <div class="mock-topic-row">
+            <span class="mock-topic-label">Anatomy</span>
+            <div class="mock-bar-bg"><div class="mock-bar-fill" style="width:85%;background:linear-gradient(90deg,#27ae60,#2ecc71)"></div></div>
+            <span class="mock-bar-pct">85%</span>
+          </div>
+          <div class="mock-topic-row">
+            <span class="mock-topic-label">Pharmacology</span>
+            <div class="mock-bar-bg"><div class="mock-bar-fill" style="width:70%;background:linear-gradient(90deg,#f39c12,#f1c40f)"></div></div>
+            <span class="mock-bar-pct">70%</span>
+          </div>
+          <div class="mock-topic-row">
+            <span class="mock-topic-label" style="color:#ff8a7a">Microbiology ❌</span>
+            <div class="mock-bar-bg"><div class="mock-bar-fill" style="width:40%;background:linear-gradient(90deg,#c0392b,#e74c3c)"></div></div>
+            <span class="mock-bar-pct" style="color:#ff8a7a">40%</span>
+          </div>
+          <div class="mock-topic-row">
+            <span class="mock-topic-label" style="color:#ff8a7a">Nursing Proc ❌</span>
+            <div class="mock-bar-bg"><div class="mock-bar-fill" style="width:52%;background:linear-gradient(90deg,#e67e22,#e74c3c)"></div></div>
+            <span class="mock-bar-pct" style="color:#ff8a7a">52%</span>
+          </div>
+        </div>
+
+        <!-- AI Suggestion Box -->
+        <div class="mock-ai-box">
+          <div class="mock-ai-header">
+            <span>🤖</span>
+            <span>AI Suggestion</span>
+          </div>
+          <div class="mock-ai-text">You are weak in Microbiology (infection control). Revise 3 chapters and attempt 20 MCQs daily for next 7 days.</div>
+        </div>
+
+        <!-- Suggestions -->
+        <div class="mock-suggestions">
+          <div class="mock-sug"><span class="mock-sug-icon">📖</span><span class="mock-sug-text">Revise: Microbiology – Infection Control</span></div>
+          <div class="mock-sug"><span class="mock-sug-icon">📝</span><span class="mock-sug-text">Practice: 20 MCQs on Microbiology daily</span></div>
+          <div class="mock-sug"><span class="mock-sug-icon">🎬</span><span class="mock-sug-text">Watch: Recorded Lecture 3 – Sterilization</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEST SERIES -->
+<section id="tests">
+  <div class="tests-layout">
+    <div class="test-visual fade-up">
+      <div class="test-card-stack">
+        <div class="test-card-behind"></div>
+        <div class="test-card-main">
+          <div class="test-progress-header">
+            <span class="test-q-num">Question 12 of 50</span>
+            <div class="test-timer">⏱ 18:42</div>
+          </div>
+          <div class="test-question">A patient presents with fever, chills, and a BP of 80/50 mmHg. Which nursing intervention should be performed FIRST?</div>
+          <div class="test-options">
+            <div class="test-option">
+              <div class="test-option-letter">A</div>
+              Administer prescribed antipyretics
+            </div>
+            <div class="test-option correct">
+              <div class="test-option-letter" style="background:rgba(39,174,96,0.3)">B</div>
+              ✓ Obtain IV access and start fluid resuscitation
+            </div>
+            <div class="test-option">
+              <div class="test-option-letter">C</div>
+              Collect blood cultures from both arms
+            </div>
+            <div class="test-option">
+              <div class="test-option-letter">D</div>
+              Notify the physician immediately
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="test-info-cards">
+        <div class="test-info-card">
+          <div class="num">500+</div>
+          <div class="lbl">MCQ Questions</div>
+        </div>
+        <div class="test-info-card">
+          <div class="num">40+</div>
+          <div class="lbl">Topic-wise Tests</div>
+        </div>
+        <div class="test-info-card">
+          <div class="num">Auto</div>
+          <div class="lbl">Scoring & Analysis</div>
+        </div>
+        <div class="test-info-card">
+          <div class="num">Real</div>
+          <div class="lbl">Exam Simulation</div>
+        </div>
+      </div>
+    </div>
+    <div class="fade-up">
+      <div class="section-tag">Test Series</div>
+      <h2 class="section-title">Exam-Simulating MCQ<br>Test Platform</h2>
+      <p class="section-sub">Practice 500+ questions in real exam conditions. Timer-based, auto-scored, with detailed explanations for every answer.</p>
+      <div class="ai-features" style="margin-top:28px">
+        <div class="ai-feat" style="background:rgba(13,43,94,0.06);border-color:var(--light-gray)">
+          <div class="ai-feat-icon">🏷️</div>
+          <div class="ai-feat-text">
+            <h4 style="color:var(--navy)">Topic-wise Tests</h4>
+            <p style="color:var(--gray)">Anatomy, Pharmacology, Microbiology, Medical-Surgical, OBG, Pediatrics and more.</p>
+          </div>
+        </div>
+        <div class="ai-feat" style="background:rgba(13,43,94,0.06);border-color:var(--light-gray)">
+          <div class="ai-feat-icon">⏱️</div>
+          <div class="ai-feat-text">
+            <h4 style="color:var(--navy)">Timed Mock Exams</h4>
+            <p style="color:var(--gray)">Full-length mock papers matching AIIMS, ESIC, Railway and NCLEX exam patterns.</p>
+          </div>
+        </div>
+        <div class="ai-feat" style="background:rgba(13,43,94,0.06);border-color:var(--light-gray)">
+          <div class="ai-feat-icon">📊</div>
+          <div class="ai-feat-text">
+            <h4 style="color:var(--navy)">Performance Analytics</h4>
+            <p style="color:var(--gray)">Instant score, accuracy %, time per question, and AI-powered weakness detection after each test.</p>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:32px;display:flex;gap:12px;flex-wrap:wrap">
+        <a href="#pricing" class="btn-primary">Start Free Test →</a>
+        <a href="#pricing" class="btn-secondary" style="color:var(--navy);border-color:var(--light-gray);background:var(--off-white)">View All Tests</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="section-header center fade-up">
+    <div class="section-tag">Pricing Plans</div>
+    <h2 class="section-title">Simple, Transparent Pricing</h2>
+    <p class="section-sub">Choose the plan that fits your preparation stage. Upgrade anytime. Cancel anytime.</p>
+  </div>
+  <div class="pricing-grid fade-up">
+    <div class="price-card">
+      <div class="price-tier">Starter</div>
+      <h3>Free Plan</h3>
+      <div class="price-amount"><span class="currency">₹</span>0<span class="per">/forever</span></div>
+      <div class="price-divider"></div>
+      <ul class="price-features">
+        <li>10 MCQ tests per month</li>
+        <li>Basic performance chart</li>
+        <li>2 recorded lectures</li>
+        <li class="no">AI analysis</li>
+        <li class="no">Live classes</li>
+        <li class="no">PDF downloads</li>
+        <li class="no">Mentorship</li>
+      </ul>
+      <a href="#contact" class="price-btn">Get Started Free</a>
+    </div>
+    <div class="price-card">
+      <div class="price-tier">Basic</div>
+      <h3>Basic Plan</h3>
+      <div class="price-amount"><span class="currency">₹</span>999<span class="per">/month</span></div>
+      <div class="price-divider"></div>
+      <ul class="price-features">
+        <li>Unlimited MCQ tests</li>
+        <li>Topic-wise test access</li>
+        <li>All recorded lectures</li>
+        <li>PDF materials</li>
+        <li>Basic AI analysis</li>
+        <li class="no">Live classes</li>
+        <li class="no">Mentorship</li>
+      </ul>
+      <a href="#contact" class="price-btn">Choose Basic</a>
+    </div>
+    <div class="price-card featured">
+      <div class="featured-pill">⭐ MOST POPULAR</div>
+      <div class="price-tier" style="color:rgba(255,255,255,0.5)">Standard</div>
+      <h3>Standard Plan</h3>
+      <div class="price-amount"><span class="currency">₹</span>1,999<span class="per">/month</span></div>
+      <div class="price-divider"></div>
+      <ul class="price-features">
+        <li>Everything in Basic</li>
+        <li>Live class access</li>
+        <li>Full AI performance analytics</li>
+        <li>Weekly progress reports</li>
+        <li>WhatsApp community</li>
+        <li>Doubt solving sessions</li>
+        <li class="no">Personal mentorship</li>
+      </ul>
+      <a href="#contact" class="price-btn">Choose Standard</a>
+    </div>
+    <div class="price-card">
+      <div class="price-tier">Pro</div>
+      <h3>Pro Mentorship</h3>
+      <div class="price-amount"><span class="currency">₹</span>4,999<span class="per">/month</span></div>
+      <div class="price-divider"></div>
+      <ul class="price-features">
+        <li>Everything in Standard</li>
+        <li>1-on-1 mentorship calls</li>
+        <li>Personalized daily study plan</li>
+        <li>Interview preparation</li>
+        <li>AI doubt solver chat</li>
+        <li>Priority support</li>
+        <li>Job placement guidance</li>
+      </ul>
+      <a href="#contact" class="price-btn">Choose Pro</a>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE CLASSES -->
+<section id="live">
+  <div class="live-layout">
+    <div class="fade-up">
+      <div class="section-tag">Live Classes</div>
+      <h2 class="section-title">Learn Live with<br>Expert Faculty</h2>
+      <p class="section-sub">Join scheduled live sessions on Zoom/Google Meet. Ask doubts in real-time, get instant answers, and never miss a class with recordings.</p>
+      <div style="margin-top:28px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:40px;height:40px;background:var(--off-white);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px">📹</div>
+          <div><strong style="color:var(--navy);font-size:14px">Recorded Backup</strong><p style="color:var(--gray);font-size:13px">All live sessions recorded and uploaded within 24 hrs</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:40px;height:40px;background:var(--off-white);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px">🙋</div>
+          <div><strong style="color:var(--navy);font-size:14px">Live Q&A</strong><p style="color:var(--gray);font-size:13px">Ask doubts directly to the trainer during live class</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:40px;height:40px;background:var(--off-white);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px">🌐</div>
+          <div><strong style="color:var(--navy);font-size:14px">Hindi + English</strong><p style="color:var(--gray);font-size:13px">Classes conducted in bilingual mode for maximum clarity</p></div>
+        </div>
+      </div>
+      <a href="#pricing" class="btn-primary" style="margin-top:32px;display:inline-flex">Join Live Classes →</a>
+    </div>
+    <div class="schedule-card fade-up">
+      <div class="schedule-header">
+        <div class="live-dot"></div>
+        <h3>Upcoming Live Sessions</h3>
+      </div>
+      <div class="schedule-list">
+        <div class="schedule-item">
+          <div class="schedule-time">MON<br>7:00 PM</div>
+          <div class="schedule-info">
+            <h4>Anatomy – Cardiovascular System</h4>
+            <p>Nursing Officer Foundation Batch • 90 mins</p>
+          </div>
+          <a href="#pricing" class="schedule-join">Join</a>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-time">WED<br>6:30 PM</div>
+          <div class="schedule-info">
+            <h4>Pharmacology – Drug Calculations</h4>
+            <p>NCLEX Prep Batch • 60 mins</p>
+          </div>
+          <a href="#pricing" class="schedule-join">Join</a>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-time">FRI<br>7:30 PM</div>
+          <div class="schedule-info">
+            <h4>Microbiology Mock Test + Review</h4>
+            <p>All Batches • 120 mins</p>
+          </div>
+          <a href="#pricing" class="schedule-join">Join</a>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-time">SUN<br>10:00 AM</div>
+          <div class="schedule-info">
+            <h4>NCLEX NGN – Clinical Judgment</h4>
+            <p>NCLEX Prep Batch • 90 mins</p>
+          </div>
+          <a href="#pricing" class="schedule-join">Join</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="section-header center fade-up">
+    <div class="section-tag">Success Stories</div>
+    <h2 class="section-title">Students Who Got Selected</h2>
+    <p class="section-sub">Real students, real results. See what our community has to say about their preparation journey.</p>
+  </div>
+  <div class="testi-grid fade-up">
+    <div class="testi-card">
+      <div class="testi-exam-badge">✅ AIIMS Delhi Selected</div>
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-quote">"</div>
+      <p class="testi-text">The AI weakness detection feature changed my preparation completely. I used to waste time on strong topics — now I focus only on weak areas and my score jumped from 52% to 81% in 6 weeks.</p>
+      <div class="testi-author">
+        <div class="testi-avatar" style="background:linear-gradient(135deg,var(--navy),var(--navy-light))">👩</div>
+        <div>
+          <div class="testi-name">Priya Sharma</div>
+          <div class="testi-role">Nursing Officer — AIIMS Delhi</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-exam-badge">✅ NCLEX-RN Passed</div>
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-quote">"</div>
+      <p class="testi-text">Hindi explanations for NCLEX topics made a huge difference. The live classes were interactive and the mock tests were very close to the actual NCLEX format. Cleared in first attempt!</p>
+      <div class="testi-author">
+        <div class="testi-avatar" style="background:linear-gradient(135deg,var(--crimson),#e74c3c)">👨</div>
+        <div>
+          <div class="testi-name">Rahul Verma</div>
+          <div class="testi-role">RN — Working in USA</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-exam-badge">✅ ESIC Nursing Selected</div>
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-quote">"</div>
+      <p class="testi-text">The personalized study plan in Pro Mentorship was worth every rupee. My mentor helped me schedule my preparation week-by-week and I got selected in ESIC in just 3 months.</p>
+      <div class="testi-author">
+        <div class="testi-avatar" style="background:linear-gradient(135deg,#27ae60,#2ecc71)">👩</div>
+        <div>
+          <div class="testi-name">Kavita Singh</div>
+          <div class="testi-role">Staff Nurse — ESIC Hospital</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-layout">
+    <div class="contact-info fade-up">
+      <div class="section-tag" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);border-color:rgba(255,255,255,0.2)">Get In Touch</div>
+      <h2 class="section-title">Start Your Nursing<br>Officer Journey Today</h2>
+      <p class="section-sub">Have questions about courses, batches, or pricing? Reach out — our team responds within 2 hours.</p>
+      <div class="contact-links">
+        <a href="https://wa.me/919999999999" class="contact-link">
+          <div class="contact-link-icon">💬</div>
+          WhatsApp: +91 99999 99999
+        </a>
+        <a href="mailto:info@nursingofficertraining.com" class="contact-link">
+          <div class="contact-link-icon">📧</div>
+          info@nursingofficertraining.com
+        </a>
+        <a href="#" class="contact-link">
+          <div class="contact-link-icon">📍</div>
+          India (Pan-India Online Classes)
+        </a>
+      </div>
+    </div>
+    <div class="contact-form-wrap fade-up">
+      <h3 style="color:white;font-size:20px;font-weight:700;margin-bottom:24px">Enroll / Enquire Now</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" placeholder="Your name">
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" placeholder="+91 XXXXX XXXXX">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label>Interested In</label>
+        <select>
+          <option>Nursing Officer (Government) Course</option>
+          <option>NCLEX-RN Preparation</option>
+          <option>NCLEX-PN Preparation</option>
+          <option>AI-Powered Combo Course</option>
+          <option>Pro Mentorship Plan</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Your Message (Optional)</label>
+        <textarea placeholder="Any questions or specific requirements..."></textarea>
+      </div>
+      <button onclick="alert('Thank you! Our team will contact you within 2 hours on WhatsApp.')" class="btn-primary" style="width:100%;justify-content:center;font-size:15px;padding:15px;cursor:pointer;border:none">
+        🚀 Submit Enquiry
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="nav-logo" style="margin-bottom:4px">
+        <div class="nav-logo-icon">🏥</div>
+        <div class="nav-logo-text">
+          <span style="color:white">NursingOfficer</span>
+          <span style="color:var(--crimson)">Training.com</span>
+        </div>
+      </div>
+      <p>India's most advanced AI-powered nursing exam preparation platform. Helping nursing aspirants crack government exams and NCLEX with smart technology.</p>
+      <div class="footer-social">
+        <a href="https://www.facebook.com/share/1DihgeCGnt/" target="_blank" rel="noopener" class="social-btn"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="https://www.linkedin.com/in/dr-rajendra-jinjwaria-phd-rn🥇gold-medalist-🥇matron-nia-076152103?utm_source=share_via&utm_content=profile&utm_medium=member_android" target="_blank" rel="noopener" class="social-btn"><i class="fa-brands fa-linkedin-in"></i></a>
+        <a href="https://youtube.com/@dr.rajendrajinjwaria1845?si=sHu5Gwy_6jILnxBd" target="_blank" rel="noopener" class="social-btn"><i class="fa-brands fa-youtube"></i></a>
+        <a href="https://wa.me/919999999999" target="_blank" rel="noopener" class="social-btn"><i class="fa-brands fa-whatsapp"></i></a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Courses</h4>
+      <ul class="footer-links">
+        <li><a href="#courses">Nursing Officer Prep</a></li>
+        <li><a href="#courses">NCLEX-RN</a></li>
+        <li><a href="#courses">NCLEX-PN</a></li>
+        <li><a href="#courses">Combo Course</a></li>
+        <li><a href="#tests">Test Series</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <ul class="footer-links">
+        <li><a href="#ai-performance">AI Analytics</a></li>
+        <li><a href="#live">Live Classes</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#testimonials">Success Stories</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <ul class="footer-links">
+        <li><a href="#contact">Contact Us</a></li>
+        <li><a href="#">WhatsApp Help</a></li>
+        <li><a href="#">Refund Policy</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Use</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 NursingOfficerTraining.com • All rights reserved • Powered by Razorpay</p>
+    <div class="footer-bottom-links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Refund Policy</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // NAV SCROLL
+  window.addEventListener('scroll', () => {
+    const nav = document.getElementById('navbar');
+    if (window.scrollY > 50) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  });
+
+  // FADE UP ANIMATIONS
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // HAMBURGER
+  document.querySelector('.hamburger').addEventListener('click', () => {
+    const links = document.querySelector('.nav-links');
+    if (links.style.display === 'flex') {
+      links.style.display = 'none';
+    } else {
+      links.style.cssText = 'display:flex;flex-direction:column;position:fixed;top:72px;left:0;right:0;background:white;padding:20px;border-bottom:1px solid #e8edf5;gap:4px;z-index:999;';
+    }
+  });
+
+  // Close mobile nav on link click
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.addEventListener('click', () => { document.querySelector('.nav-links').style.display = 'none'; });
+  });
+</script>
+</body>
+</html>

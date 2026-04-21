@@ -1,0 +1,22 @@
+.str-card { background: var(--white); border-radius: 16px; padding: 28px; border: 1px solid var(--light-gray); margin-bottom: 24px; box-shadow: 0 4px 20px rgba(13,43,94,0.08); animation: fadeUp 0.5s ease; }
+.str-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 20px; }
+.str-title { display: block; font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--navy); }
+.str-subtitle { font-size: 13px; color: var(--gray); }
+.shimmer-icon { animation: shimmer 2s linear infinite; }
+.str-header .shimmer-icon { margin-left: auto; }
+.str-list { display: flex; flex-direction: column; gap: 12px; }
+.str-rec { display: flex; align-items: center; gap: 16px; padding: 16px; border-radius: 12px; border: 1px solid var(--light-gray); transition: all 0.3s; }
+.str-rec:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(13,43,94,0.08); }
+.str-rec-icon { width: 48px; height: 48px; border-radius: 12px; background: var(--off-white); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.str-rec-body { flex: 1; }
+.str-rec-topic { font-size: 15px; font-weight: 700; color: var(--navy); }
+.str-rec-title { font-size: 13px; color: var(--gray); margin-top: 2px; }
+.str-rec-meta { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.str-diff-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 50px; border: 1px solid; }
+.str-acc { font-size: 12px; color: var(--gray); display: flex; align-items: center; gap: 4px; }
+.str-start-btn { display: flex; align-items: center; gap: 4px; background: var(--navy); color: white; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; text-decoration: none; transition: all 0.2s; flex-shrink: 0; }
+.str-start-btn:hover { background: var(--crimson); }
+.str-allclear { text-align: center; padding: 32px; }
+.str-allclear p { color: var(--gray); margin: 12px 0; font-size: 14px; }
+.str-mock-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--navy); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; }
+@media (max-width: 600px) { .str-rec { flex-direction: column; align-items: flex-start; } .str-start-btn { width: 100%; justify-content: center; } }

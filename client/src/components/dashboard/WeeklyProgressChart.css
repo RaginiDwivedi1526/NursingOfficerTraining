@@ -1,0 +1,12 @@
+.wpc-card { background: var(--white); border-radius: 16px; padding: 28px; border: 1px solid var(--light-gray); margin-bottom: 24px; box-shadow: 0 4px 20px rgba(13,43,94,0.08); animation: fadeUp 0.5s ease; }
+.wpc-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 20px; }
+.wpc-title { display: block; font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--navy); }
+.wpc-subtitle { font-size: 13px; color: var(--gray); }
+.wpc-chart { height: 260px; }
+.wpc-improvement { display: flex; align-items: center; gap: 10px; margin-top: 16px; padding: 12px 16px; background: rgba(249,115,22,0.08); border: 1px solid rgba(249,115,22,0.2); border-radius: 10px; font-size: 14px; color: var(--dark); }
+.flicker-icon { animation: flicker 1.5s ease-in-out infinite; }
+.wpc-skeleton { display: flex; flex-direction: column; gap: 12px; padding: 40px 0; }
+.shimmer-bar { height: 16px; border-radius: 8px; background: linear-gradient(90deg, var(--light-gray) 25%, #f0f4fa 50%, var(--light-gray) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+.shimmer-bar:nth-child(1) { width: 90%; }
+.shimmer-bar:nth-child(2) { width: 70%; }
+.shimmer-bar:nth-child(3) { width: 80%; }

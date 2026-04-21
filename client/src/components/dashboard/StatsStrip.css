@@ -1,0 +1,9 @@
+.stats-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.ss-card { background: var(--white); border-radius: 16px; padding: 24px; border: 1px solid var(--light-gray); box-shadow: 0 4px 20px rgba(13,43,94,0.08); text-align: center; animation: fadeUp 0.5s ease both; transition: all 0.3s; }
+.ss-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(13,43,94,0.12); }
+.ss-icon-wrap { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+.ss-value { font-family: var(--font-display); font-size: 1.8rem; font-weight: 900; color: var(--navy); }
+.ss-label { font-size: 13px; color: var(--gray); margin-top: 4px; margin-bottom: 8px; }
+.ss-trend { display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 12px; font-weight: 600; }
+@media (max-width: 768px) { .stats-strip { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .stats-strip { grid-template-columns: 1fr; } }
