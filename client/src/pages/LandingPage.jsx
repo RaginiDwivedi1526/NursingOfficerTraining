@@ -22,8 +22,8 @@ function LandingPage() {
         <div className="hero-content">
           <div className="hero-badge"><Stethoscope size={14} /> India's Most Advanced Nursing Prep</div>
           <h1 className="hero-title">
-            Crack Nursing Officer &amp;<br/>
-            <span className="highlight">NCLEX</span> Exams<br/>
+            Crack Nursing Officer &amp;<br />
+            <span className="highlight">NCLEX</span> Exams<br />
             with AI-Powered Training
           </h1>
           <p className="hero-sub">
@@ -44,8 +44,8 @@ function LandingPage() {
       {/* Badge Strip */}
       <div className="badge-strip">
         <div className="badge-track">
-          {['AIIMS Delhi','ESIC Nursing','Railway Nursing','NCLEX-RN','NCLEX-PN','State PSC Nursing','Army Nursing','NHM Nursing',
-            'AIIMS Delhi','ESIC Nursing','Railway Nursing','NCLEX-RN','NCLEX-PN','State PSC Nursing','Army Nursing','NHM Nursing'
+          {['AIIMS Delhi', 'ESIC Nursing', 'Railway Nursing', 'NCLEX-RN', 'NCLEX-PN', 'State PSC Nursing', 'Army Nursing', 'NHM Nursing',
+            'AIIMS Delhi', 'ESIC Nursing', 'Railway Nursing', 'NCLEX-RN', 'NCLEX-PN', 'State PSC Nursing', 'Army Nursing', 'NHM Nursing'
           ].map((b, i) => <div className="badge-item" key={i}>{b}</div>)}
         </div>
       </div>
@@ -54,7 +54,7 @@ function LandingPage() {
       <section className="features-section" id="features">
         <div className="section-header center">
           <div className="section-tag">Why Choose Us</div>
-          <h2 className="section-title">Everything You Need to<br/>Ace Your Nursing Exam</h2>
+          <h2 className="section-title">Everything You Need to<br />Ace Your Nursing Exam</h2>
           <p className="section-sub">A complete ecosystem for nursing aspirants — from learning to testing to getting selected.</p>
         </div>
         <div className="features-grid">
@@ -79,7 +79,7 @@ function LandingPage() {
       <section className="courses-section" id="courses">
         <div className="section-header">
           <div className="section-tag">Our Courses</div>
-          <h2 className="section-title">Comprehensive Courses for<br/>Every Nursing Aspirant</h2>
+          <h2 className="section-title">Comprehensive Courses for<br />Every Nursing Aspirant</h2>
           <p className="section-sub">Structured programs covering all major nursing entrance exams in India and globally.</p>
         </div>
         <div className="courses-grid">
@@ -105,12 +105,12 @@ function LandingPage() {
       </section>
 
       {/* AI Dashboard Live Preview */}
-      <section id="ai-dashboard" style={{ background: 'linear-gradient(135deg, var(--dark), var(--navy))', padding: '90px 5%', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 70% 50%, rgba(192,57,43,0.2) 0%, transparent 60%)' }}></div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px', alignItems: 'center', position: 'relative', zIndex: 1 }}>
+      <section id="ai-dashboard" className="ai-analytics-section">
+        <div className="ai-analytics-overlay"></div>
+        <div className="ai-analytics-grid">
           <div>
             <div className="section-tag" style={{ background: 'rgba(243,156,18,0.2)', color: '#f9c74f', borderColor: 'rgba(243,156,18,0.3)' }}><Bot size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} /> AI-Powered Analytics</div>
-            <h2 className="section-title" style={{ color: 'white' }}>Your Personal AI<br/>Performance Coach</h2>
+            <h2 className="section-title" style={{ color: 'white' }}>Your Personal AI<br />Performance Coach</h2>
             <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '16px', lineHeight: '1.7', maxWidth: '520px', marginBottom: '32px' }}>
               After every test, our AI engine analyzes your performance, detects weak areas, and gives you a step-by-step improvement plan.
             </p>
@@ -134,7 +134,7 @@ function LandingPage() {
           </div>
 
           {/* Dashboard Mock */}
-          <div style={{ background: '#1a2b4a', borderRadius: '20px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 40px 80px rgba(0,0,0,0.4)' }}>
+          <div className="ai-dashboard-preview">
             <div style={{ background: '#0d1e38', padding: '12px 20px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
               <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57' }}></div>
               <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#febc2e' }}></div>
@@ -155,9 +155,9 @@ function LandingPage() {
               {/* Score Ring */}
               <div style={{ textAlign: 'center', marginBottom: '20px' }}>
                 <svg width="110" height="110" viewBox="0 0 110 110" style={{ transform: 'rotate(-90deg)' }}>
-                  <circle cx="55" cy="55" r="45" stroke="rgba(255,255,255,0.08)" strokeWidth="10" fill="none"/>
-                  <circle cx="55" cy="55" r="45" stroke="url(#heroRingGrad)" strokeWidth="10" fill="none" strokeDasharray="282.6" strokeDashoffset="76.3" strokeLinecap="round"/>
-                  <defs><linearGradient id="heroRingGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor="#c0392b"/><stop offset="100%" stopColor="#f39c12"/></linearGradient></defs>
+                  <circle cx="55" cy="55" r="45" stroke="rgba(255,255,255,0.08)" strokeWidth="10" fill="none" />
+                  <circle cx="55" cy="55" r="45" stroke="url(#heroRingGrad)" strokeWidth="10" fill="none" strokeDasharray="282.6" strokeDashoffset="76.3" strokeLinecap="round" />
+                  <defs><linearGradient id="heroRingGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor="#c0392b" /><stop offset="100%" stopColor="#f39c12" /></linearGradient></defs>
                 </svg>
                 <div style={{ position: 'relative', top: '-75px', marginBottom: '-60px' }}>
                   <div style={{ fontSize: '24px', fontWeight: 900, color: 'white', fontFamily: 'var(--font-display)' }}>72%</div>
@@ -273,7 +273,7 @@ function LandingPage() {
         <div className="contact-layout">
           <div className="contact-info">
             <div className="section-tag" style={{ background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)', borderColor: 'rgba(255,255,255,0.2)' }}>Get In Touch</div>
-            <h2 className="section-title">Start Your Nursing<br/>Officer Journey Today</h2>
+            <h2 className="section-title">Start Your Nursing<br />Officer Journey Today</h2>
             <p className="section-sub">Have questions? Our team responds within 2 hours.</p>
             <div className="contact-links">
               <a href="https://wa.me/919999999999" className="contact-link"><MessageCircle size={18} color="rgba(255,255,255,0.8)" /> WhatsApp: +91 99999 99999</a>
