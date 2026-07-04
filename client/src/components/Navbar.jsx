@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Menu, X, Rocket, LayoutDashboard, ClipboardList, LogOut, MoreVertical } from 'lucide-react';
+import { Menu, X, Rocket, LayoutDashboard, ClipboardList, LogOut, Shield } from 'lucide-react';
 import logo from '../assets/logo.png';
 
 function Navbar() {
@@ -40,7 +40,7 @@ function Navbar() {
       </Link>
 
       <button className="nav-mobile-toggle" onClick={toggleMenu} aria-label="Toggle Menu">
-        {isOpen ? <X size={24} /> : <MoreVertical size={24} />}
+        {isOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
       <div className={`nav-links ${isOpen ? 'open' : ''}`}>
@@ -49,6 +49,11 @@ function Navbar() {
         <a href="/#pricing" onClick={(e) => handleAnchorClick(e, 'pricing')}>Pricing</a>
         {user ? (
           <>
+            {user.role === 'admin' && (
+              <Link to="/admin" onClick={closeMenu} style={{ color: 'var(--crimson)', fontWeight: 'bold' }}>
+                <Shield size={14} className="nav-icon" /> Admin Panel
+              </Link>
+            )}
             <Link to="/dashboard" onClick={closeMenu}><LayoutDashboard size={14} className="nav-icon" /> Dashboard</Link>
             <Link to="/tests" onClick={closeMenu}><ClipboardList size={14} className="nav-icon" /> Tests</Link>
             <div className="nav-user-info">

@@ -10,10 +10,17 @@ import TakeTest from './pages/TakeTest';
 import TestResult from './pages/TestResult';
 import AIDoubtSolver from './components/AIDoubtSolver';
 import WhatsAppFloat from './components/WhatsAppFloat';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminUsers from './pages/admin/AdminUsers';
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
   return user ? children : <Navigate to="/login" />;
+};
+
+const AdminRoute = ({ children }) => {
+  const { user } = useAuth();
+  return user && user.role === 'admin' ? children : <Navigate to="/dashboard" />;
 };
 
 function AppRoutes() {
@@ -29,6 +36,10 @@ function AppRoutes() {
         <Route path="/tests" element={<ProtectedRoute><TestList /></ProtectedRoute>} />
         <Route path="/test/:id" element={<ProtectedRoute><TakeTest /></ProtectedRoute>} />
         <Route path="/result/:id" element={<ProtectedRoute><TestResult /></ProtectedRoute>} />
+        
+        {/* Admin Routes */}
+        <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+        <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
       </Routes>
       {user && <AIDoubtSolver />}
       <WhatsAppFloat />

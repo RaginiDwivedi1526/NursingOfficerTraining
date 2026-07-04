@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   password: { type: String, required: true, minlength: 6 },
   phone: { type: String, trim: true },
-  role: { type: String, enum: ['free', 'basic', 'standard', 'pro'], default: 'free' },
+  role: { type: String, enum: ['free', 'basic', 'standard', 'pro', 'admin'], default: 'free' },
   batch: { type: String, default: 'Batch 2025' },
   examTarget: { type: String, default: 'Nursing Officer' },
   weeklyScores: [{ week: Number, score: Number, date: { type: Date, default: Date.now } }],
