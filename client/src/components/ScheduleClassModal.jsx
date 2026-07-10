@@ -30,7 +30,7 @@ const ScheduleClassModal = ({ isOpen, onClose, onClassScheduled }) => {
       const token = userStr ? JSON.parse(userStr).token : null;
       
       const response = await axios.post(
-        'http://localhost:5000/api/live-classes', 
+        `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/live-classes`, 
         {
           title: formData.title,
           description: formData.description,

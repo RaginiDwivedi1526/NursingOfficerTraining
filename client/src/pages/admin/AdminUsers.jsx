@@ -20,7 +20,7 @@ function AdminUsers() {
       const config = {
         headers: { Authorization: `Bearer ${token}` }
       };
-      const { data } = await axios.get('http://localhost:5000/api/admin/users', config);
+      const { data } = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/admin/users`, config);
       setUsers(data);
       setLoading(false);
     } catch (err) {
@@ -36,7 +36,7 @@ function AdminUsers() {
       const config = {
         headers: { Authorization: `Bearer ${token}` }
       };
-      await axios.put(`http://localhost:5000/api/admin/users/${id}/role`, { role }, config);
+      await axios.put(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/admin/users/${id}/role`, { role }, config);
       setMessage({ text: 'User role updated successfully', type: 'success' });
       fetchUsers();
     } catch (err) {
@@ -52,7 +52,7 @@ function AdminUsers() {
       const config = {
         headers: { Authorization: `Bearer ${token}` }
       };
-      await axios.delete(`http://localhost:5000/api/admin/users/${id}`, config);
+      await axios.delete(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/admin/users/${id}`, config);
       setMessage({ text: 'User deleted successfully', type: 'success' });
       fetchUsers();
     } catch (err) {

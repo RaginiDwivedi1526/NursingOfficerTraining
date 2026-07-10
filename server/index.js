@@ -14,12 +14,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: [
-    'https://nursing-officer-training.vercel.app', 
-    'http://localhost:3000',
-    'https://www.nursingofficertraning.com',
-    'https://nursingofficertraning.com'
-  ],
+  origin: '*', // Allow all origins for now so your Vercel URL works automatically
   credentials: true
 }));
 app.use(express.json());
