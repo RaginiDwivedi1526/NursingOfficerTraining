@@ -29,8 +29,10 @@ const ScheduleClassModal = ({ isOpen, onClose, onClassScheduled }) => {
       const userStr = localStorage.getItem('nursingUser');
       const token = userStr ? JSON.parse(userStr).token : null;
       
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+      const url = baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
       const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/live-classes`, 
+        `${url}/live-classes`, 
         {
           title: formData.title,
           description: formData.description,

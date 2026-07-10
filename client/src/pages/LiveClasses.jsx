@@ -19,7 +19,9 @@ const LiveClasses = () => {
     try {
       const userStr = localStorage.getItem('nursingUser');
       const token = userStr ? JSON.parse(userStr).token : null;
-      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/live-classes`, {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+      const url = baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
+      const res = await axios.get(`${url}/live-classes`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setClasses(res.data);
@@ -39,7 +41,9 @@ const LiveClasses = () => {
     try {
       const userStr = localStorage.getItem('nursingUser');
       const token = userStr ? JSON.parse(userStr).token : null;
-      await axios.delete(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/live-classes/${id}`, {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+      const url = baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
+      await axios.delete(`${url}/live-classes/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setClasses(classes.filter(c => c._id !== id));

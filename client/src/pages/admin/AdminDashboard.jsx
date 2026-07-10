@@ -17,7 +17,9 @@ function AdminDashboard() {
         const config = {
           headers: { Authorization: `Bearer ${token}` }
         };
-        const { data } = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/admin/stats`, config);
+        const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+        const url = baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
+        const { data } = await axios.get(`${url}/admin/stats`, config);
         setStats(data);
         setLoading(false);
       } catch (err) {
