@@ -15,8 +15,10 @@ function AdminUsers() {
 
   const fetchUsers = async () => {
     try {
+      const userStr = localStorage.getItem('nursingUser');
+      const token = userStr ? JSON.parse(userStr).token : null;
       const config = {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${token}` }
       };
       const { data } = await axios.get('http://localhost:5000/api/admin/users', config);
       setUsers(data);
@@ -29,8 +31,10 @@ function AdminUsers() {
 
   const updateRole = async (id, role) => {
     try {
+      const userStr = localStorage.getItem('nursingUser');
+      const token = userStr ? JSON.parse(userStr).token : null;
       const config = {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${token}` }
       };
       await axios.put(`http://localhost:5000/api/admin/users/${id}/role`, { role }, config);
       setMessage({ text: 'User role updated successfully', type: 'success' });
@@ -43,8 +47,10 @@ function AdminUsers() {
   const deleteUser = async (id) => {
     if (!window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
     try {
+      const userStr = localStorage.getItem('nursingUser');
+      const token = userStr ? JSON.parse(userStr).token : null;
       const config = {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${token}` }
       };
       await axios.delete(`http://localhost:5000/api/admin/users/${id}`, config);
       setMessage({ text: 'User deleted successfully', type: 'success' });
@@ -59,7 +65,7 @@ function AdminUsers() {
     u.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (loading) return <div className="loading"><div className="spinner"></div></div>;
+  if (loading) return <div className="page-container"><div className="loading"><div className="spinner"></div></div></div>;
 
   return (
     <div className="test-list-page">

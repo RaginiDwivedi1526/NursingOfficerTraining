@@ -30,6 +30,7 @@ app.use('/api/tests', require('./routes/tests'));
 app.use('/api/analytics', require('./routes/analytics'));
 app.use('/api/ai', require('./routes/ai'));
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/live-classes', require('./routes/liveClasses'));
 
 // Health check
 app.get('/api/health', (req, res) => {

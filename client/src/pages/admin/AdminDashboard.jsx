@@ -12,8 +12,10 @@ function AdminDashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
+        const userStr = localStorage.getItem('nursingUser');
+        const token = userStr ? JSON.parse(userStr).token : null;
         const config = {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+          headers: { Authorization: `Bearer ${token}` }
         };
         const { data } = await axios.get('http://localhost:5000/api/admin/stats', config);
         setStats(data);
@@ -26,12 +28,13 @@ function AdminDashboard() {
     fetchStats();
   }, []);
 
-  if (loading) return <div className="loading"><div className="spinner"></div></div>;
-  if (error) return <div className="auth-error">{error}</div>;
+  if (loading) return <div className="page-container"><div className="loading"><div className="spinner"></div></div></div>;
+  if (error) return <div className="page-container" style={{padding: '100px 5%'}}><div className="auth-error">{error}</div></div>;
 
   return (
-    <div className="dashboard">
-      <div className="dash-header">
+    <div className="page-container">
+      <div className="dashboard">
+        <div className="dash-header">
         <div>
           <h1>Admin Command Center</h1>
           <p className="subtitle">Platform overview and management</p>
@@ -92,6 +95,7 @@ function AdminDashboard() {
               <span className="badge">System Tool</span>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>

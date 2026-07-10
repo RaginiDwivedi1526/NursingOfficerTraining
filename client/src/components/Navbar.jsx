@@ -56,6 +56,7 @@ function Navbar() {
             )}
             <Link to="/dashboard" onClick={closeMenu}><LayoutDashboard size={14} className="nav-icon" /> Dashboard</Link>
             <Link to="/tests" onClick={closeMenu}><ClipboardList size={14} className="nav-icon" /> Tests</Link>
+            <Link to="/live-classes" onClick={closeMenu}><Rocket size={14} className="nav-icon" /> Live Classes</Link>
             <div className="nav-user-info">
               <div className="nav-user-avatar">{user.name?.charAt(0).toUpperCase()}</div>
               <span className="nav-user-name">{user.name}</span>
