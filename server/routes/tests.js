@@ -22,6 +22,43 @@ router.get('/', async (req, res) => {
   }
 });
 
+// GET /api/tests/debug-long
+router.get('/debug-long', async (req, res) => {
+  try {
+    const tests = await Test.find({ title: /AIIMS NORCET - Psychiatry Mock Test/ });
+    let longQs = [];
+    tests.forEach(test => {
+      test.questions.forEach((q, i) => {
+        if (q.questionText && q.questionText.length > 300) {
+          longQs.push(`Q${i+1}: ${q.questionText.substring(0, 100)}...`);
+        }
+      });
+    });
+    res.json({ longQuestions: longQs });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/tests/debug-mock
+router.get('/debug-mock', async (req, res) => {
+  try {
+    const tests = await Test.find({ title: /AIIMS NORCET - Psychiatry Mock Test/ });
+    if (tests.length === 0) return res.json({ message: "No tests found" });
+    
+    // Just return the first 3 questions of the first test
+    const debugData = tests[0].questions.slice(0, 3).map(q => ({
+      questionText: q.questionText,
+      options: q.options,
+      correctAnswer: q.correctAnswer,
+      explanation: q.explanation
+    }));
+    res.json(debugData);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 const fs = require('fs');
 const path = require('path');
 
