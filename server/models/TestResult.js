@@ -22,6 +22,8 @@ const testResultSchema = new mongoose.Schema({
   totalQuestions: { type: Number, required: true },
   correctAnswers: { type: Number, default: 0 },
   incorrectAnswers: { type: Number, default: 0 },
+  unattemptedAnswers: { type: Number, default: 0 },
+  negativeMarksDeducted: { type: Number, default: 0 },
   score: { type: Number, default: 0 }, // percentage
   timeTaken: { type: Number, default: 0 }, // total seconds
   topicPerformance: [topicPerformanceSchema],

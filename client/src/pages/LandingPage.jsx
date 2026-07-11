@@ -75,18 +75,18 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* Courses */}
-      <section className="courses-section" id="courses">
+      {/* Career Portal */}
+      <section className="courses-section" id="career">
         <div className="section-header">
-          <div className="section-tag">Our Courses</div>
-          <h2 className="section-title">Comprehensive Courses for<br />Every Nursing Aspirant</h2>
-          <p className="section-sub">Structured programs covering all major nursing entrance exams in India and globally.</p>
+          <div className="section-tag">Career Portal</div>
+          <h2 className="section-title">Latest Nursing Job<br />Notifications & Vacancies</h2>
+          <p className="section-sub">Stay updated with the latest government and private sector nursing recruitment drives across India.</p>
         </div>
         <div className="courses-grid">
           {[
-            { color: 'blue', badge: <><Zap size={12} /> Most Popular</>, icon: <Hospital size={48} color="white" />, title: 'Nursing Officer (Government)', desc: 'Complete preparation for AIIMS, ESIC, Railway, Army, NHM & State PSC exams.', meta: [<><NotebookPen size={12} /> 200+ Videos</>, <><CalendarCheck size={12} /> 6 Months</>, <><Target size={12} /> 300 Tests</>] },
-            { color: 'red', badge: <><Globe size={12} /> International</>, icon: <Globe size={48} color="white" />, title: 'NCLEX-RN / NCLEX-PN Prep', desc: 'US-based NCLEX preparation with NGN format, clinical judgment modules & CAT simulation.', meta: [<><NotebookPen size={12} /> 150+ Videos</>, <><CalendarCheck size={12} /> 4 Months</>, <><Target size={12} /> 200 Tests</>] },
-            { color: 'gold', badge: <><Star size={12} /> Pro Feature</>, icon: <Brain size={48} color="white" />, title: 'AI-Powered Full Combo', desc: 'Both courses combined with AI analytics, personalized study plan, daily MCQ alerts & mentor access.', meta: [<><NotebookPen size={12} /> 350+ Videos</>, <><CalendarCheck size={12} /> 12 Months</>, <><Bot size={12} /> AI Analytics</>] }
+            { color: 'blue', badge: <><Zap size={12} /> Active Hiring</>, icon: <Hospital size={48} color="white" />, title: 'AIIMS NORCET 2026', desc: 'Nursing Officer Recruitment Common Eligibility Test for all AIIMS institutes across India.', meta: [<><MapPin size={12} /> Pan India</>, <><CalendarCheck size={12} /> Upcoming</>, <><Target size={12} /> 3000+ Posts</>] },
+            { color: 'red', badge: <><Star size={12} /> Just Announced</>, icon: <Stethoscope size={48} color="white" />, title: 'ESIC Staff Nurse Recruitment', desc: 'Employee State Insurance Corporation massive recruitment drive for Staff Nurses in various states.', meta: [<><MapPin size={12} /> State-wise</>, <><CalendarCheck size={12} /> Apply Now</>, <><Target size={12} /> 1900+ Posts</>] },
+            { color: 'gold', badge: <><Zap size={12} /> High Alert</>, icon: <Globe size={48} color="white" />, title: 'RRB Nursing Officer', desc: 'Railway Recruitment Board notifications for Chief Nursing Superintendent & Staff Nurse.', meta: [<><MapPin size={12} /> Indian Railways</>, <><CalendarCheck size={12} /> Expected Soon</>, <><Target size={12} /> 1100+ Posts</>] }
           ].map((c, i) => (
             <div className="course-card" key={i}>
               <div className={`course-img ${c.color}`}>
@@ -97,7 +97,7 @@ function LandingPage() {
                 <h3>{c.title}</h3>
                 <p>{c.desc}</p>
                 <div className="course-meta">{c.meta.map((m, j) => <span className="meta-pill" key={j}>{m}</span>)}</div>
-                <Link to="/register" className="course-btn">View Course <ChevronRight size={14} /></Link>
+                <button className="course-btn" onClick={() => alert('Detailed notification will be available soon.')}>View Details <ChevronRight size={14} /></button>
               </div>
             </div>
           ))}
@@ -322,12 +322,12 @@ function LandingPage() {
             </div>
           </div>
           <div className="footer-col">
-            <h4>Courses</h4>
+            <h4>Career Portal</h4>
             <ul className="footer-links">
-              <li><a href="#courses">Nursing Officer Prep</a></li>
-              <li><a href="#courses">NCLEX-RN</a></li>
-              <li><a href="#courses">NCLEX-PN</a></li>
-              <li><a href="#courses">Combo Course</a></li>
+              <li><a href="#career">AIIMS NORCET Updates</a></li>
+              <li><a href="#career">ESIC Recruitment</a></li>
+              <li><a href="#career">RRB Nursing Jobs</a></li>
+              <li><a href="#career">State PSC Vacancies</a></li>
             </ul>
           </div>
           <div className="footer-col">

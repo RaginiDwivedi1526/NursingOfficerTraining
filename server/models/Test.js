@@ -21,9 +21,8 @@ const testSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-testSchema.pre('save', function(next) {
-  this.totalQuestions = this.questions.length;
-  next();
+testSchema.pre('save', async function() {
+  this.totalQuestions = this.questions ? this.questions.length : 0;
 });
 
 module.exports = mongoose.model('Test', testSchema);

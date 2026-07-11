@@ -22,6 +22,69 @@ router.get('/', async (req, res) => {
   }
 });
 
+const fs = require('fs');
+const path = require('path');
+
+// GET /api/tests/parse-txt
+router.get('/parse-txt', (req, res) => {
+  try {
+    const filePath = path.join(__dirname, '../../questions and summary.txt');
+    const content = fs.readFileSync(filePath, 'utf8');
+    const blocks = content.split(/---\s*Image\s*\d+\s*---/i);
+    
+    const questions = [];
+    let currentQuestion = null;
+    
+    for (let i = 1; i < blocks.length; i++) {
+      const block = blocks[i].trim();
+      if (!block) continue;
+      
+      const isQuestionBlock = block.match(/^[O©vVYXx\[\]]\s*\d+\./m) && !block.includes('Educational objective:');
+      const isExplanationBlock = block.includes('Educational objective:') || block.includes('Explanation');
+      
+      if (isQuestionBlock && !isExplanationBlock) {
+        currentQuestion = { questionText: '', options: [], correctAnswer: -1, explanation: '', topic: 'Mental Health (Psychiatric) Nursing' };
+        const lines = block.split('\n').map(l => l.trim()).filter(l => l);
+        let qText = [];
+        let inOptions = false;
+        
+        for (const line of lines) {
+          const optionMatch = line.match(/^[O©vVYXx\[\]]\s*(\d+)\.\s*(.*)/);
+          if (optionMatch) {
+            inOptions = true;
+            currentQuestion.options.push(optionMatch[2]);
+            if (line.match(/^[©vVY]/)) {
+              currentQuestion.correctAnswer = parseInt(optionMatch[1]) - 1;
+            }
+          } else if (!inOptions) {
+            qText.push(line);
+          } else {
+            currentQuestion.options[currentQuestion.options.length - 1] += ' ' + line;
+          }
+        }
+        currentQuestion.questionText = qText.join(' ');
+        questions.push(currentQuestion);
+      } else if (isExplanationBlock && currentQuestion) {
+        currentQuestion.explanation = block;
+        const lines = block.split('\n').map(l => l.trim()).filter(l => l);
+        for (const line of lines) {
+          const optionMatch = line.match(/^[©vVY]\s*(\d+)\./);
+          if (optionMatch) {
+            currentQuestion.correctAnswer = parseInt(optionMatch[1]) - 1;
+          }
+        }
+      }
+    }
+    
+    const filtered = questions.filter(q => q.questionText && q.options.length > 0);
+    fs.writeFileSync(path.join(__dirname, '../parsedQuestions.json'), JSON.stringify(filtered, null, 2));
+    res.json({ message: "Parsed successfully", count: filtered.length, first: filtered[0] });
+  } catch (err) {
+    res.status(500).json({ error: err.message, stack: err.stack });
+  }
+});
+
+
 // GET /api/tests/results/my - Get user's test results (must be BEFORE /:id)
 router.get('/results/my', protect, async (req, res) => {
   try {
@@ -70,6 +133,7 @@ router.post('/:id/submit', protect, async (req, res) => {
 
     // Process answers
     let correctCount = 0;
+    let incorrectCount = 0;
     const topicMap = {};
     const processedAnswers = [];
 
@@ -78,7 +142,13 @@ router.post('/:id/submit', protect, async (req, res) => {
       if (!question) continue;
 
       const isCorrect = question.correctAnswer === ans.selectedAnswer;
-      if (isCorrect) correctCount++;
+      const isAttempted = ans.selectedAnswer !== -1 && ans.selectedAnswer !== undefined && ans.selectedAnswer !== null;
+
+      if (isCorrect) {
+        correctCount++;
+      } else if (isAttempted) {
+        incorrectCount++;
+      }
 
       // Track topic performance
       if (!topicMap[question.topic]) {
@@ -104,7 +174,16 @@ router.post('/:id/submit', protect, async (req, res) => {
       accuracy: Math.round((data.correct / data.total) * 100)
     }));
 
-    const score = Math.round((correctCount / test.questions.length) * 100);
+    const isMock = test.title.toLowerCase().includes('mock') || 
+                   ['AIIMS', 'ESIC', 'RRB', 'DSSSB', 'PGIMER', 'SGPGI', 'PARAMILITARY'].some(exam => test.topic.includes(exam) || test.title.includes(exam));
+    
+    // Calculate Score with Negative Marking (1/3 for mock tests)
+    const negativeMarking = isMock ? (1/3) : 0;
+    const negativeMarksDeducted = Number((incorrectCount * negativeMarking).toFixed(2));
+    let rawScore = correctCount - negativeMarksDeducted;
+    if (rawScore < 0) rawScore = 0; // Prevent negative total scores
+    
+    const score = Math.round((rawScore / test.questions.length) * 100);
 
     const result = await TestResult.create({
       user: req.user._id,
@@ -112,10 +191,12 @@ router.post('/:id/submit', protect, async (req, res) => {
       answers: processedAnswers,
       totalQuestions: test.questions.length,
       correctAnswers: correctCount,
-      incorrectAnswers: test.questions.length - correctCount,
+      incorrectAnswers: incorrectCount,
+      unattemptedAnswers: test.questions.length - (correctCount + incorrectCount),
       score,
       timeTaken: timeTaken || 0,
-      topicPerformance
+      topicPerformance,
+      negativeMarksDeducted
     });
 
     // Update user's weekly scores (guard against missing createdAt)

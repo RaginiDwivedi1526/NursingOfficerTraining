@@ -9,6 +9,7 @@ import TestList from './pages/TestList';
 import TakeTest from './pages/TakeTest';
 import TestResult from './pages/TestResult';
 import LiveClasses from './pages/LiveClasses';
+import Library from './pages/Library';
 import AIDoubtSolver from './components/AIDoubtSolver';
 import WhatsAppFloat from './components/WhatsAppFloat';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -38,6 +39,7 @@ function AppRoutes() {
         <Route path="/test/:id" element={<ProtectedRoute><TakeTest /></ProtectedRoute>} />
         <Route path="/result/:id" element={<ProtectedRoute><TestResult /></ProtectedRoute>} />
         <Route path="/live-classes" element={<ProtectedRoute><LiveClasses /></ProtectedRoute>} />
+        <Route path="/library" element={<ProtectedRoute><Library /></ProtectedRoute>} />
 
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />

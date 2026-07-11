@@ -63,9 +63,20 @@ function TestResultSummary({ result, testId }) {
       <div className="trs-stats">
         <div className="trs-stat"><CheckCircle2 size={20} color="var(--success)" /><span className="trs-stat-num">{result.correctAnswers}</span><span className="trs-stat-label">Correct</span></div>
         <div className="trs-stat"><XCircle size={20} color="var(--crimson)" /><span className="trs-stat-num">{result.incorrectAnswers}</span><span className="trs-stat-label">Wrong</span></div>
+        <div className="trs-stat"><ClipboardList size={20} color="var(--gray)" /><span className="trs-stat-num">{result.unattemptedAnswers || 0}</span><span className="trs-stat-label">Skipped</span></div>
         <div className="trs-stat"><Timer size={20} color="var(--gold)" /><span className="trs-stat-num">{totalTime} min</span><span className="trs-stat-label">Time</span></div>
-        <div className="trs-stat"><ClipboardList size={20} color="var(--navy)" /><span className="trs-stat-num">{result.totalQuestions}</span><span className="trs-stat-label">Total</span></div>
       </div>
+
+      {result.negativeMarksDeducted > 0 && (
+        <div style={{ background: 'rgba(192, 57, 43, 0.1)', border: '1px solid var(--crimson)', borderRadius: '12px', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', marginTop: '-12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--crimson)', fontWeight: '600' }}>
+            <AlertTriangle size={18} /> Negative Marking Deducted (-1/3 per wrong answer)
+          </div>
+          <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--crimson)' }}>
+            -{result.negativeMarksDeducted} Marks
+          </div>
+        </div>
+      )}
 
       {result.topicPerformance?.length > 0 && (
         <div className="trs-topics">
