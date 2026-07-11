@@ -244,7 +244,6 @@ function TestList() {
     // 2. Filter by Tab (Practice vs Mock)
     // We check if the test topic/title indicates it is a mock test.
     const isMock = test.title.toLowerCase().includes('mock') || 
-                   test.examType !== 'general' ||
                    MOCK_EXAMS.some(exam => exam !== "All Mock Exams" && (test.topic.includes(exam) || test.title.includes(exam)));
                    
     if (activeTab === 'mock' && !isMock) return false;
