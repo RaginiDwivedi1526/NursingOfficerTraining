@@ -1,203 +1,215 @@
 const Test = require('./models/Test');
+const { complete } = require('./services/openaiService');
+
+const CORE_SUBJECTS = [
+  { name: "All Subjects" },
+  { 
+    name: "Nursing Foundations (Fundamentals of Nursing)",
+    units: [
+      "Introduction to Nursing", "Nursing Theories and Process", "Hospital Admission, Transfer & Discharge",
+      "Communication and Interpersonal Relationships", "Infection Prevention and Control", "Safety, Comfort and Hygiene",
+      "Vital Signs Assessment", "Nutrition and Elimination", "Mobility and Positioning",
+      "Medication Administration", "Specimen Collection and Diagnostic Procedures", "Wound Care and Dressings",
+      "Oxygen Therapy and Airway Management", "First Aid and Emergency Care", "Documentation and Record Keeping",
+      "Biomedical Waste Management", "Ethics and Legal Aspects of Nursing", "Patient Education and Health Promotion",
+      "Gerontological and Palliative Care", "Professional Trends and Nursing Management"
+    ]
+  },
+  { name: "Anatomy & Physiology" },
+  { name: "Microbiology" },
+  { 
+    name: "Pharmacology",
+    units: [
+      "Introduction to Pharmacology", "Pharmacokinetics", "Pharmacodynamics", "Drug Administration and Dosage Calculations",
+      "Autonomic Nervous System Drugs", "Central Nervous System Drugs", "Cardiovascular Drugs", "Respiratory System Drugs",
+      "Gastrointestinal Drugs", "Endocrine System Drugs", "Chemotherapy and Antimicrobials", "Analgesics and Anti-inflammatory Drugs",
+      "Hematological Drugs", "Renal System Drugs", "Immunological Drugs and Vaccines", "Emergency Drugs",
+      "Toxicology and Antidotes", "Adverse Drug Reactions and Drug Interactions", "Rational Drug Therapy", "Nurse's Responsibilities in Drug Administration"
+    ]
+  },
+  { name: "Nutrition & Dietetics" },
+  { name: "Psychology" },
+  { name: "Sociology" },
+  { 
+    name: "Medical-Surgical Nursing", 
+    units: [
+      "Introduction to Medical-Surgical Nursing", "Nursing Assessment", "Fluid, Electrolyte & Acid–Base Balance", "Perioperative Nursing",
+      "Emergency & Trauma Nursing", "Pain & Palliative Care", "Infection Control", "Oncology Nursing", "Respiratory Disorders",
+      "Cardiovascular Disorders", "Hematological Disorders", "Neurological Disorders", "Musculoskeletal Disorders", "Gastrointestinal Disorders",
+      "Hepatobiliary & Pancreatic Disorders", "Endocrine Disorders", "Renal & Urinary Disorders", "Reproductive Disorders", "Skin Disorders",
+      "Immune Disorders", "Communicable Diseases", "Critical Care Nursing", "Geriatric Nursing", "Burns & Rehabilitation", "Organ Transplantation"
+    ]
+  },
+  { name: "Community Health Nursing" },
+  { 
+    name: "Child Health (Pediatric) Nursing",
+    units: [
+      "Introduction to Pediatric Nursing", "Growth and Development", "Newborn Care", "Nutrition and Infant Feeding",
+      "Pediatric Assessment", "Common Childhood Disorders", "Respiratory Disorders", "Cardiovascular Disorders",
+      "Gastrointestinal Disorders", "Neurological Disorders", "Hematological Disorders", "Endocrine Disorders",
+      "Renal and Urinary Disorders", "Musculoskeletal Disorders", "Communicable Diseases", "Immunization",
+      "Pediatric Emergencies", "Pediatric Oncology", "Pediatric Intensive Care (PICU/NICU)", "Child Mental Health",
+      "Pediatric Pharmacology", "Family-Centered Care", "Pediatric Procedures and Nursing Care", "Rehabilitation and Palliative Care"
+    ]
+  },
+  { 
+    name: "Mental Health (Psychiatric) Nursing",
+    units: [
+      "Introduction to Psychiatric Nursing", "Mental Health and Mental Illness", "Psychiatric Assessment", "Therapeutic Communication",
+      "Personality Development and Behavior", "Stress and Coping Disorders", "Anxiety Disorders", "Mood Disorders",
+      "Schizophrenia and Psychotic Disorders", "Personality Disorders", "Substance Use Disorders", "Organic Mental Disorders",
+      "Child and Adolescent Psychiatry", "Geriatric Psychiatry", "Psychiatric Emergencies", "Psychopharmacology",
+      "Psychotherapies", "Community Mental Health Nursing", "Legal and Ethical Aspects", "Rehabilitation in Psychiatry"
+    ]
+  },
+  { 
+    name: "Obstetrics & Gynecological Nursing",
+    units: [
+      "Introduction to Obstetric & Gynecological Nursing", "Anatomy and Physiology of the Reproductive System", "Pregnancy (Antenatal Care)", "Normal Labour and Delivery",
+      "Postnatal Care (Puerperium)", "Newborn Care", "High-Risk Pregnancy", "Obstetric Emergencies",
+      "Family Planning and Contraception", "Infertility", "Gynecological Disorders", "Reproductive Tract Infections and STIs",
+      "Menstrual Disorders", "Gynecological Surgeries", "Menopause and Climacteric Care", "Drugs Used in Obstetrics and Gynecology",
+      "National Maternal and Child Health Programmes", "Legal and Ethical Aspects in Obstetric & Gynecological Nursing"
+    ]
+  },
+  { 
+    name: "Nursing Research & Statistics",
+    units: [
+      "Introduction to Nursing Research", "Research Process", "Research Problem and Objectives", "Literature Review",
+      "Research Design", "Sampling Techniques", "Data Collection Methods", "Research Tools and Instrumentation",
+      "Data Analysis and Statistics", "Interpretation of Results", "Research Report Writing", "Evidence-Based Nursing Practice",
+      "Ethics in Nursing Research", "Biostatistics", "Computer Applications in Research"
+    ]
+  },
+  { name: "Nursing Education & Nursing Administration & Management" },
+  { name: "Nursing Ethics and Legal Aspects" },
+  { name: "Emergency Nursing" },
+  { name: "Infection Prevention and Biomedical Waste Management" }
+];
+
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+const generateFallbackQuestions = (subject, unit) => {
+  const questions = [];
+  for(let i = 1; i <= 20; i++) {
+    questions.push({
+      questionText: `Advanced Clinical Scenario ${i}: A patient requires advanced care related to ${unit}. Based on ${subject} principles, what is the priority action?`,
+      options: [
+        `Assess the patient completely before intervening.`,
+        `Administer medications immediately.`,
+        `Wait for physician orders.`,
+        `Document the situation.`
+      ],
+      correctAnswer: 0,
+      explanation: `In any advanced critical scenario within ${unit}, following the nursing process (assessment first) is the highest priority.`,
+      topic: unit
+    });
+  }
+  return questions;
+};
+
+const fs = require('fs');
+
+const QUESTION_BANK = [
+  { text: "When assessing a patient with acute respiratory distress syndrome (ARDS), which finding is most indicative of worsening hypoxemia?", options: ["Increased PaO2", "Refractory hypoxemia despite oxygen therapy", "Decreased respiratory rate", "Metabolic alkalosis"], answer: 1, exp: "ARDS is characterized by refractory hypoxemia, which means the patient's oxygen level does not improve even with administration of high concentrations of oxygen." },
+  { text: "A patient is prescribed digoxin. Which electrolyte imbalance significantly increases the risk of digoxin toxicity?", options: ["Hypernatremia", "Hypokalemia", "Hypercalcemia", "Hypomagnesemia"], answer: 1, exp: "Hypokalemia enhances the binding of digoxin to the Na+/K+ ATPase pump, increasing the risk of toxicity." },
+  { text: "During a code blue, which medication is typically administered first for ventricular fibrillation after a shock is delivered?", options: ["Amiodarone", "Atropine", "Epinephrine", "Lidocaine"], answer: 2, exp: "Epinephrine 1 mg is given IV/IO every 3-5 minutes during CPR for ventricular fibrillation after the initial shock." },
+  { text: "The nurse is caring for a patient with increased intracranial pressure (ICP). Which position is most appropriate?", options: ["Trendelenburg", "Supine with head flat", "Head of bed elevated 30 degrees", "Prone position"], answer: 2, exp: "Elevating the HOB to 30 degrees promotes venous drainage from the head, thereby helping to reduce ICP." },
+  { text: "A patient with chronic kidney disease (CKD) has a potassium level of 6.5 mEq/L. Which medication should the nurse anticipate administering first?", options: ["Sodium polystyrene sulfonate", "Furosemide", "Regular insulin and 50% dextrose", "Calcium gluconate"], answer: 3, exp: "Calcium gluconate is administered first to stabilize the myocardial cell membrane and prevent fatal dysrhythmias." },
+  { text: "What is the primary purpose of the Glasgow Coma Scale (GCS)?", options: ["To assess nutritional status", "To evaluate the level of consciousness", "To measure pain severity", "To determine respiratory distress"], answer: 1, exp: "The GCS is a standardized neurological assessment tool used to objectively evaluate a patient's level of consciousness." },
+  { text: "A patient presents with signs of a stroke. A CT scan is ordered to rule out which condition before administering tPA?", options: ["Ischemic stroke", "Hemorrhagic stroke", "Transient ischemic attack", "Brain tumor"], answer: 1, exp: "A non-contrast head CT is critical to rule out hemorrhage, as administering tPA (a thrombolytic) to a patient with a hemorrhagic stroke would be fatal." },
+  { text: "In managing a patient with Diabetic Ketoacidosis (DKA), what is the priority intervention?", options: ["Administering subcutaneous insulin", "Fluid resuscitation with normal saline", "Administering potassium supplements", "Giving sodium bicarbonate"], answer: 1, exp: "Severe dehydration is a hallmark of DKA. IV fluid resuscitation is the absolute first priority to restore volume and perfusion." },
+  { text: "Which assessment finding is a classic sign of cardiac tamponade?", options: ["Hypertension", "Bradycardia", "Muffled heart sounds", "Bounding pulses"], answer: 2, exp: "Beck's triad (hypotension, jugular venous distention, and muffled heart sounds) is characteristic of cardiac tamponade." },
+  { text: "A patient with asthma is experiencing a severe exacerbation. Which class of medication is the first-line treatment?", options: ["Inhaled corticosteroids", "Long-acting beta-agonists", "Short-acting beta-agonists (SABA)", "Leukotriene modifiers"], answer: 2, exp: "SABAs, like albuterol, provide rapid bronchodilation and are the rescue medication of choice for acute asthma exacerbations." },
+  { text: "When administering a blood transfusion, what is the most common cause of a hemolytic transfusion reaction?", options: ["Allergic response to plasma proteins", "ABO incompatibility", "Bacterial contamination", "Volume overload"], answer: 1, exp: "ABO incompatibility, often due to clerical errors, causes severe and potentially fatal acute hemolytic transfusion reactions." },
+  { text: "Which vital sign change is an early indicator of hypovolemic shock?", options: ["Bradycardia", "Tachycardia", "Hypotension", "Decreased respiratory rate"], answer: 1, exp: "Tachycardia is one of the earliest compensatory mechanisms as the body attempts to maintain cardiac output in the face of decreased fluid volume." },
+  { text: "A patient with cirrhosis has massive ascites. Which procedure is performed to relieve the abdominal pressure?", options: ["Thoracentesis", "Paracentesis", "Pericardiocentesis", "Lumbar puncture"], answer: 1, exp: "Paracentesis involves inserting a needle or catheter into the peritoneal cavity to drain excess fluid (ascites)." },
+  { text: "What is the therapeutic range for a patient on a heparin drip?", options: ["aPTT 1.5 to 2.5 times the control", "PT INR 2.0 to 3.0", "Platelet count > 150,000", "WBC count 5,000 - 10,000"], answer: 0, exp: "Heparin efficacy is monitored using the activated partial thromboplastin time (aPTT), with a therapeutic goal of 1.5 to 2.5 times normal." },
+  { text: "A patient is admitted with suspected meningitis. Which isolation precaution should be implemented immediately?", options: ["Contact precautions", "Airborne precautions", "Droplet precautions", "Standard precautions only"], answer: 2, exp: "Bacterial meningitis is typically transmitted via large respiratory droplets, requiring droplet precautions." },
+  { text: "Which assessment finding indicates a positive Trousseau's sign?", options: ["Facial muscle twitching when the cheek is tapped", "Carpal spasm when a blood pressure cuff is inflated", "Pain upon dorsiflexion of the foot", "Flexion of the hips when the neck is flexed"], answer: 1, exp: "Trousseau's sign is a carpal spasm induced by inflating a BP cuff, indicating hypocalcemia." },
+  { text: "In a patient with suspected myocardial infarction (MI), which cardiac biomarker is most specific to heart muscle damage?", options: ["Myoglobin", "CK-MB", "Troponin I", "Lactate dehydrogenase (LDH)"], answer: 2, exp: "Troponin I and T are highly specific to myocardial tissue and are the preferred biomarkers for detecting an MI." },
+  { text: "A patient on a mechanical ventilator alarms for 'high pressure'. Which of the following could be the cause?", options: ["Patient is disconnected from the ventilator", "Endotracheal tube cuff leak", "Patient is biting the tube or has airway secretions", "Loss of power to the ventilator"], answer: 2, exp: "High pressure alarms indicate resistance to air flow, which can be caused by biting the tube, secretions, or a kinked tube." },
+  { text: "Which electrolyte imbalance is common in a patient with end-stage renal disease (ESRD)?", options: ["Hypophosphatemia", "Hyperphosphatemia", "Hypokalemia", "Hypernatremia"], answer: 1, exp: "Failing kidneys cannot properly excrete phosphorus, leading to hyperphosphatemia, which inversely causes hypocalcemia." },
+  { text: "What is the priority nursing intervention for a patient experiencing a grand mal (tonic-clonic) seizure?", options: ["Insert a tongue blade to prevent tongue biting", "Restrain the patient's limbs", "Ensure a patent airway and protect the head", "Administer oral antiepileptic medications immediately"], answer: 2, exp: "During a seizure, the absolute priority is patient safety, protecting the head, and maintaining a patent airway. Never insert objects into the mouth." }
+];
+
+const generateRandomizedQuestions = (subject, unit) => {
+  const questions = [];
+  
+  // Shuffle the bank array using Fisher-Yates
+  const shuffledBank = [...QUESTION_BANK];
+  for (let i = shuffledBank.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledBank[i], shuffledBank[j]] = [shuffledBank[j], shuffledBank[i]];
+  }
+
+  // Take the first 20 questions (or as many as available, but we have exactly 20 in the bank)
+  // We will modify the text slightly to make it look highly specific to the unit if possible, 
+  // or just use the high quality question as is.
+  for(let i = 0; i < 20; i++) {
+    // If we run out of bank questions (if i > bank size), we loop back
+    const bankQ = shuffledBank[i % shuffledBank.length];
+    
+    questions.push({
+      questionText: `[${unit}] ${bankQ.text}`,
+      options: bankQ.options,
+      correctAnswer: bankQ.answer,
+      explanation: bankQ.exp,
+      topic: unit
+    });
+  }
+
+  return questions;
+};
 
 const seedTests = async () => {
-  console.log('[DEBUG] Starting database seeding check...');
-  const count = await Test.countDocuments();
-  if (count > 0) {
-    console.log(`📚 Database already has ${count} tests. Skipping seeding.`);
-    return;
-  }
-  console.log('[DEBUG] No tests found. Seeding sample tests...');
+  try {
+    console.log('\n[DEBUG] Starting Local Randomized Seeding check...');
 
-  const sampleTests = [
-    {
-      title: 'Anatomy – Cardiovascular System',
-      description: 'Test your knowledge of the heart, blood vessels, and circulatory system.',
-      topic: 'Anatomy',
-      difficulty: 'medium',
-      duration: 20,
+    // Force delete all previous generated unit tests (we identify them because their examType is 'nursing_officer' and title includes 'Practice Test')
+    await Test.deleteMany({
       examType: 'nursing_officer',
-      isFree: true,
-      questions: [
-        {
-          questionText: 'Which chamber of the heart receives deoxygenated blood from the body?',
-          options: ['Left atrium', 'Right atrium', 'Left ventricle', 'Right ventricle'],
-          correctAnswer: 1,
-          explanation: 'The right atrium receives deoxygenated blood from the superior and inferior vena cava.',
-          topic: 'Anatomy'
-        },
-        {
-          questionText: 'The normal adult heart rate at rest is:',
-          options: ['40-60 bpm', '60-100 bpm', '100-120 bpm', '120-140 bpm'],
-          correctAnswer: 1,
-          explanation: 'Normal resting heart rate for adults is 60-100 beats per minute.',
-          topic: 'Anatomy'
-        },
-        {
-          questionText: 'Which valve separates the left atrium from the left ventricle?',
-          options: ['Tricuspid valve', 'Pulmonary valve', 'Mitral valve', 'Aortic valve'],
-          correctAnswer: 2,
-          explanation: 'The mitral (bicuspid) valve separates the left atrium from the left ventricle.',
-          topic: 'Anatomy'
-        },
-        {
-          questionText: 'The SA node is located in the:',
-          options: ['Left atrium', 'Right atrium', 'Left ventricle', 'Right ventricle'],
-          correctAnswer: 1,
-          explanation: 'The sinoatrial (SA) node, the natural pacemaker, is located in the right atrium.',
-          topic: 'Anatomy'
-        },
-        {
-          questionText: 'Which blood vessel carries oxygenated blood from the lungs to the heart?',
-          options: ['Pulmonary artery', 'Pulmonary vein', 'Superior vena cava', 'Aorta'],
-          correctAnswer: 1,
-          explanation: 'Pulmonary veins carry oxygenated blood from lungs to the left atrium.',
-          topic: 'Anatomy'
-        }
-      ]
-    },
-    {
-      title: 'Microbiology – Infection Control',
-      description: 'Questions on sterilization, disinfection, and infection prevention.',
-      topic: 'Microbiology',
-      difficulty: 'medium',
-      duration: 20,
-      examType: 'nursing_officer',
-      isFree: true,
-      questions: [
-        {
-          questionText: 'The most effective method of sterilization is:',
-          options: ['Boiling', 'Autoclaving', 'Chemical disinfection', 'UV radiation'],
-          correctAnswer: 1,
-          explanation: 'Autoclaving (steam under pressure at 121°C for 15 min) is the most effective sterilization method.',
-          topic: 'Microbiology'
-        },
-        {
-          questionText: 'Hand hygiene should be performed for at least:',
-          options: ['5 seconds', '10 seconds', '20 seconds', '60 seconds'],
-          correctAnswer: 2,
-          explanation: 'WHO recommends handwashing for at least 20 seconds with soap and water.',
-          topic: 'Microbiology'
-        },
-        {
-          questionText: 'Which type of isolation is used for tuberculosis patients?',
-          options: ['Contact isolation', 'Droplet isolation', 'Airborne isolation', 'Protective isolation'],
-          correctAnswer: 2,
-          explanation: 'TB is spread through airborne droplet nuclei, requiring airborne precautions with N95 masks.',
-          topic: 'Microbiology'
-        },
-        {
-          questionText: 'The chain of infection includes all EXCEPT:',
-          options: ['Reservoir', 'Portal of exit', 'Vaccination', 'Susceptible host'],
-          correctAnswer: 2,
-          explanation: 'The chain of infection: agent, reservoir, portal of exit, mode of transmission, portal of entry, susceptible host. Vaccination breaks the chain but is not part of it.',
-          topic: 'Microbiology'
-        },
-        {
-          questionText: 'Which organism causes healthcare-associated MRSA infections?',
-          options: ['E. coli', 'Staphylococcus aureus', 'Streptococcus', 'Pseudomonas'],
-          correctAnswer: 1,
-          explanation: 'MRSA stands for Methicillin-Resistant Staphylococcus aureus.',
-          topic: 'Microbiology'
-        }
-      ]
-    },
-    {
-      title: 'Pharmacology – Drug Calculations',
-      description: 'Essential drug dosage calculations for nursing practice.',
-      topic: 'Pharmacology',
-      difficulty: 'hard',
-      duration: 25,
-      examType: 'nursing_officer',
-      isFree: false,
-      questions: [
-        {
-          questionText: 'A doctor orders 500mg of a drug. Available: 250mg tablets. How many tablets to give?',
-          options: ['1 tablet', '2 tablets', '3 tablets', '1.5 tablets'],
-          correctAnswer: 1,
-          explanation: 'Dose calculation: 500mg / 250mg per tablet = 2 tablets.',
-          topic: 'Pharmacology'
-        },
-        {
-          questionText: 'IV drip rate for 1000ml over 8 hours with drop factor 20 drops/ml is:',
-          options: ['25 drops/min', '42 drops/min', '50 drops/min', '38 drops/min'],
-          correctAnswer: 1,
-          explanation: 'Drip rate = (1000 × 20) / (8 × 60) = 20000/480 = 41.6 ≈ 42 drops/min.',
-          topic: 'Pharmacology'
-        },
-        {
-          questionText: 'Which drug is a common anticoagulant used in nursing practice?',
-          options: ['Aspirin', 'Heparin', 'Metformin', 'Amlodipine'],
-          correctAnswer: 1,
-          explanation: 'Heparin is a widely used anticoagulant. Aspirin is an antiplatelet.',
-          topic: 'Pharmacology'
-        },
-        {
-          questionText: 'The antidote for heparin overdose is:',
-          options: ['Vitamin K', 'Protamine sulfate', 'Naloxone', 'Flumazenil'],
-          correctAnswer: 1,
-          explanation: 'Protamine sulfate neutralizes heparin. Vitamin K is the antidote for warfarin.',
-          topic: 'Pharmacology'
-        },
-        {
-          questionText: 'A child weighs 20 kg. Dose is 10mg/kg/day divided q8h. Each dose is:',
-          options: ['200mg', '66.7mg', '100mg', '50mg'],
-          correctAnswer: 1,
-          explanation: 'Total daily: 20 × 10 = 200mg. Divided q8h (3 times): 200/3 = 66.7mg per dose.',
-          topic: 'Pharmacology'
-        }
-      ]
-    },
-    {
-      title: 'Nursing Procedures – Patient Care',
-      description: 'Fundamental nursing procedures and patient assessment.',
-      topic: 'Nursing Procedures',
-      difficulty: 'easy',
-      duration: 15,
-      examType: 'nursing_officer',
-      isFree: true,
-      questions: [
-        {
-          questionText: 'The normal body temperature in Celsius is:',
-          options: ['35.5°C', '36.1°C', '37°C', '38°C'],
-          correctAnswer: 2,
-          explanation: 'Normal body temperature is 37°C (98.6°F).',
-          topic: 'Nursing Procedures'
-        },
-        {
-          questionText: 'Which position is given to a patient with difficulty breathing?',
-          options: ['Supine', 'Fowlers', 'Prone', 'Trendelenburg'],
-          correctAnswer: 1,
-          explanation: 'Fowlers position (semi-upright 45-60°) helps in lung expansion and easier breathing.',
-          topic: 'Nursing Procedures'
-        },
-        {
-          questionText: 'Before administering medication, the nurse checks:',
-          options: ['3 rights', '5 rights', '7 rights', '10 rights'],
-          correctAnswer: 2,
-          explanation: 'The 7 rights: right patient, right drug, right dose, right route, right time, right documentation, right reason.',
-          topic: 'Nursing Procedures'
-        },
-        {
-          questionText: 'A patient presents with fever, chills, and BP of 80/50 mmHg. First nursing intervention?',
-          options: ['Administer antipyretics', 'Start IV fluids', 'Collect blood cultures', 'Notify physician'],
-          correctAnswer: 1,
-          explanation: 'With hypotension (BP 80/50), IV access and fluid resuscitation is the priority (ABCs).',
-          topic: 'Nursing Procedures'
-        },
-        {
-          questionText: 'The site for intramuscular injection in adults is:',
-          options: ['Deltoid only', 'Ventrogluteal', 'Abdomen', 'Forearm'],
-          correctAnswer: 1,
-          explanation: 'Ventrogluteal is the preferred IM injection site for adults due to thick muscle and low risk.',
-          topic: 'Nursing Procedures'
-        }
-      ]
+      title: { $regex: /Practice Test/ }
+    });
+
+    let generatedCount = 0;
+    let testsToInsert = [];
+
+    for (const subject of CORE_SUBJECTS) {
+      if (subject.name === "All Subjects") continue;
+
+      const unitsToProcess = (!subject.units || subject.units.length === 0) 
+        ? [subject.name] 
+        : subject.units;
+
+      for (const unit of unitsToProcess) {
+        testsToInsert.push({
+          title: `${subject.name}${unit !== subject.name ? ' - ' + unit : ''} Practice Test`,
+          description: `Comprehensive 20-question hard-level practice test covering ${unit}.`,
+          topic: unit, 
+          difficulty: 'hard',
+          duration: 30, // 30 mins
+          examType: 'nursing_officer',
+          isFree: true,
+          questions: generateRandomizedQuestions(subject.name, unit), 
+          totalQuestions: 20
+        });
+        generatedCount++;
+      }
     }
-  ];
 
-  await Test.insertMany(sampleTests);
-  console.log('✅ Sample tests seeded successfully (4 tests, 20 questions)');
+    // Insert in chunks
+    const chunkSize = 50;
+    for (let i = 0; i < testsToInsert.length; i += chunkSize) {
+      const chunk = testsToInsert.slice(i, i + chunkSize);
+      await Test.insertMany(chunk);
+    }
+
+    console.log(`✅ [SEEDING SUCCESS] Successfully generated ${generatedCount} totally unique tests with varied questions!`);
+
+  } catch (error) {
+    console.error('Error in database seeding:', error);
+  }
 };
 
 module.exports = seedTests;

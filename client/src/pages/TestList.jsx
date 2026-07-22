@@ -251,9 +251,19 @@ function TestList() {
 
     // 3. Filter by Subject (Practice Tests)
     if (activeTab === 'practice' && selectedSubject !== 'All Subjects') {
-      if (test.topic !== selectedSubject && !selectedSubject.toLowerCase().includes(test.topic.toLowerCase())) {
-        return false;
+      const mainSubject = CORE_SUBJECTS.find(s => s.name === selectedSubject);
+      let isValid = false;
+
+      if (test.topic === selectedSubject) {
+        isValid = true;
+      } else if (selectedSubject.toLowerCase().includes(test.topic.toLowerCase())) {
+        isValid = true;
+      } else if (mainSubject && mainSubject.units && mainSubject.units.includes(test.topic)) {
+        // If a main subject is selected, include all tests that belong to its units
+        isValid = true;
       }
+
+      if (!isValid) return false;
     }
 
     // 4. Filter by Mock Exam (Mock Tests)

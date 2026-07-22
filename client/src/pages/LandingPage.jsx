@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Stethoscope, Rocket, Monitor, Trophy, Smartphone, ChevronRight, Bot, Video, NotebookPen, BarChart3, MessageCircle, GraduationCap, Target, TrendingUp, Brain, CalendarCheck, Sparkles, Zap, Star, CheckCircle2, MapPin, Mail, Send, Heart, Hospital, Globe, User } from 'lucide-react';
 
 import logo from '../assets/logo.png';
+import ContactSection from '../components/ContactSection';
 
 function LandingPage() {
   return (
@@ -269,42 +270,7 @@ function LandingPage() {
       </section>
 
       {/* Contact */}
-      <section className="contact-section" id="contact">
-        <div className="contact-layout">
-          <div className="contact-info">
-            <div className="section-tag" style={{ background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)', borderColor: 'rgba(255,255,255,0.2)' }}>Get In Touch</div>
-            <h2 className="section-title">Start Your Nursing<br />Officer Journey Today</h2>
-            <p className="section-sub">Have questions? Our team responds within 2 hours.</p>
-            <div className="contact-links">
-              <a href="https://wa.me/919999999999" className="contact-link"><MessageCircle size={18} color="rgba(255,255,255,0.8)" /> WhatsApp: +91 99999 99999</a>
-              <a href="mailto:info@nursingofficertraining.com" className="contact-link"><Mail size={18} color="rgba(255,255,255,0.8)" /> info@nursingofficertraining.com</a>
-              <a href="#" className="contact-link"><MapPin size={18} color="rgba(255,255,255,0.8)" /> India (Pan-India Online Classes)</a>
-            </div>
-          </div>
-          <div className="contact-form-wrap">
-            <h3>Enroll / Enquire Now</h3>
-            <div className="form-row">
-              <div className="form-group"><label>Full Name</label><input type="text" placeholder="Your name" /></div>
-              <div className="form-group"><label>Phone Number</label><input type="tel" placeholder="+91 XXXXX XXXXX" /></div>
-            </div>
-            <div className="form-group"><label>Email</label><input type="email" placeholder="you@example.com" /></div>
-            <div className="form-group">
-              <label>Interested In</label>
-              <select>
-                <option>Nursing Officer (Government) Course</option>
-                <option>NCLEX-RN Preparation</option>
-                <option>NCLEX-PN Preparation</option>
-                <option>AI-Powered Combo Course</option>
-                <option>Pro Mentorship Plan</option>
-              </select>
-            </div>
-            <div className="form-group"><label>Your Message</label><textarea placeholder="Any questions..."></textarea></div>
-            <button className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '15px', border: 'none' }} onClick={() => alert('Thank you! Our team will contact you within 2 hours.')}>
-              <Send size={16} /> Submit Enquiry
-            </button>
-          </div>
-        </div>
-      </section>
+      <ContactSection />
 
       {/* Footer */}
       <footer className="app-footer">

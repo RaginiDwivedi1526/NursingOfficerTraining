@@ -44,6 +44,7 @@ function Navbar() {
       </button>
 
       <div className={`nav-links ${isOpen ? 'open' : ''}`}>
+        <Link to="/" onClick={closeMenu}>Home</Link>
         <a href="/#features" onClick={(e) => handleAnchorClick(e, 'features')}>Features</a>
         <a href="/#career" onClick={(e) => handleAnchorClick(e, 'career')}>Career Portal</a>
         <a href="/#pricing" onClick={(e) => handleAnchorClick(e, 'pricing')}>Pricing</a>

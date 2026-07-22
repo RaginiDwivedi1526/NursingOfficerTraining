@@ -1,12 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+
+// Load env vars FIRST
+dotenv.config();
+
 const connectDB = require('./config/db');
 const seedTests = require('./seed');
 const parseAndSeed = require('./parseOCR');
-
-// Load env vars
-dotenv.config();
 
 // Connect to DB and start server
 connectDB().then(() => {

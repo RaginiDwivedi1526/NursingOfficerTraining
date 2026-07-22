@@ -26,7 +26,7 @@ const chat = async (messages, maxTokens = 300) => {
     return response.choices[0].message.content;
   } catch (error) {
     console.error('AI Chat Error:', error.message);
-    return 'AI analysis unavailable. Please try again.';
+    return `ERROR: ${error.message}`;
   }
 };
 
