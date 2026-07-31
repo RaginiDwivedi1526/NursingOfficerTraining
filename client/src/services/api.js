@@ -31,6 +31,8 @@ API.interceptors.response.use(
 export const register = (data) => API.post('/auth/register', data);
 export const login = (data) => API.post('/auth/login', data);
 export const getProfile = () => API.get('/auth/profile');
+export const forgotPassword = (data) => API.post('/auth/forgotpassword', data);
+export const resetPassword = (token, data) => API.put(`/auth/resetpassword/${token}`, data);
 
 // Tests
 export const getTests = (params) => API.get('/tests', { params });

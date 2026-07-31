@@ -45,9 +45,9 @@ function Navbar() {
 
       <div className={`nav-links ${isOpen ? 'open' : ''}`}>
         <Link to="/" onClick={closeMenu}>Home</Link>
-        <a href="/#features" onClick={(e) => handleAnchorClick(e, 'features')}>Features</a>
-        <a href="/#career" onClick={(e) => handleAnchorClick(e, 'career')}>Career Portal</a>
-        <a href="/#pricing" onClick={(e) => handleAnchorClick(e, 'pricing')}>Pricing</a>
+
+        <Link to="/career" onClick={closeMenu}>Career Portal</Link>
+        <Link to="/pricing" onClick={closeMenu}>Pricing</Link>
         {user ? (
           <>
             {user.role === 'admin' && (

@@ -4,12 +4,16 @@ import Navbar from './components/Navbar';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import Dashboard from './pages/Dashboard';
 import TestList from './pages/TestList';
 import TakeTest from './pages/TakeTest';
 import TestResult from './pages/TestResult';
 import LiveClasses from './pages/LiveClasses';
 import Library from './pages/Library';
+import PricingPage from './pages/PricingPage';
+import CareerPortalPage from './pages/CareerPortalPage';
 import AIDoubtSolver from './components/AIDoubtSolver';
 import WhatsAppFloat from './components/WhatsAppFloat';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -34,12 +38,16 @@ function AppRoutes() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <LoginPage />} />
         <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <RegisterPage />} />
+        <Route path="/forgot-password" element={user ? <Navigate to="/dashboard" /> : <ForgotPasswordPage />} />
+        <Route path="/reset-password/:token" element={user ? <Navigate to="/dashboard" /> : <ResetPasswordPage />} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/tests" element={<ProtectedRoute><TestList /></ProtectedRoute>} />
         <Route path="/test/:id" element={<ProtectedRoute><TakeTest /></ProtectedRoute>} />
         <Route path="/result/:id" element={<ProtectedRoute><TestResult /></ProtectedRoute>} />
         <Route path="/live-classes" element={<ProtectedRoute><LiveClasses /></ProtectedRoute>} />
         <Route path="/library" element={<ProtectedRoute><Library /></ProtectedRoute>} />
+        <Route path="/pricing" element={<PricingPage />} />
+        <Route path="/career" element={<CareerPortalPage />} />
 
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />

@@ -76,34 +76,7 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* Career Portal */}
-      <section className="courses-section" id="career">
-        <div className="section-header">
-          <div className="section-tag">Career Portal</div>
-          <h2 className="section-title">Latest Nursing Job<br />Notifications & Vacancies</h2>
-          <p className="section-sub">Stay updated with the latest government and private sector nursing recruitment drives across India.</p>
-        </div>
-        <div className="courses-grid">
-          {[
-            { color: 'blue', badge: <><Zap size={12} /> Active Hiring</>, icon: <Hospital size={48} color="white" />, title: 'AIIMS NORCET 2026', desc: 'Nursing Officer Recruitment Common Eligibility Test for all AIIMS institutes across India.', meta: [<><MapPin size={12} /> Pan India</>, <><CalendarCheck size={12} /> Upcoming</>, <><Target size={12} /> 3000+ Posts</>] },
-            { color: 'red', badge: <><Star size={12} /> Just Announced</>, icon: <Stethoscope size={48} color="white" />, title: 'ESIC Staff Nurse Recruitment', desc: 'Employee State Insurance Corporation massive recruitment drive for Staff Nurses in various states.', meta: [<><MapPin size={12} /> State-wise</>, <><CalendarCheck size={12} /> Apply Now</>, <><Target size={12} /> 1900+ Posts</>] },
-            { color: 'gold', badge: <><Zap size={12} /> High Alert</>, icon: <Globe size={48} color="white" />, title: 'RRB Nursing Officer', desc: 'Railway Recruitment Board notifications for Chief Nursing Superintendent & Staff Nurse.', meta: [<><MapPin size={12} /> Indian Railways</>, <><CalendarCheck size={12} /> Expected Soon</>, <><Target size={12} /> 1100+ Posts</>] }
-          ].map((c, i) => (
-            <div className="course-card" key={i}>
-              <div className={`course-img ${c.color}`}>
-                <div className="course-badge-pill">{c.badge}</div>
-                {c.icon}
-              </div>
-              <div className="course-body">
-                <h3>{c.title}</h3>
-                <p>{c.desc}</p>
-                <div className="course-meta">{c.meta.map((m, j) => <span className="meta-pill" key={j}>{m}</span>)}</div>
-                <button className="course-btn" onClick={() => alert('Detailed notification will be available soon.')}>View Details <ChevronRight size={14} /></button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+
 
       {/* AI Dashboard Live Preview */}
       <section id="ai-dashboard" className="ai-analytics-section">
@@ -209,35 +182,7 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* Pricing */}
-      <section className="pricing-section" id="pricing">
-        <div className="section-header center">
-          <div className="section-tag">Pricing Plans</div>
-          <h2 className="section-title">Simple, Transparent Pricing</h2>
-          <p className="section-sub">Choose the plan that fits your preparation stage.</p>
-        </div>
-        <div className="pricing-grid">
-          {[
-            { tier: 'Starter', name: 'Free Plan', price: '0', per: '/forever', features: ['10 MCQ tests per month', 'Basic performance chart', '2 recorded lectures'], noFeatures: ['AI analysis', 'Live classes', 'Mentorship'] },
-            { tier: 'Basic', name: 'Basic Plan', price: '999', per: '/month', features: ['Unlimited MCQ tests', 'All recorded lectures', 'PDF materials', 'Basic AI analysis'], noFeatures: ['Live classes', 'Mentorship'] },
-            { tier: 'Standard', name: 'Standard Plan', price: '1,999', per: '/month', featured: true, features: ['Everything in Basic', 'Live class access', 'Full AI analytics', 'Weekly progress reports', 'WhatsApp community', 'Doubt solving'], noFeatures: ['Personal mentorship'] },
-            { tier: 'Pro', name: 'Pro Mentorship', price: '4,999', per: '/month', features: ['Everything in Standard', '1-on-1 mentorship', 'Personalized study plan', 'Interview preparation', 'AI doubt solver', 'Priority support', 'Job guidance'], noFeatures: [] }
-          ].map((p, i) => (
-            <div className={`price-card ${p.featured ? 'featured' : ''}`} key={i}>
-              {p.featured && <div className="featured-pill"><Star size={10} /> MOST POPULAR</div>}
-              <div className="price-tier">{p.tier}</div>
-              <h3>{p.name}</h3>
-              <div className="price-amount"><span className="currency">₹</span>{p.price}<span className="per">{p.per}</span></div>
-              <div className="price-divider"></div>
-              <ul className="price-features">
-                {p.features.map((f, j) => <li key={j}>{f}</li>)}
-                {p.noFeatures.map((f, j) => <li key={`no-${j}`} className="no">{f}</li>)}
-              </ul>
-              <Link to="/register" className="price-btn">{p.price === '0' ? 'Get Started Free' : `Choose ${p.tier}`}</Link>
-            </div>
-          ))}
-        </div>
-      </section>
+
 
       {/* Testimonials */}
       <section className="testimonials-section">
@@ -290,10 +235,10 @@ function LandingPage() {
           <div className="footer-col">
             <h4>Career Portal</h4>
             <ul className="footer-links">
-              <li><a href="#career">AIIMS NORCET Updates</a></li>
-              <li><a href="#career">ESIC Recruitment</a></li>
-              <li><a href="#career">RRB Nursing Jobs</a></li>
-              <li><a href="#career">State PSC Vacancies</a></li>
+              <li><Link to="/career">AIIMS NORCET Updates</Link></li>
+              <li><Link to="/career">ESIC Recruitment</Link></li>
+              <li><Link to="/career">RRB Nursing Jobs</Link></li>
+              <li><Link to="/career">State PSC Vacancies</Link></li>
             </ul>
           </div>
           <div className="footer-col">
@@ -301,7 +246,7 @@ function LandingPage() {
             <ul className="footer-links">
               <li><a href="#ai-dashboard">AI Analytics</a></li>
               <li><a href="#features">Features</a></li>
-              <li><a href="#pricing">Pricing</a></li>
+              <li><Link to="/pricing">Pricing</Link></li>
             </ul>
           </div>
           <div className="footer-col">

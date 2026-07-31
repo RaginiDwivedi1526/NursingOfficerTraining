@@ -10,7 +10,9 @@ const userSchema = new mongoose.Schema({
   batch: { type: String, default: 'Batch 2025' },
   examTarget: { type: String, default: 'Nursing Officer' },
   weeklyScores: [{ week: Number, score: Number, date: { type: Date, default: Date.now } }],
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+  resetPasswordToken: String,
+  resetPasswordExpires: Date
 });
 
 // Hash password before saving

@@ -36,9 +36,12 @@ function LoginPage() {
             <label>Email Address</label>
             <input type="email" placeholder="you@example.com" value={form.email} onChange={e => setForm({...form, email: e.target.value})} required />
           </div>
-          <div className="form-group">
-            <label>Password</label>
-            <input type="password" placeholder="Enter your password" value={form.password} onChange={e => setForm({...form, password: e.target.value})} required />
+          <div className="form-group" style={{ marginBottom: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <label style={{ marginBottom: 0 }}>Password</label>
+              <Link to="/forgot-password" style={{ fontSize: '13px', color: 'var(--primary)', textDecoration: 'none' }}>Forgot Password?</Link>
+            </div>
+            <input type="password" placeholder="Enter your password" value={form.password} onChange={e => setForm({...form, password: e.target.value})} required style={{ marginTop: '8px' }} />
           </div>
           <button type="submit" className="auth-btn" disabled={loading}>
             {loading ? 'Logging in...' : '🚀 Login'}
