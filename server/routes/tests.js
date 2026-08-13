@@ -3,7 +3,29 @@ const Test = require('../models/Test');
 const TestResult = require('../models/TestResult');
 const User = require('../models/User');
 const { protect } = require('../middleware/auth');
+const { chat } = require('../services/openaiService');
+const { getIndianNursingPrompt } = require('../services/questionPrompts');
 const router = express.Router();
+
+/**
+ * Shared helper — strips all known AI-generated prefixes from a question string.
+ * Handles:
+ *   [Topic Name] prefix  →  "[Emergency Nursing] A patient..."
+ *   Plain topic prefix   →  "Anxiety Disorders: What is..."
+ *   Q-number prefix      →  "Q1.", "Question 1:", "1."
+ */
+const stripPrefix = (text) => {
+  if (!text) return text;
+  let s = text.trim();
+  // Strip [Any text in brackets] at the very start
+  s = s.replace(/^\[[^\]]+\]\s*/i, '');
+  // Strip topic/subject name followed by : or – or -
+  s = s.replace(/^[A-Za-z ,&()\-/]{3,80}\s*[-\u2013:]\s+(?=[A-Z])/, '');
+  // Strip Q1., Question 1:, 1., 1) etc.
+  s = s.replace(/^(Question\s*\d+|Q\s*\d+)[.:\s]+/i, '');
+  s = s.replace(/^\d+[.):] +/, '');
+  return s.trim();
+};
 
 // GET /api/tests - Get all tests (metadata only, no questions)
 router.get('/', async (req, res) => {
@@ -152,9 +174,16 @@ router.get('/:id', protect, async (req, res) => {
       console.log(`[DEBUG] Test with ID ${id} NOT FOUND in database.`);
       return res.status(404).json({ message: 'Test not found' });
     }
-    
+
+    // Clean any leftover prefixes from question text before sending to client
+    const testObj = test.toObject();
+    testObj.questions = testObj.questions.map(q => ({
+      ...q,
+      questionText: stripPrefix(q.questionText)
+    }));
+
     console.log(`[DEBUG] Test found: ${test.title}`);
-    res.json(test);
+    res.json(testObj);
   } catch (error) {
     console.error(`[DEBUG] Error fetching test ${req.params.id}:`, error.message);
     res.status(500).json({ message: error.message });
@@ -255,6 +284,120 @@ router.post('/:id/submit', protect, async (req, res) => {
   } catch (error) {
     console.error('Submit test error:', error);
     res.status(500).json({ message: error.message });
+  }
+});
+
+// POST /api/tests/generate - Generate custom AI test
+router.post('/generate', protect, async (req, res) => {
+  try {
+    const { topic, difficulty = 'medium', numberOfQuestions = 10 } = req.body;
+    console.log(`[GENERATE] Starting generation for topic: "${topic}", difficulty: ${difficulty}, count: ${numberOfQuestions}`);
+    
+    if (!topic) {
+      return res.status(400).json({ message: 'Topic is required' });
+    }
+
+    const prompt = getIndianNursingPrompt(topic, numberOfQuestions, difficulty);
+    console.log(`[GENERATE] Prompt built, calling AI...`);
+
+    const aiResponse = await chat(
+      [
+        { role: 'system', content: prompt },
+        { role: 'user', content: 'Generate the questions as JSON now.' }
+      ],
+      4000
+    );
+
+    console.log(`[GENERATE] AI responded. Length: ${aiResponse ? aiResponse.length : 0}`);
+    console.log(`[GENERATE] Raw response (first 500 chars): ${aiResponse ? aiResponse.substring(0, 500) : 'NULL'}`);
+
+    if (!aiResponse || aiResponse.startsWith('ERROR:') || aiResponse.startsWith('AI analysis unavailable')) {
+      console.error(`[GENERATE] AI service error: ${aiResponse}`);
+      return res.status(500).json({ message: `AI service error: ${aiResponse}` });
+    }
+
+    // Robust JSON extraction
+    let jsonString = aiResponse.trim();
+    if (jsonString.includes('```json')) {
+      jsonString = jsonString.split('```json')[1].split('```')[0].trim();
+    } else if (jsonString.includes('```')) {
+      jsonString = jsonString.split('```')[1].split('```')[0].trim();
+    }
+    // Strip any leading/trailing text before the first { and after the last }
+    const firstBrace = jsonString.indexOf('{');
+    const lastBrace = jsonString.lastIndexOf('}');
+    if (firstBrace !== -1 && lastBrace !== -1) {
+      jsonString = jsonString.substring(firstBrace, lastBrace + 1);
+    }
+
+    console.log(`[GENERATE] Cleaned JSON (first 300 chars): ${jsonString.substring(0, 300)}`);
+
+    let parsed;
+    try {
+      parsed = JSON.parse(jsonString);
+    } catch (parseErr) {
+      console.error(`[GENERATE] JSON parse error: ${parseErr.message}`);
+      console.error(`[GENERATE] Full cleaned JSON: ${jsonString}`);
+      return res.status(500).json({ message: 'AI returned invalid JSON', error: parseErr.message, raw: jsonString.substring(0, 500) });
+    }
+
+    if (!parsed.questions || !Array.isArray(parsed.questions) || parsed.questions.length === 0) {
+      console.error(`[GENERATE] No questions in parsed response:`, JSON.stringify(parsed).substring(0, 300));
+      return res.status(500).json({ message: 'AI returned no questions', raw: JSON.stringify(parsed).substring(0, 500) });
+    }
+
+    console.log(`[GENERATE] Parsed ${parsed.questions.length} questions. Mapping to schema...`);
+
+    const questions = parsed.questions.map((q, idx) => {
+      const correctIndex = Array.isArray(q.options)
+        ? q.options.findIndex(opt => opt.is_correct === true)
+        : -1;
+      
+      const mappedOptions = Array.isArray(q.options)
+        ? q.options.map(opt => typeof opt === 'string' ? opt : (opt.text || String(opt)))
+        : [];
+
+      if (mappedOptions.length === 0) {
+        console.warn(`[GENERATE] Question ${idx + 1} has no options`);
+      }
+
+      // Combine scenario (clinical context) + question_stem into full question text
+      const scenario = q.scenario ? q.scenario.trim() : '';
+      const stem = stripPrefix(q.question_stem || q.questionText || `Question ${idx + 1}`);
+      const fullText = scenario ? `${scenario}\n\n${stem}` : stem;
+
+      return {
+        questionText: fullText,
+        options: mappedOptions,
+        correctAnswer: correctIndex !== -1 ? correctIndex : 0,
+        explanation: q.rationale || q.correct_rationale || '',
+        topic: topic
+      };
+    }).filter(q => q.options.length >= 2); // Ensure at least 2 options
+
+
+    if (questions.length === 0) {
+      return res.status(500).json({ message: 'No valid questions could be parsed from AI response' });
+    }
+
+    console.log(`[GENERATE] Creating test with ${questions.length} questions in DB...`);
+
+    const newTest = await Test.create({
+      title: `${topic} - AI Practice Test`,
+      description: `Custom generated AI practice test for ${topic}.`,
+      topic: topic,
+      difficulty: difficulty,
+      examType: 'general',
+      questions: questions,
+      isFree: true
+    });
+
+    console.log(`[GENERATE] Test created: ${newTest._id}`);
+    res.status(201).json(newTest);
+
+  } catch (error) {
+    console.error('[GENERATE] Unhandled error:', error);
+    res.status(500).json({ message: 'Failed to generate test using AI', error: error.message });
   }
 });
 

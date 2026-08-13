@@ -37,6 +37,7 @@ export const resetPassword = (token, data) => API.put(`/auth/resetpassword/${tok
 // Tests
 export const getTests = (params) => API.get('/tests', { params });
 export const getTest = (id) => API.get(`/tests/${id}`);
+export const generateTest = (data) => API.post('/tests/generate', data);
 export const submitTest = (id, data) => API.post(`/tests/${id}/submit`, data);
 export const getMyResults = () => API.get('/tests/results/my');
 

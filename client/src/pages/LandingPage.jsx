@@ -1,212 +1,315 @@
 import { Link } from 'react-router-dom';
-import { Stethoscope, Rocket, Monitor, Trophy, Smartphone, ChevronRight, Bot, Video, NotebookPen, BarChart3, MessageCircle, GraduationCap, Target, TrendingUp, Brain, CalendarCheck, Sparkles, Zap, Star, CheckCircle2, MapPin, Mail, Send, Heart, Hospital, Globe, User } from 'lucide-react';
-
+import { CheckCircle, Video, BarChart3, BookOpen, Users, Headphones, Bot, ChevronRight, Star, Download, Globe, User, Stethoscope, Brain, Target, TrendingUp, CalendarCheck, NotebookPen, Rocket } from 'lucide-react';
 import logo from '../assets/logo.png';
-import ContactSection from '../components/ContactSection';
+
+const INDIA_IMG = '/india_gate.png';
+const LIBERTY_IMG = '/statue_of_liberty.png';
+
+/* ─────────────────────────────────────
+   DATA
+───────────────────────────────────── */
+const FEATURE_STRIP = [
+  { icon: <Video size={20} />, label: 'Live Classes & Recordings' },
+  { icon: <BarChart3 size={20} />, label: 'AI Performance Analytics' },
+  { icon: <BookOpen size={20} />, label: '1M+ Questions & Mock Tests' },
+  { icon: <Brain size={20} />, label: 'Personalized Study Plan' },
+  { icon: <Users size={20} />, label: 'Expert Faculty Support' },
+  { icon: <Headphones size={20} />, label: '24/7 Guide Support' },
+];
+
+const INSTITUTIONS = ['AIIMS', 'PGIMER', 'ESIC', 'Apollo', 'Fortis', 'MAX Hospitals', 'USA Hospitals', 'Canada Hospitals'];
+
+const AI_FEATURES = [
+  { icon: <Target size={18} color="#27ae60" />, title: 'Weak Topic Identification', desc: 'Pinpoints exactly where you lose marks' },
+  { icon: <CalendarCheck size={18} color="#3498db" />, title: 'Personalized Study Plan', desc: 'AI-built daily schedule based on your gaps' },
+  { icon: <TrendingUp size={18} color="#9b59b6" />, title: 'Predicted Exam Readiness', desc: 'Know your readiness score before exam day' },
+  { icon: <Bot size={18} color="#f39c12" />, title: 'Daily Targets & Reminders', desc: 'Stay on track with intelligent nudges' },
+];
+
+const STATS = [
+  { num: '25,000+', label: 'Students Trained' },
+  { num: '1M+', label: 'Questions Practised' },
+  { num: '95%', label: 'Success Rate' },
+  { num: '500+', label: 'Live Classes / Month' },
+  { num: '50+', label: 'Expert Faculty' },
+  { num: '24/7', label: 'Support Available' },
+];
+
+const WHY_CARDS = [
+  { icon: <Users size={22} color="#c0392b" />, bg: '#fff0f0', title: 'Expert Faculty', desc: "Learn from India's best nursing faculty" },
+  { icon: <Bot size={22} color="#2980b9" />, bg: '#f0f7ff', title: 'AI Study Assistant', desc: 'Smart AI that guides you every step' },
+  { icon: <BookOpen size={22} color="#27ae60" />, bg: '#f0fff5', title: 'Smart Test Series', desc: 'Exam-pattern based practice tests' },
+  { icon: <Headphones size={22} color="#8e44ad" />, bg: '#f8f0ff', title: 'Personal Mentorship', desc: 'One-to-one guidance & support' },
+  { icon: <Star size={22} color="#f39c12" />, bg: '#fffbf0', title: 'Affordable Plans', desc: 'Best quality education at affordable price' },
+  { icon: <TrendingUp size={22} color="#16a085" />, bg: '#f0fffe', title: 'Proven Results', desc: 'Thousands of students already selected' },
+];
+
+const TESTIMONIALS = [
+  { text: 'I cracked AIIMS Nursing Officer Exam in my first attempt. The AI Analysis helped me improve my weak topics!', name: 'Neha Sharma', role: 'AIIMS, Delhi', init: 'NS', color: '#c0392b' },
+  { text: 'The best platform for NCLEX preparation. Highly recommended!', name: 'Aditi Verma', role: 'Nursing in USA', init: 'AV', color: '#2980b9' },
+  { text: 'The test series and AI performance dashboard are game changers. Thank you for the support.', name: 'Ritika Patel', role: 'ESIC Hospital', init: 'RP', color: '#27ae60' },
+  { text: 'Got selected in NORCET with AIR 128. The live classes and notes are the best. Highly satisfied!', name: 'Pooja Yadav', role: 'AIIMS, Rishikesh', init: 'PY', color: '#8e44ad' },
+];
 
 function LandingPage() {
   return (
-    <>
-      {/* Announcement Bar */}
-      <div className="announce-bar">
-        <Sparkles size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} /> Batch 2025 Registration Open — Early Bird Discount Available <span>Limited Seats</span>
-      </div>
+    <div className="lp-root">
 
-      {/* Hero */}
-      <section className="landing-hero">
-        <div className="hero-bg-pattern"></div>
-        <div className="hero-floating-badges">
-          <div className="floating-badge"><div className="dot"></div> 50+ Students Enrolled Today</div>
-          <div className="floating-badge"><Trophy size={14} color="var(--gold)" /> #1 Nursing Exam Platform</div>
-          <div className="floating-badge"><Smartphone size={14} /> Hindi + English Content</div>
-        </div>
-        <div className="hero-content">
-          <div className="hero-badge"><Stethoscope size={14} /> India's Most Advanced Nursing Prep</div>
-          <h1 className="hero-title">
-            Crack Nursing Officer &amp;<br />
-            <span className="highlight">NCLEX</span> Exams<br />
-            with AI-Powered Training
-          </h1>
-          <p className="hero-sub">
-            Live classes, recorded lectures, smart MCQ tests, and an AI system that detects your weak areas and builds a personalized study plan — all in one platform.
-          </p>
-          <div className="hero-actions">
-            <Link to="/register" className="btn-primary"><Rocket size={16} /> Start Free Trial</Link>
-            <a href="#ai-dashboard" className="btn-secondary"><Monitor size={16} /> See AI Dashboard</a>
-          </div>
-          <div className="hero-stats">
-            <div className="stat"><span className="stat-num">15,000+</span><span className="stat-label">Students Trained</span></div>
-            <div className="stat"><span className="stat-num">92%</span><span className="stat-label">Selection Rate</span></div>
-            <div className="stat"><span className="stat-num">500+</span><span className="stat-label">MCQ Tests</span></div>
-          </div>
-        </div>
-      </section>
+      {/* ── HERO ── */}
+      <section className="lp-hero">
+        <div className="lp-hero-inner">
 
-      {/* Badge Strip */}
-      <div className="badge-strip">
-        <div className="badge-track">
-          {['AIIMS Delhi', 'ESIC Nursing', 'Railway Nursing', 'NCLEX-RN', 'NCLEX-PN', 'State PSC Nursing', 'Army Nursing', 'NHM Nursing',
-            'AIIMS Delhi', 'ESIC Nursing', 'Railway Nursing', 'NCLEX-RN', 'NCLEX-PN', 'State PSC Nursing', 'Army Nursing', 'NHM Nursing'
-          ].map((b, i) => <div className="badge-item" key={i}>{b}</div>)}
-        </div>
-      </div>
-
-      {/* Features */}
-      <section className="features-section" id="features">
-        <div className="section-header center">
-          <div className="section-tag">Why Choose Us</div>
-          <h2 className="section-title">Everything You Need to<br />Ace Your Nursing Exam</h2>
-          <p className="section-sub">A complete ecosystem for nursing aspirants — from learning to testing to getting selected.</p>
-        </div>
-        <div className="features-grid">
-          {[
-            { colorClass: 'f-purple', icon: <Bot size={28} color="white" strokeWidth={1.5} />, title: 'AI Performance Tracking', desc: 'Our AI engine analyzes every test attempt, identifies your weak topics, and generates a personalized improvement plan automatically.' },
-            { colorClass: 'f-blue', icon: <Video size={28} color="white" strokeWidth={1.5} />, title: 'Live + Recorded Classes', desc: 'Attend live doubt-clearing sessions or watch recorded lectures at your own pace. Available in both Hindi and English.' },
-            { colorClass: 'f-orange', icon: <NotebookPen size={28} color="white" strokeWidth={1.5} />, title: 'Smart MCQ Test Series', desc: '500+ topic-wise tests with auto-scoring, timers, and detailed explanations. Simulate real exam conditions daily.' },
-            { colorClass: 'f-teal', icon: <BarChart3 size={28} color="white" strokeWidth={1.5} />, title: 'Progress Analytics Dashboard', desc: 'Visualize your week-by-week growth with charts, topic accuracy graphs, and rank comparisons.' },
-            { colorClass: 'f-green', icon: <MessageCircle size={28} color="white" strokeWidth={1.5} />, title: 'WhatsApp Community', desc: 'Join an exclusive WhatsApp group for daily MCQs, announcements, and peer support.' },
-            { colorClass: 'f-gold', icon: <GraduationCap size={28} color="white" strokeWidth={1.5} />, title: '1-on-1 Mentorship', desc: 'Book personal mentorship sessions with expert faculty. Get career guidance and interview preparation.' }
-          ].map((f, i) => (
-            <div className="feature-card" key={i}>
-              <div className={`feature-icon ${f.colorClass}`}>{f.icon}</div>
-              <h3>{f.title}</h3>
-              <p>{f.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-
-
-      {/* AI Dashboard Live Preview */}
-      <section id="ai-dashboard" className="ai-analytics-section">
-        <div className="ai-analytics-overlay"></div>
-        <div className="ai-analytics-grid">
-          <div>
-            <div className="section-tag" style={{ background: 'rgba(243,156,18,0.2)', color: '#f9c74f', borderColor: 'rgba(243,156,18,0.3)' }}><Bot size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} /> AI-Powered Analytics</div>
-            <h2 className="section-title" style={{ color: 'white' }}>Your Personal AI<br />Performance Coach</h2>
-            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '16px', lineHeight: '1.7', maxWidth: '520px', marginBottom: '32px' }}>
-              After every test, our AI engine analyzes your performance, detects weak areas, and gives you a step-by-step improvement plan.
+          {/* Left */}
+          <div className="lp-hero-left">
+            <p className="lp-hero-tagline">One Platform. Two Career Paths.</p>
+            <h1 className="lp-hero-h1">
+              Your Nursing Career<br />
+              <span className="lp-hero-accent">Starts Here</span>
+            </h1>
+            <p className="lp-hero-sub">
+              India's most trusted platform for Nursing Officer Exams &amp; NCLEX preparation with AI-Powered learning, expert faculty and proven results.
             </p>
-            {[
-              { icon: <Target size={20} color="#f9c74f" />, title: 'Weakness Detection', desc: 'AI identifies which topics you struggle with based on test history.' },
-              { icon: <TrendingUp size={20} color="#2ecc71" />, title: 'Progress Tracking', desc: 'See your week-by-week score improvement visually.' },
-              { icon: <Brain size={20} color="#a78bfa" />, title: 'Smart Recommendations', desc: 'AI suggests which test to attempt next based on your weak areas.' },
-              { icon: <CalendarCheck size={20} color="#f9c74f" />, title: 'Personalized Study Plan', desc: 'Premium users get AI-generated daily study roadmaps.', pro: true }
-            ].map((f, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '12px', padding: '16px', marginBottom: '12px', transition: 'all 0.3s' }}>
-                <span style={{ flexShrink: 0, display: 'flex' }}>{f.icon}</span>
-                <div>
-                  <h4 style={{ color: 'white', fontSize: '15px', fontWeight: 600, marginBottom: '4px' }}>
-                    {f.title}
-                    {f.pro && <span style={{ background: 'rgba(243,156,18,0.3)', color: '#f9c74f', fontSize: '10px', padding: '2px 8px', borderRadius: '50px', marginLeft: '6px', fontWeight: 700 }}>PRO</span>}
-                  </h4>
-                  <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', lineHeight: '1.5' }}>{f.desc}</p>
-                </div>
+
+            <div className="lp-hero-avatars">
+              <div className="lp-avatar-stack">
+                {['NS','AV','RP','PY','KS'].map((i, idx) => (
+                  <div className="lp-avatar" key={idx} style={{ background: ['#c0392b','#2980b9','#27ae60','#8e44ad','#f39c12'][idx], zIndex: 5 - idx }}>{i}</div>
+                ))}
               </div>
+              <div>
+                <div className="lp-avatar-count">25,000+</div>
+                <div className="lp-avatar-label">Students Already Trust Us</div>
+              </div>
+            </div>
+
+            <div className="lp-hero-google">
+              <div className="lp-google-icon">G</div>
+              <div>
+                <div className="lp-stars">★★★★★</div>
+                <div className="lp-rating-label">4.6/5 &nbsp; Google Rating</div>
+              </div>
+            </div>
+
+            <div className="lp-hero-btns">
+              <Link to="/register" className="lp-btn-india"><Rocket size={15}/> Start Free Trial</Link>
+              <Link to="/login" className="lp-btn-outline">Login →</Link>
+            </div>
+          </div>
+
+          {/* Middle card — India */}
+          <div className="lp-path-card lp-card-india">
+            <div className="lp-card-badge lp-badge-green">● FOR NOW</div>
+            <h2 className="lp-card-title">Nursing Officer<br/><span>(India)</span></h2>
+            <p className="lp-card-sub">Prepare for Top Indian Nursing Officer Exams</p>
+            <ul className="lp-card-list">
+              {['AIIMS', 'NORCET', 'ESIC', 'RRB', 'State Nursing Exams'].map(e => (
+                <li key={e}><CheckCircle size={14} color="#27ae60"/> {e}</li>
+              ))}
+            </ul>
+            <div className="lp-card-img-wrap">
+              <img src={INDIA_IMG} alt="India Gate" className="lp-card-img" onError={e => { e.target.style.display='none'; }}/>
+            </div>
+            <Link to="/register" className="lp-btn-india lp-card-btn">Start India Preparation →</Link>
+          </div>
+
+          {/* Right card — NCLEX */}
+          <div className="lp-path-card lp-card-nclex">
+            <div className="lp-card-badge lp-badge-blue">✈ FYI ABROAD</div>
+            <h2 className="lp-card-title">NCLEX-RN<br/><span>(USA / Canada)</span></h2>
+            <p className="lp-card-sub">Prepare for NCLEX-6 &amp; build your International Nursing Career</p>
+            <ul className="lp-card-list">
+              {['NCLEX-RN', 'USA', 'Canada', 'Global Opportunities'].map(e => (
+                <li key={e}><CheckCircle size={14} color="#3498db"/> {e}</li>
+              ))}
+            </ul>
+            <div className="lp-card-img-wrap">
+              <img src={LIBERTY_IMG} alt="Statue of Liberty" className="lp-card-img" onError={e => { e.target.style.display='none'; }}/>
+            </div>
+            <Link to="/register" className="lp-btn-nclex lp-card-btn">Start NCLEX Preparation →</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FEATURE STRIP ── */}
+      <div className="lp-feature-strip">
+        {FEATURE_STRIP.map((f, i) => (
+          <div className="lp-feature-strip-item" key={i}>
+            <span className="lp-fstrip-icon">{f.icon}</span>
+            <span>{f.label}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* ── TRUSTED BY ── */}
+      <div className="lp-trusted">
+        <p className="lp-trusted-label">Trusted by Students. Recognised by Institutions.</p>
+        <div className="lp-marquee-wrap">
+          <div className="lp-marquee-track">
+            {[...INSTITUTIONS, ...INSTITUTIONS].map((inst, i) => (
+              <div className="lp-marquee-logo" key={i}>{inst}</div>
             ))}
           </div>
+        </div>
+      </div>
 
-          {/* Dashboard Mock */}
-          <div className="ai-dashboard-preview">
-            <div style={{ background: '#0d1e38', padding: '12px 20px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-              <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57' }}></div>
-              <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#febc2e' }}></div>
-              <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840' }}></div>
-              <span style={{ marginLeft: 10, color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>AI Performance Dashboard</span>
-            </div>
-            <div style={{ padding: '20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-                <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg, #c0392b, #e74c3c)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <User size={18} color="white" />
-                </div>
-                <div>
-                  <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: '13px', fontWeight: 600 }}>Priya Sharma</div>
-                  <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px' }}>Nursing Officer Aspirant • Batch 2025</div>
-                </div>
+      {/* ── AI SECTION ── */}
+      <section className="lp-ai-section" id="ai-dashboard">
+        <div className="lp-ai-inner">
+          <div className="lp-ai-left">
+            <div className="lp-section-tag lp-tag-gold"><Bot size={13}/> SMART LEARNING WITH AI</div>
+            <h2 className="lp-ai-h2">AI-Powered Learning.<br/>Real Results.</h2>
+            <p className="lp-ai-desc">
+              Our AI system analyses your performance in depth, identifies weak areas and helps you make personalised recommendations.
+            </p>
+            <ul className="lp-ai-list">
+              {AI_FEATURES.map((f, i) => (
+                <li key={i} className="lp-ai-list-item">
+                  <span className="lp-ai-icon">{f.icon}</span>
+                  <div><strong>{f.title}</strong><br/><span>{f.desc}</span></div>
+                </li>
+              ))}
+            </ul>
+            <Link to="/dashboard" className="lp-btn-india" style={{marginTop: 24, display:'inline-flex', alignItems:'center', gap:6}}>
+              Explore AI Dashboard →
+            </Link>
+          </div>
+
+          {/* Dashboard mockup */}
+          <div className="lp-ai-right">
+            <div className="lp-dashboard-mock">
+              <div className="lp-dash-header">
+                <div className="lp-dash-dots"><span/><span/><span/></div>
+                <span className="lp-dash-title">Welcome back, Priya 👋</span>
               </div>
-
-              {/* Score Ring */}
-              <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                <svg width="110" height="110" viewBox="0 0 110 110" style={{ transform: 'rotate(-90deg)' }}>
-                  <circle cx="55" cy="55" r="45" stroke="rgba(255,255,255,0.08)" strokeWidth="10" fill="none" />
-                  <circle cx="55" cy="55" r="45" stroke="url(#heroRingGrad)" strokeWidth="10" fill="none" strokeDasharray="282.6" strokeDashoffset="76.3" strokeLinecap="round" />
-                  <defs><linearGradient id="heroRingGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor="#c0392b" /><stop offset="100%" stopColor="#f39c12" /></linearGradient></defs>
-                </svg>
-                <div style={{ position: 'relative', top: '-75px', marginBottom: '-60px' }}>
-                  <div style={{ fontSize: '24px', fontWeight: 900, color: 'white', fontFamily: 'var(--font-display)' }}>72%</div>
-                  <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)' }}>Overall Score</div>
-                </div>
-              </div>
-
-              {/* Topic bars */}
-              {[
-                { label: 'Anatomy', pct: 85, color: 'linear-gradient(90deg,#27ae60,#2ecc71)' },
-                { label: 'Pharmacology', pct: 70, color: 'linear-gradient(90deg,#f39c12,#f1c40f)' },
-                { label: 'Microbiology', pct: 40, color: 'linear-gradient(90deg,#c0392b,#e74c3c)', weak: true },
-                { label: 'Nursing Proc', pct: 52, color: 'linear-gradient(90deg,#e67e22,#e74c3c)', weak: true }
-              ].map((t, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                  <span style={{ color: t.weak ? '#ff8a7a' : 'rgba(255,255,255,0.7)', fontSize: '11px', width: 100, flexShrink: 0 }}>{t.label}</span>
-                  <div style={{ flex: 1, height: 8, background: 'rgba(255,255,255,0.08)', borderRadius: 50, overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${t.pct}%`, background: t.color, borderRadius: 50 }}></div>
+              <div className="lp-dash-body">
+                <div className="lp-dash-cards-row">
+                  <div className="lp-dash-mini-card">
+                    <div className="lp-dash-mini-label">Overall Score</div>
+                    <div className="lp-dash-ring-wrap">
+                      <svg width="80" height="80" viewBox="0 0 80 80" style={{transform:'rotate(-90deg)'}}>
+                        <circle cx="40" cy="40" r="32" stroke="rgba(255,255,255,0.1)" strokeWidth="8" fill="none"/>
+                        <circle cx="40" cy="40" r="32" stroke="url(#dashGrad)" strokeWidth="8" fill="none" strokeDasharray="201" strokeDashoffset="54" strokeLinecap="round"/>
+                        <defs><linearGradient id="dashGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor="#27ae60"/><stop offset="100%" stopColor="#f39c12"/></linearGradient></defs>
+                      </svg>
+                      <div className="lp-dash-ring-val">82%</div>
+                    </div>
                   </div>
-                  <span style={{ color: t.weak ? '#ff8a7a' : 'rgba(255,255,255,0.7)', fontSize: '11px', fontWeight: 600, width: 32, textAlign: 'right' }}>{t.pct}%</span>
+                  <div className="lp-dash-mini-card">
+                    <div className="lp-dash-mini-label">Exam Readiness</div>
+                    <div className="lp-dash-badge-high">High</div>
+                    <div className="lp-dash-mini-sub">82%</div>
+                  </div>
+                  <div className="lp-dash-mini-card">
+                    <div className="lp-dash-mini-label">Questions Attempted</div>
+                    <div className="lp-dash-big-num">2,450</div>
+                    <div className="lp-dash-mini-sub">78% Accuracy</div>
+                  </div>
                 </div>
-              ))}
 
-              {/* AI Box */}
-              <div style={{ background: 'rgba(243,156,18,0.1)', border: '1px solid rgba(243,156,18,0.3)', borderRadius: '10px', padding: '12px', margin: '16px 0 12px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                  <Bot size={14} color="#f9c74f" />
-                  <span style={{ fontSize: '11px', color: '#f9c74f', fontWeight: 700 }}>AI Suggestion</span>
-                </div>
-                <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: '11px', lineHeight: '1.5' }}>
-                  You are weak in Microbiology (infection control). Revise 3 chapters and attempt 20 MCQs daily for next 7 days.
-                </div>
+                <div className="lp-dash-section-title">Weak Topics</div>
+                {[
+                  { label: 'Pharmacology', pct: 42, color: '#e74c3c' },
+                  { label: 'Microbiology', pct: 58, color: '#e67e22' },
+                  { label: 'Anatomy', pct: 76, color: '#27ae60' },
+                  { label: 'Psychiatry', pct: 65, color: '#3498db' },
+                ].map((t, i) => (
+                  <div className="lp-dash-bar-row" key={i}>
+                    <span className="lp-dash-bar-label">{t.label}</span>
+                    <div className="lp-dash-bar-bg">
+                      <div className="lp-dash-bar-fill" style={{ width: `${t.pct}%`, background: t.color }}/>
+                    </div>
+                    <span className="lp-dash-bar-pct">{t.pct}%</span>
+                  </div>
+                ))}
               </div>
-
-              {/* Suggestions */}
-              {[
-                { icon: <NotebookPen size={12} color="rgba(255,255,255,0.6)" />, text: 'Revise: Microbiology – Infection Control' },
-                { icon: <Target size={12} color="rgba(255,255,255,0.6)" />, text: 'Practice: 20 MCQs daily' },
-                { icon: <Video size={12} color="rgba(255,255,255,0.6)" />, text: 'Watch: Recorded Lecture 3' }
-              ].map((s, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', padding: '8px 10px', marginBottom: '6px' }}>
-                  {s.icon}
-                  <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: '11px' }}>{s.text}</span>
-                </div>
-              ))}
             </div>
           </div>
         </div>
       </section>
 
-
-
-      {/* Testimonials */}
-      <section className="testimonials-section">
-        <div className="section-header center">
-          <div className="section-tag">Success Stories</div>
-          <h2 className="section-title">Students Who Got Selected</h2>
-          <p className="section-sub">Real students, real results.</p>
+      {/* ── CHOOSE YOUR PATH ── */}
+      <section className="lp-paths-section">
+        <div className="lp-section-header">
+          <h2 className="lp-paths-h2">Choose Your Path. Achieve Your Dreams.</h2>
         </div>
-        <div className="testi-grid">
-          {[
-            { badge: <><CheckCircle2 size={12} /> AIIMS Delhi Selected</>, text: 'The AI weakness detection changed my preparation completely. My score jumped from 52% to 81% in 6 weeks.', name: 'Priya Sharma', role: 'Nursing Officer — AIIMS Delhi', color: 'linear-gradient(135deg,var(--navy),var(--navy-light))', avatar: <User size={18} color="white" /> },
-            { badge: <><CheckCircle2 size={12} /> NCLEX-RN Passed</>, text: 'Hindi explanations for NCLEX topics made a huge difference. Cleared in first attempt!', name: 'Rahul Verma', role: 'RN — Working in USA', color: 'linear-gradient(135deg,var(--crimson),#e74c3c)', avatar: <User size={18} color="white" /> },
-            { badge: <><CheckCircle2 size={12} /> ESIC Nursing Selected</>, text: 'The personalized study plan in Pro Mentorship was worth every rupee. Got selected in 3 months.', name: 'Kavita Singh', role: 'Staff Nurse — ESIC Hospital', color: 'linear-gradient(135deg,#27ae60,#2ecc71)', avatar: <User size={18} color="white" /> }
-          ].map((t, i) => (
-            <div className="testi-card" key={i}>
-              <div className="testi-exam-badge">{t.badge}</div>
-              <div className="testi-stars">★★★★★</div>
-              <div className="testi-quote">"</div>
-              <p className="testi-text">{t.text}</p>
-              <div className="testi-author">
-                <div className="testi-avatar" style={{ background: t.color }}>{t.avatar}</div>
+        <div className="lp-paths-grid">
+          <div className="lp-path-big lp-path-big-india">
+            <div className="lp-path-big-left">
+              <div className="lp-path-big-tag">India → Nursing Officer Exams</div>
+              <p className="lp-path-big-desc">Government Jobs. Job Security. Respect.</p>
+              <div className="lp-path-exam-list">
+                {['AIIMS', 'NORCET', 'ESIC', 'RRB', 'State Exams'].map(e => <span key={e} className="lp-exam-pill">{e}</span>)}
+              </div>
+              <p className="lp-path-big-features">LIVE Classes • Test Series • PYQs • Notes • AI Analysis</p>
+              <Link to="/register" className="lp-btn-india" style={{marginTop:16, display:'inline-flex', alignItems:'center', gap:6}}>
+                Explore India Programs →
+              </Link>
+            </div>
+            <div className="lp-path-big-nurse" style={{background:'linear-gradient(135deg,#0d2b5e,#163a7a)'}}>
+              <div style={{fontSize:64}}>👩‍⚕️</div>
+            </div>
+          </div>
+
+          <div className="lp-path-big lp-path-big-nclex">
+            <div className="lp-path-big-left">
+              <div className="lp-path-big-tag lp-tag-blue-soft">Abroad → NCLEX Preparation</div>
+              <p className="lp-path-big-desc">Work in USA &amp; Canada. Global Opportunities.</p>
+              <div className="lp-path-exam-list">
+                {['NCLEX-RN', 'USA', 'Canada', 'Career Support'].map(e => <span key={e} className="lp-exam-pill lp-pill-blue">{e}</span>)}
+              </div>
+              <p className="lp-path-big-features">LIVE Classes • NCLEX QBank • Case Studies • AI Analysis</p>
+              <Link to="/register" className="lp-btn-nclex" style={{marginTop:16, display:'inline-flex', alignItems:'center', gap:6}}>
+                Explore NCLEX Programs →
+              </Link>
+            </div>
+            <div className="lp-path-big-nurse" style={{background:'linear-gradient(135deg,#1a4a8a,#2471c8)'}}>
+              <div style={{fontSize:64}}>👨‍⚕️</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── STATS ROW ── */}
+      <div className="lp-stats-bar">
+        {STATS.map((s, i) => (
+          <div className="lp-stat-item" key={i}>
+            <div className="lp-stat-num">{s.num}</div>
+            <div className="lp-stat-label">{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── WHY STUDENTS LOVE ── */}
+      <section className="lp-why-section">
+        <div className="lp-section-header">
+          <p className="lp-section-tag-plain">Why Students Love NursingOfficerTraining.com</p>
+        </div>
+        <div className="lp-why-grid">
+          {WHY_CARDS.map((c, i) => (
+            <div className="lp-why-card" key={i}>
+              <div className="lp-why-icon" style={{background: c.bg}}>{c.icon}</div>
+              <h4 className="lp-why-title">{c.title}</h4>
+              <p className="lp-why-desc">{c.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── SUCCESS STORIES ── */}
+      <section className="lp-testi-section">
+        <div className="lp-section-header">
+          <p className="lp-section-tag-plain">Success Stories That Inspire</p>
+        </div>
+        <div className="lp-testi-grid">
+          {TESTIMONIALS.map((t, i) => (
+            <div className="lp-testi-card" key={i}>
+              <div className="lp-testi-stars">★★★★★</div>
+              <p className="lp-testi-text">"{t.text}"</p>
+              <div className="lp-testi-author">
+                <div className="lp-testi-avatar" style={{background: t.color}}>{t.init}</div>
                 <div>
-                  <div className="testi-name">{t.name}</div>
-                  <div className="testi-role">{t.role}</div>
+                  <div className="lp-testi-name">{t.name}</div>
+                  <div className="lp-testi-role">{t.role}</div>
                 </div>
               </div>
             </div>
@@ -214,56 +317,130 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* Contact */}
-      <ContactSection />
+      {/* ── APP DOWNLOAD ── */}
+      <section className="lp-app-section">
+        <div className="lp-app-inner">
+          <div className="lp-app-left">
+            <h2 className="lp-app-h2">Learn Anytime, Anywhere!</h2>
+            <p className="lp-app-sub">Download our App and take your preparation on the go.</p>
+            <div className="lp-app-pills">
+              {[
+                {icon: <Video size={14}/>, label: 'Live Classes'},
+                {icon: <BookOpen size={14}/>, label: 'Test Series'},
+                {icon: <Bot size={14}/>, label: 'AI Analysis'},
+                {icon: <NotebookPen size={14}/>, label: 'PDF Notes'},
+              ].map((p,i) => <span key={i} className="lp-app-pill">{p.icon} {p.label}</span>)}
+            </div>
+            <div className="lp-app-store-btns">
+              <a href="#" className="lp-store-btn">
+                <span className="lp-store-icon">▶</span>
+                <div><div className="lp-store-sub">Get it on</div><div className="lp-store-name">Google Play</div></div>
+              </a>
+              <a href="#" className="lp-store-btn">
+                <span className="lp-store-icon lp-apple">⌘</span>
+                <div><div className="lp-store-sub">Download on the</div><div className="lp-store-name">App Store</div></div>
+              </a>
+            </div>
+          </div>
+          <div className="lp-app-right">
+            <div className="lp-qr-box">
+              <div className="lp-qr-placeholder">
+                <div style={{fontSize:48}}>📱</div>
+                <div style={{fontSize:12,color:'#666',marginTop:8}}>QR Code<br/>Coming Soon</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      {/* Footer */}
-      <footer className="app-footer">
-        <div className="footer-grid">
-          <div className="footer-brand">
-            <div className="nav-logo" style={{ marginBottom: 4 }}>
-              <img src={logo} alt="NursingOfficer Training" className="nav-logo-img" style={{ height: '60px' }} />
-            </div>
-            <p>India's most advanced AI-powered nursing exam preparation platform.</p>
-            <div className="footer-social">
-              <a href="https://www.facebook.com/share/1DihgeCGnt/" target="_blank" rel="noopener noreferrer" className="social-btn"><i className="fa-brands fa-facebook-f"></i></a>
-              <a href="https://www.linkedin.com/in/dr-rajendra-jinjwaria-phd-rn🥇gold-medalist-🥇matron-nia-076152103?utm_source=share_via&utm_content=profile&utm_medium=member_android" target="_blank" rel="noopener noreferrer" className="social-btn"><i className="fa-brands fa-linkedin-in"></i></a>
-              <a href="https://youtube.com/@dr.rajendrajinjwaria1845?si=sHu5Gwy_6jILnxBd" target="_blank" rel="noopener noreferrer" className="social-btn"><i className="fa-brands fa-youtube"></i></a>
-              <a href="https://wa.me/919999999999" target="_blank" rel="noopener noreferrer" className="social-btn"><i className="fa-brands fa-whatsapp"></i></a>
+      {/* ── CTA BANNER ── */}
+      <section className="lp-cta-section">
+        <div className="lp-cta-inner">
+          <div className="lp-cta-left">
+            <h2 className="lp-cta-h2">Ready to Start Your Journey?</h2>
+            <p className="lp-cta-sub">Join thousands of aspiring nurses and take the first step towards your dream career.</p>
+          </div>
+          <div className="lp-cta-btns">
+            <Link to="/register" className="lp-btn-india lp-cta-btn">Start India Preparation →</Link>
+            <Link to="/register" className="lp-btn-nclex lp-cta-btn">Start NCLEX Preparation →</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer className="lp-footer">
+        <div className="lp-footer-top">
+          <div className="lp-footer-brand">
+            <img src={logo} alt="NursingOfficer Training" className="lp-footer-logo" />
+            <p className="lp-footer-brand-desc">India's most trusted platform for Nursing Officer Exams &amp; NCLEX preparation with AI-Powered learning, expert faculty and proven results.</p>
+            <div className="lp-footer-social">
+              <a href="https://www.facebook.com/share/1DihgeCGnt/" target="_blank" rel="noopener noreferrer" className="lp-social-btn"><i className="fa-brands fa-facebook-f"></i></a>
+              <a href="#" target="_blank" rel="noopener noreferrer" className="lp-social-btn"><i className="fa-brands fa-instagram"></i></a>
+              <a href="https://youtube.com/@dr.rajendrajinjwaria1845" target="_blank" rel="noopener noreferrer" className="lp-social-btn"><i className="fa-brands fa-youtube"></i></a>
+              <a href="https://wa.me/919999999999" target="_blank" rel="noopener noreferrer" className="lp-social-btn"><i className="fa-brands fa-whatsapp"></i></a>
             </div>
           </div>
-          <div className="footer-col">
-            <h4>Career Portal</h4>
-            <ul className="footer-links">
-              <li><Link to="/career">AIIMS NORCET Updates</Link></li>
-              <li><Link to="/career">ESIC Recruitment</Link></li>
-              <li><Link to="/career">RRB Nursing Jobs</Link></li>
-              <li><Link to="/career">State PSC Vacancies</Link></li>
+
+          <div className="lp-footer-col">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><Link to="/">Home</Link></li>
+              <li><Link to="/tests">Courses</Link></li>
+              <li><Link to="/tests">Test Series</Link></li>
+              <li><Link to="/dashboard">AI Dashboard</Link></li>
+              <li><Link to="/dashboard">Results</Link></li>
+              <li><Link to="/career">Contact Us</Link></li>
             </ul>
           </div>
-          <div className="footer-col">
-            <h4>Platform</h4>
-            <ul className="footer-links">
-              <li><a href="#ai-dashboard">AI Analytics</a></li>
-              <li><a href="#features">Features</a></li>
-              <li><Link to="/pricing">Pricing</Link></li>
+
+          <div className="lp-footer-col">
+            <h4>India Programs</h4>
+            <ul>
+              <li><Link to="/tests">AIIMS</Link></li>
+              <li><Link to="/tests">NORCET</Link></li>
+              <li><Link to="/tests">ESIC</Link></li>
+              <li><Link to="/tests">RRB</Link></li>
+              <li><Link to="/tests">State Exams</Link></li>
             </ul>
           </div>
-          <div className="footer-col">
+
+          <div className="lp-footer-col">
+            <h4>Abroad Programs</h4>
+            <ul>
+              <li><Link to="/tests">NCLEX-RN</Link></li>
+              <li><Link to="/tests">USA</Link></li>
+              <li><Link to="/tests">Canada</Link></li>
+              <li><a href="#">Career Support</a></li>
+            </ul>
+          </div>
+
+          <div className="lp-footer-col">
             <h4>Support</h4>
-            <ul className="footer-links">
-              <li><a href="#contact">Contact Us</a></li>
-              <li><a href="#">WhatsApp Help</a></li>
+            <ul>
+              <li><a href="#">Help Center</a></li>
+              <li><a href="#">Doubt Support</a></li>
               <li><a href="#">Privacy Policy</a></li>
-              <li><a href="#">Terms of Use</a></li>
+              <li><a href="#">Terms & Conditions</a></li>
+              <li><a href="#">Refund Policy</a></li>
+            </ul>
+          </div>
+
+          <div className="lp-footer-col">
+            <h4>Contact Us</h4>
+            <ul>
+              <li><a href="tel:+911234567890">+91 12345-67890</a></li>
+              <li><a href="mailto:support@nursingofficertraining.com">support@nursingofficer<br/>training.com</a></li>
+              <li style={{color:'rgba(255,255,255,0.55)', fontSize:13, lineHeight:'1.5'}}>123, Medline Tower, Sector 12,<br/>Noida, Uttar Pradesh - 201301</li>
             </ul>
           </div>
         </div>
-        <div className="footer-bottom">
-          <p>© 2025 NursingOfficerTraining.com • All rights reserved • Powered by Razorpay</p>
+
+        <div className="lp-footer-bottom">
+          <p>© 2024 NursingOfficerTraining.com | All Rights Reserved.</p>
         </div>
       </footer>
-    </>
+
+    </div>
   );
 }
 

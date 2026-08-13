@@ -91,14 +91,15 @@ router.post('/forgotpassword', async (req, res) => {
         message
       });
 
+      // Respond to the frontend instantly
       res.status(200).json({ success: true, data: 'Email sent' });
     } catch (err) {
-      console.log(err);
+      console.log('EMAIL ERROR:', err);
       user.resetPasswordToken = undefined;
       user.resetPasswordExpires = undefined;
       await user.save({ validateBeforeSave: false });
 
-      return res.status(500).json({ message: 'Email could not be sent' });
+      return res.status(500).json({ message: `Email could not be sent: ${err.message}` });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });

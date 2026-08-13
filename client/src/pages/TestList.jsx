@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getTests } from '../services/api';
-import { Search, BookOpen, Stethoscope, ChevronRight, Target } from 'lucide-react';
+import { getTests, generateTest } from '../services/api';
+import { Search, BookOpen, Stethoscope, ChevronRight, Target, Loader2 } from 'lucide-react';
 
 const CORE_SUBJECTS = [
   { name: "All Subjects" },
@@ -212,25 +212,67 @@ function TestList() {
   const [selectedSubject, setSelectedSubject] = useState('All Subjects');
   const [selectedMockExam, setSelectedMockExam] = useState('All Mock Exams');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isAutoGenerating, setIsAutoGenerating] = useState(false);
+  const autoGenRef = useRef(new Set()); // track which topics have already been auto-generated
   const navigate = useNavigate();
 
+  const fetchTests = async () => {
+    try {
+      const { data } = await getTests({});
+      setTests(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
-    const fetchTests = async () => {
+    const initialLoad = async () => {
       setLoading(true);
-      try {
-        const params = {};
-        // Note: For now, we fetch all and filter in frontend to ensure quick tab switching,
-        // or you can implement backend filtering based on your schema.
-        const { data } = await getTests(params);
-        setTests(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
+      await fetchTests();
+      setLoading(false);
+    };
+    initialLoad();
+  }, []);
+
+  // Auto-generate practice test for a unit if none exist yet
+  useEffect(() => {
+    const autoGenerate = async () => {
+      if (
+        activeTab !== 'practice' ||
+        selectedSubject === 'All Subjects' ||
+        loading ||
+        isAutoGenerating ||
+        autoGenRef.current.has(selectedSubject)
+      ) return;
+
+      // Check if any tests exist for this topic
+      const hasTests = tests.some(t => {
+        const isMock = t.title.toLowerCase().includes('mock') || 
+          MOCK_EXAMS.some(exam => exam !== "All Mock Exams" && (t.topic.includes(exam) || t.title.includes(exam)));
+        if (isMock) return false;
+        return t.topic === selectedSubject || selectedSubject.toLowerCase().includes(t.topic.toLowerCase());
+      });
+
+      if (!hasTests) {
+        autoGenRef.current.add(selectedSubject);
+        setIsAutoGenerating(true);
+        try {
+          await generateTest({
+            topic: selectedSubject,
+            difficulty: 'medium',
+            numberOfQuestions: 10
+          });
+          await fetchTests(); // refresh list to show the new test
+        } catch (err) {
+          console.error('[AutoGen] Failed to generate test:', err);
+          autoGenRef.current.delete(selectedSubject); // allow retry on next visit
+        } finally {
+          setIsAutoGenerating(false);
+        }
       }
     };
-    fetchTests();
-  }, []);
+    autoGenerate();
+  }, [selectedSubject, activeTab, loading]);
 
   const difficultyEmoji = { easy: '🟢', medium: '🟡', hard: '🔴' };
 
@@ -320,6 +362,16 @@ function TestList() {
             />
           </div>
 
+          {activeTab === 'practice' && selectedSubject !== 'All Subjects' && isAutoGenerating && (
+            <div style={{ backgroundColor: '#eef2ff', border: '1px solid #c7d2fe', padding: '20px', borderRadius: '12px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <Loader2 size={24} style={{ color: 'var(--navy)', animation: 'spin 1s linear infinite' }} />
+              <div>
+                <h3 style={{ margin: '0 0 4px 0', color: 'var(--navy)' }}>Preparing your practice test…</h3>
+                <p style={{ margin: 0, color: 'var(--gray)', fontSize: '14px' }}>AI is generating questions for <strong>{selectedSubject}</strong>. This takes just a moment.</p>
+              </div>
+            </div>
+          )}
+
           <div className="tests-grid">
             {filteredTests.map(test => (
               <div className="test-card-modern" key={test._id}>
@@ -341,7 +393,7 @@ function TestList() {
             ))}
           </div>
 
-          {filteredTests.length === 0 && (
+          {filteredTests.length === 0 && !isAutoGenerating && (
             <div className="empty-tests-state">
               <div className="empty-icon"><Stethoscope size={48} /></div>
               <h3>No tests available</h3>

@@ -13,20 +13,32 @@ if (process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'your_openai_ap
 
 const chat = async (messages, maxTokens = 300) => {
   if (!openai) return 'AI analysis unavailable. Please configure your API key.';
-  try {
-    const isGeminiKey = process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY.startsWith('AIza');
-    const model = isGeminiKey ? 'gemini-1.5-flash' : 'gpt-4o-mini';
+  
+  const isGeminiKey = process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY.startsWith('AIza');
+  
+  // For large generation tasks, try pro first, fall back to flash
+  const modelsToTry = isGeminiKey
+    ? (maxTokens > 1000 ? ['gemini-1.5-pro', 'gemini-1.5-flash'] : ['gemini-1.5-flash'])
+    : ['gpt-4o-mini'];
 
-    const response = await openai.chat.completions.create({
-      model: model,
-      messages,
-      temperature: 0.7,
-      max_tokens: maxTokens
-    });
-    return response.choices[0].message.content;
-  } catch (error) {
-    console.error('AI Chat Error:', error.message);
-    return `ERROR: ${error.message}`;
+  for (const model of modelsToTry) {
+    try {
+      console.log(`[AI] Trying model: ${model}, maxTokens: ${maxTokens}`);
+      const response = await openai.chat.completions.create({
+        model,
+        messages,
+        temperature: 0.7,
+        max_tokens: maxTokens
+      });
+      return response.choices[0].message.content;
+    } catch (error) {
+      console.error(`[AI] Model ${model} failed: ${error.message}`);
+      if (model === modelsToTry[modelsToTry.length - 1]) {
+        // Last model also failed
+        return `ERROR: ${error.message}`;
+      }
+      // Try next model
+    }
   }
 };
 
