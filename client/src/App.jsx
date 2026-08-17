@@ -14,6 +14,8 @@ import LiveClasses from './pages/LiveClasses';
 import Library from './pages/Library';
 import PricingPage from './pages/PricingPage';
 import CareerPortalPage from './pages/CareerPortalPage';
+import NCLEXPreparationPage from './pages/NCLEXPreparationPage';
+import IndiaPreparationPage from './pages/IndiaPreparationPage';
 import AIDoubtSolver from './components/AIDoubtSolver';
 import WhatsAppFloat from './components/WhatsAppFloat';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -48,6 +50,8 @@ function AppRoutes() {
         <Route path="/library" element={<ProtectedRoute><Library /></ProtectedRoute>} />
         <Route path="/pricing" element={<PricingPage />} />
         <Route path="/career" element={<CareerPortalPage />} />
+        <Route path="/nclex-preparation" element={<NCLEXPreparationPage />} />
+        <Route path="/india-preparation" element={<IndiaPreparationPage />} />
 
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />

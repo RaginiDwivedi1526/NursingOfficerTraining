@@ -109,7 +109,7 @@ function LandingPage() {
             <div className="lp-card-img-wrap">
               <img src={INDIA_IMG} alt="India Gate" className="lp-card-img" onError={e => { e.target.style.display='none'; }}/>
             </div>
-            <Link to="/register" className="lp-btn-india lp-card-btn">Start India Preparation →</Link>
+            <Link to="/india-preparation" className="lp-btn-india lp-card-btn" target="_blank" rel="noopener noreferrer">Start India Preparation →</Link>
           </div>
 
           {/* Right card — NCLEX */}
@@ -125,7 +125,7 @@ function LandingPage() {
             <div className="lp-card-img-wrap">
               <img src={LIBERTY_IMG} alt="Statue of Liberty" className="lp-card-img" onError={e => { e.target.style.display='none'; }}/>
             </div>
-            <Link to="/register" className="lp-btn-nclex lp-card-btn">Start NCLEX Preparation →</Link>
+            <Link to="/nclex-preparation" className="lp-btn-nclex lp-card-btn" target="_blank" rel="noopener noreferrer">Start NCLEX Preparation →</Link>
           </div>
         </div>
       </section>
@@ -361,8 +361,8 @@ function LandingPage() {
             <p className="lp-cta-sub">Join thousands of aspiring nurses and take the first step towards your dream career.</p>
           </div>
           <div className="lp-cta-btns">
-            <Link to="/register" className="lp-btn-india lp-cta-btn">Start India Preparation →</Link>
-            <Link to="/register" className="lp-btn-nclex lp-cta-btn">Start NCLEX Preparation →</Link>
+            <Link to="/india-preparation" className="lp-btn-india lp-cta-btn" target="_blank" rel="noopener noreferrer">Start India Preparation →</Link>
+            <Link to="/nclex-preparation" className="lp-btn-nclex lp-cta-btn" target="_blank" rel="noopener noreferrer">Start NCLEX Preparation →</Link>
           </div>
         </div>
       </section>
