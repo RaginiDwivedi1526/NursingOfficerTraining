@@ -77,13 +77,13 @@ function Dashboard() {
               <h3>Overall Performance</h3>
               <div className="ring-wrap">
                 <svg width="160" height="160" viewBox="0 0 160 160">
-                  <circle cx="80" cy="80" r="65" stroke="rgba(255,255,255,0.08)" strokeWidth="12" fill="none"/>
+                  <circle cx="80" cy="80" r="65" stroke="rgba(255,255,255,0.08)" strokeWidth="12" fill="none" />
                   <circle cx="80" cy="80" r="65" stroke="url(#dashRingGrad)" strokeWidth="12" fill="none"
-                    strokeDasharray="408.4" strokeDashoffset={408.4 - (408.4 * (data?.overallScore || 0) / 100)} strokeLinecap="round"/>
+                    strokeDasharray="408.4" strokeDashoffset={408.4 - (408.4 * (data?.overallScore || 0) / 100)} strokeLinecap="round" />
                   <defs>
                     <linearGradient id="dashRingGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#c0392b"/>
-                      <stop offset="100%" stopColor="#f39c12"/>
+                      <stop offset="0%" stopColor="#c0392b" />
+                      <stop offset="100%" stopColor="#f39c12" />
                     </linearGradient>
                   </defs>
                 </svg>

@@ -14,12 +14,12 @@ import {
 const NAV_LINKS = ['Home', 'Courses', 'Test Series', 'Live Classes', 'QBank', 'Resources', 'Results', 'Contact'];
 
 const EXAMS_COVERED = [
-  { name: 'AIIMS NORCET', icon: <Stethoscope size={24} />, desc: 'All India Institute of Medical Sciences Nursing Officer Recruitment', color: '#7c3aed' },
-  { name: 'ESIC', icon: <Shield size={24} />, desc: 'Employees State Insurance Corporation Nursing Exam', color: '#2563eb' },
-  { name: 'RRB', icon: <ClipboardList size={24} />, desc: 'Railway Recruitment Board Staff Nurse Exam', color: '#059669' },
-  { name: 'PGIMER', icon: <GraduationCap size={24} />, desc: 'Post Graduate Institute of Medical Education & Research', color: '#d97706' },
-  { name: 'JIPMER', icon: <Activity size={24} />, desc: 'Jawaharlal Institute of Postgraduate Medical Education', color: '#dc2626' },
-  { name: 'State Nursing', icon: <Layers size={24} />, desc: 'UP, MP, Rajasthan, Bihar & All State Level Nursing Exams', color: '#0891b2' },
+  { name: 'AIIMS CRE & NORCET', icon: <Stethoscope size={24} />, desc: 'All India Institute of Medical Sciences — Nursing Officer Recruitment (CRE & NORCET)', color: '#7c3aed' },
+  { name: 'ESIC • RRB • JIPMER • NIMHANS • CHO', icon: <Shield size={24} />, desc: 'ESIC Staff Nurse • RRB Staff Nurse • JIPMER • NIMHANS • Community Health Officer', color: '#2563eb' },
+  { name: 'State Nursing Exams', icon: <Layers size={24} />, desc: 'SGPGI • GMCH • RML • KGMU • RUHS • RGUHS • ISRO & all state-level nursing exams', color: '#059669' },
+  { name: 'Military Nursing Service (MNS)', icon: <GraduationCap size={24} />, desc: 'Army, Navy & Air Force Military Nursing Service Officer exams', color: '#d97706' },
+  { name: 'Paramilitary Nursing', icon: <Activity size={24} />, desc: 'BSF • ITBP • CRPF • SSB • CISF — Staff Nurse & Nursing Officer exams', color: '#dc2626' },
+  { name: 'SNO | ANS | Clinical Instructor | Asst. Professor', icon: <ClipboardList size={24} />, desc: 'Senior Nursing Officer, Assistant Nursing Superintendent, Clinical Instructor & Assistant Professor roles', color: '#0891b2' },
 ];
 
 const FEATURES = [
@@ -232,7 +232,7 @@ export default function IndiaPreparationPage() {
             <div>
               <p style={{ fontSize: 11.5, color: '#7c6b91', fontWeight: 600, letterSpacing: '.5px', margin: '0 0 10px' }}>EXAMS WE COVER</p>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                {['AIIMS', 'ESIC', 'RRB', 'PGIMER', 'JIPMER', 'State'].map(e => (
+                {['AIIMS', 'NORCET', 'ESIC', 'RRB', 'JIPMER', 'NIMHANS', 'CHO', 'MNS', 'BSF', 'ITBP', 'State Exams'].map(e => (
                   <div key={e} style={{ background: '#fff', border: '1.5px solid #ede6f6', borderRadius: 8, padding: '6px 14px', fontSize: 12, fontWeight: 700, color: '#7c3aed', boxShadow: '0 2px 8px rgba(124,58,237,.08)' }}>{e}</div>
                 ))}
               </div>
@@ -311,8 +311,12 @@ export default function IndiaPreparationPage() {
       <section id="exams" style={{ padding: '80px 24px', background: 'linear-gradient(160deg, #faf8ff 0%, #f0e6ff 50%, #e8f0ff 100%)' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 52 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(124,58,237,.08)', borderRadius: 50, padding: '6px 18px', marginBottom: 14 }}>
+              <span style={{ fontSize: 14 }}>🇮🇳</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#7c3aed', letterSpacing: '.5px' }}>COMPETITIVE NURSING EXAMS (INDIA)</span>
+            </div>
             <h2 style={{ fontSize: 'clamp(1.5rem,3vw,2.4rem)', fontWeight: 800, color: '#1a0e2e', margin: '0 0 12px' }}>Exams We Cover</h2>
-            <p style={{ color: '#7c6b91', fontSize: 15 }}>Comprehensive preparation for all major Nursing Officer exams in India</p>
+            <p style={{ color: '#7c6b91', fontSize: 15, maxWidth: 640, margin: '0 auto' }}>Prepare for Top Indian Nursing Officer, SNO | ANS, Clinical Instructor &amp; Assistant Professor Exams</p>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>

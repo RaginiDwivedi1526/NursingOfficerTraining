@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { CheckCircle, Video, BarChart3, BookOpen, Users, Headphones, Bot, ChevronRight, Star, Download, Globe, User, Stethoscope, Brain, Target, TrendingUp, CalendarCheck, NotebookPen, Rocket } from 'lucide-react';
+import { CheckCircle, Video, BarChart3, BookOpen, Users, Headphones, Bot, ChevronRight, Star, Download, Globe, User, Stethoscope, Brain, Target, TrendingUp, CalendarCheck, NotebookPen, Rocket, Award, FlaskConical, GraduationCap, Microscope, ShieldCheck, Plane, MapPin, HeartPulse, Siren, Scissors } from 'lucide-react';
 import logo from '../assets/logo.png';
 
 const INDIA_IMG = '/india_gate.png';
@@ -43,6 +43,33 @@ const WHY_CARDS = [
   { icon: <Star size={22} color="#f39c12" />, bg: '#fffbf0', title: 'Affordable Plans', desc: 'Best quality education at affordable price' },
   { icon: <TrendingUp size={22} color="#16a085" />, bg: '#f0fffe', title: 'Proven Results', desc: 'Thousands of students already selected' },
 ];
+
+const WHY_JOIN_FEATURES = [
+  { icon: <Brain size={22} color="#fff" />, bg: 'linear-gradient(135deg,#c0392b,#e74c3c)', title: 'Experience-Based Learning', desc: '15+ years of real clinical, teaching & government nursing experience brought into every lesson.' },
+  { icon: <Target size={22} color="#fff" />, bg: 'linear-gradient(135deg,#0d2b5e,#1a4a8a)', title: 'Exam-Focused Strategy', desc: 'High-yield topics, PYQ analysis, exam-pattern tests and proven strategies to maximise your score.' },
+  { icon: <ShieldCheck size={22} color="#fff" />, bg: 'linear-gradient(135deg,#27ae60,#16a085)', title: 'Concept + Clinical Reasoning', desc: 'Not just memorisation — learn the "why" behind every answer for lasting retention.' },
+  { icon: <Plane size={22} color="#fff" />, bg: 'linear-gradient(135deg,#8e44ad,#6c3483)', title: 'Indian & International Pathways', desc: 'One mentor, multiple destinations — AIIMS, NORCET, NCLEX-RN, DHA, SNB and beyond.' },
+  { icon: <FlaskConical size={22} color="#fff" />, bg: 'linear-gradient(135deg,#d35400,#e67e22)', title: 'Research-Backed Teaching', desc: 'Lessons enriched by RCTs, validated assessment tools and published international research.' },
+  { icon: <Users size={22} color="#fff" />, bg: 'linear-gradient(135deg,#2980b9,#3498db)', title: 'Continuous Mentorship', desc: 'Personal doubt resolution, mock tests, performance tracking and career guidance — all in one place.' },
+];
+
+const MENTOR_ACHIEVEMENTS = [
+  { emoji: '🥇', label: 'Gold Medalist' },
+  { emoji: '🎓', label: 'PhD — BHU, 1st Rank' },
+  { emoji: '🎓', label: 'MSc — KGMU, 1st Rank' },
+  { emoji: '🎓', label: 'GNM — 1st Rank' },
+  { emoji: '🌎', label: 'RN — USA (Illinois)' },
+  { emoji: '🌎', label: 'RN — Canada & India' },
+  { emoji: '🩺', label: 'NCLEX-RN Qualified' },
+  { emoji: '📝', label: 'OET Qualified' },
+  { emoji: '🏥', label: '15+ Yrs Govt Experience' },
+  { emoji: '🪖', label: 'BSF Sub-Inspector / Staff Nurse' },
+  { emoji: '🏛️', label: 'Former Matron — NIA Panchkula' },
+  { emoji: '🔬', label: 'RCT Researcher & PhD Guide' },
+];
+
+const INDIA_EXAMS = ['AIIMS CRE', 'NORCET', 'ESIC', 'RRB', 'JIPMER', 'NIMHANS', 'State Exams', 'MNS', 'Paramilitary'];
+const INTL_EXAMS  = ['NCLEX-RN', 'CBT', 'UAE DHA', 'UAE DOH', 'UAE MOHAP', 'Singapore SNB'];
 
 const TESTIMONIALS = [
   { text: 'I cracked AIIMS Nursing Officer Exam in my first attempt. The AI Analysis helped me improve my weak topics!', name: 'Neha Sharma', role: 'AIIMS, Delhi', init: 'NS', color: '#c0392b' },
@@ -99,12 +126,14 @@ function LandingPage() {
           {/* Middle card — India */}
           <div className="lp-path-card lp-card-india">
             <div className="lp-card-badge lp-badge-green">● FOR NOW</div>
-            <h2 className="lp-card-title">Nursing Officer<br/><span>(India)</span></h2>
-            <p className="lp-card-sub">Prepare for Top Indian Nursing Officer Exams</p>
-            <ul className="lp-card-list">
-              {['AIIMS', 'NORCET', 'ESIC', 'RRB', 'State Nursing Exams'].map(e => (
-                <li key={e}><CheckCircle size={14} color="#27ae60"/> {e}</li>
-              ))}
+            <h2 className="lp-card-title">Competitive Nursing<br/><span>Exams (India)</span></h2>
+            <p className="lp-card-sub">Prepare for Top Indian Nursing Officer, SNO | ANS, Clinical Instructor &amp; Assistant Professor Exams</p>
+            <ul className="lp-card-list lp-card-list-india">
+              <li><CheckCircle size={13} color="#27ae60"/> <strong>AIIMS CRE &amp; NORCET</strong></li>
+              <li><CheckCircle size={13} color="#27ae60"/> <strong>ESIC &nbsp;•&nbsp; RRB &nbsp;•&nbsp; JIPMER &nbsp;•&nbsp; NIMHANS &nbsp;•&nbsp; CHO</strong></li>
+              <li><CheckCircle size={13} color="#27ae60"/> <strong>State Exams</strong> — SGPGI, GMCH, RML, KGMU, RUHS, RGUHS, ISRO…</li>
+              <li><CheckCircle size={13} color="#27ae60"/> <strong>Military Nursing (MNS)</strong></li>
+              <li><CheckCircle size={13} color="#27ae60"/> <strong>Paramilitary</strong> — BSF, ITBP, CRPF, SSB, CISF</li>
             </ul>
             <div className="lp-card-img-wrap">
               <img src={INDIA_IMG} alt="India Gate" className="lp-card-img" onError={e => { e.target.style.display='none'; }}/>
@@ -115,12 +144,13 @@ function LandingPage() {
           {/* Right card — NCLEX */}
           <div className="lp-path-card lp-card-nclex">
             <div className="lp-card-badge lp-badge-blue">✈ FYI ABROAD</div>
-            <h2 className="lp-card-title">NCLEX-RN<br/><span>(USA / Canada)</span></h2>
-            <p className="lp-card-sub">Prepare for NCLEX-6 &amp; build your International Nursing Career</p>
-            <ul className="lp-card-list">
-              {['NCLEX-RN', 'USA', 'Canada', 'Global Opportunities'].map(e => (
-                <li key={e}><CheckCircle size={14} color="#3498db"/> {e}</li>
-              ))}
+            <h2 className="lp-card-title">Global Nursing<br/><span>Opportunities</span></h2>
+            <p className="lp-card-sub">Prepare for NCLEX-RN &amp; build your International Nursing Career</p>
+            <ul className="lp-card-list lp-card-list-intl">
+              <li><CheckCircle size={14} color="#3498db"/> <strong>NCLEX-RN</strong> — USA / Canada / Australia</li>
+              <li><CheckCircle size={14} color="#3498db"/> <strong>CBT</strong> — UK / New Zealand</li>
+              <li><CheckCircle size={14} color="#3498db"/> <strong>UAE Nursing Exams</strong> — DHA / DOH / MOHAP</li>
+              <li><CheckCircle size={14} color="#3498db"/> <strong>Singapore Nursing</strong> — SNB</li>
             </ul>
             <div className="lp-card-img-wrap">
               <img src={LIBERTY_IMG} alt="Statue of Liberty" className="lp-card-img" onError={e => { e.target.style.display='none'; }}/>
@@ -152,122 +182,7 @@ function LandingPage() {
         </div>
       </div>
 
-      {/* ── AI SECTION ── */}
-      <section className="lp-ai-section" id="ai-dashboard">
-        <div className="lp-ai-inner">
-          <div className="lp-ai-left">
-            <div className="lp-section-tag lp-tag-gold"><Bot size={13}/> SMART LEARNING WITH AI</div>
-            <h2 className="lp-ai-h2">AI-Powered Learning.<br/>Real Results.</h2>
-            <p className="lp-ai-desc">
-              Our AI system analyses your performance in depth, identifies weak areas and helps you make personalised recommendations.
-            </p>
-            <ul className="lp-ai-list">
-              {AI_FEATURES.map((f, i) => (
-                <li key={i} className="lp-ai-list-item">
-                  <span className="lp-ai-icon">{f.icon}</span>
-                  <div><strong>{f.title}</strong><br/><span>{f.desc}</span></div>
-                </li>
-              ))}
-            </ul>
-            <Link to="/dashboard" className="lp-btn-india" style={{marginTop: 24, display:'inline-flex', alignItems:'center', gap:6}}>
-              Explore AI Dashboard →
-            </Link>
-          </div>
 
-          {/* Dashboard mockup */}
-          <div className="lp-ai-right">
-            <div className="lp-dashboard-mock">
-              <div className="lp-dash-header">
-                <div className="lp-dash-dots"><span/><span/><span/></div>
-                <span className="lp-dash-title">Welcome back, Priya 👋</span>
-              </div>
-              <div className="lp-dash-body">
-                <div className="lp-dash-cards-row">
-                  <div className="lp-dash-mini-card">
-                    <div className="lp-dash-mini-label">Overall Score</div>
-                    <div className="lp-dash-ring-wrap">
-                      <svg width="80" height="80" viewBox="0 0 80 80" style={{transform:'rotate(-90deg)'}}>
-                        <circle cx="40" cy="40" r="32" stroke="rgba(255,255,255,0.1)" strokeWidth="8" fill="none"/>
-                        <circle cx="40" cy="40" r="32" stroke="url(#dashGrad)" strokeWidth="8" fill="none" strokeDasharray="201" strokeDashoffset="54" strokeLinecap="round"/>
-                        <defs><linearGradient id="dashGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor="#27ae60"/><stop offset="100%" stopColor="#f39c12"/></linearGradient></defs>
-                      </svg>
-                      <div className="lp-dash-ring-val">82%</div>
-                    </div>
-                  </div>
-                  <div className="lp-dash-mini-card">
-                    <div className="lp-dash-mini-label">Exam Readiness</div>
-                    <div className="lp-dash-badge-high">High</div>
-                    <div className="lp-dash-mini-sub">82%</div>
-                  </div>
-                  <div className="lp-dash-mini-card">
-                    <div className="lp-dash-mini-label">Questions Attempted</div>
-                    <div className="lp-dash-big-num">2,450</div>
-                    <div className="lp-dash-mini-sub">78% Accuracy</div>
-                  </div>
-                </div>
-
-                <div className="lp-dash-section-title">Weak Topics</div>
-                {[
-                  { label: 'Pharmacology', pct: 42, color: '#e74c3c' },
-                  { label: 'Microbiology', pct: 58, color: '#e67e22' },
-                  { label: 'Anatomy', pct: 76, color: '#27ae60' },
-                  { label: 'Psychiatry', pct: 65, color: '#3498db' },
-                ].map((t, i) => (
-                  <div className="lp-dash-bar-row" key={i}>
-                    <span className="lp-dash-bar-label">{t.label}</span>
-                    <div className="lp-dash-bar-bg">
-                      <div className="lp-dash-bar-fill" style={{ width: `${t.pct}%`, background: t.color }}/>
-                    </div>
-                    <span className="lp-dash-bar-pct">{t.pct}%</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── CHOOSE YOUR PATH ── */}
-      <section className="lp-paths-section">
-        <div className="lp-section-header">
-          <h2 className="lp-paths-h2">Choose Your Path. Achieve Your Dreams.</h2>
-        </div>
-        <div className="lp-paths-grid">
-          <div className="lp-path-big lp-path-big-india">
-            <div className="lp-path-big-left">
-              <div className="lp-path-big-tag">India → Nursing Officer Exams</div>
-              <p className="lp-path-big-desc">Government Jobs. Job Security. Respect.</p>
-              <div className="lp-path-exam-list">
-                {['AIIMS', 'NORCET', 'ESIC', 'RRB', 'State Exams'].map(e => <span key={e} className="lp-exam-pill">{e}</span>)}
-              </div>
-              <p className="lp-path-big-features">LIVE Classes • Test Series • PYQs • Notes • AI Analysis</p>
-              <Link to="/register" className="lp-btn-india" style={{marginTop:16, display:'inline-flex', alignItems:'center', gap:6}}>
-                Explore India Programs →
-              </Link>
-            </div>
-            <div className="lp-path-big-nurse" style={{background:'linear-gradient(135deg,#0d2b5e,#163a7a)'}}>
-              <div style={{fontSize:64}}>👩‍⚕️</div>
-            </div>
-          </div>
-
-          <div className="lp-path-big lp-path-big-nclex">
-            <div className="lp-path-big-left">
-              <div className="lp-path-big-tag lp-tag-blue-soft">Abroad → NCLEX Preparation</div>
-              <p className="lp-path-big-desc">Work in USA &amp; Canada. Global Opportunities.</p>
-              <div className="lp-path-exam-list">
-                {['NCLEX-RN', 'USA', 'Canada', 'Career Support'].map(e => <span key={e} className="lp-exam-pill lp-pill-blue">{e}</span>)}
-              </div>
-              <p className="lp-path-big-features">LIVE Classes • NCLEX QBank • Case Studies • AI Analysis</p>
-              <Link to="/register" className="lp-btn-nclex" style={{marginTop:16, display:'inline-flex', alignItems:'center', gap:6}}>
-                Explore NCLEX Programs →
-              </Link>
-            </div>
-            <div className="lp-path-big-nurse" style={{background:'linear-gradient(135deg,#1a4a8a,#2471c8)'}}>
-              <div style={{fontSize:64}}>👨‍⚕️</div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* ── STATS ROW ── */}
       <div className="lp-stats-bar">
@@ -278,6 +193,143 @@ function LandingPage() {
           </div>
         ))}
       </div>
+
+      {/* ── WHY JOIN US ── */}
+      <section className="lp-wj-section" id="why-join-us">
+        <div className="lp-wj-inner">
+          <div className="lp-wj-header">
+            <div className="lp-section-tag lp-tag-gold"><Star size={13}/> WHY JOIN US</div>
+            <h2 className="lp-wj-h2">Learn From Experience.<br/><span className="lp-wj-accent">Prepare With Confidence.</span></h2>
+            <p className="lp-wj-sub">Build Your Nursing Future with a mentor who has lived every role — clinician, educator, researcher and government officer.</p>
+          </div>
+
+          <div className="lp-wj-grid">
+            {WHY_JOIN_FEATURES.map((f, i) => (
+              <div className="lp-wj-card" key={i}>
+                <div className="lp-wj-icon" style={{background: f.bg}}>{f.icon}</div>
+                <h4 className="lp-wj-card-title">{f.title}</h4>
+                <p className="lp-wj-card-desc">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="lp-wj-pathways">
+            <div className="lp-wj-pathway-col">
+              <div className="lp-wj-pathway-label"><span>🇮🇳</span> Indian Nursing Exams</div>
+              <div className="lp-wj-pills">
+                {INDIA_EXAMS.map(e => <span key={e} className="lp-wj-pill lp-wj-pill-india">{e}</span>)}
+              </div>
+            </div>
+            <div className="lp-wj-pathway-divider"/>
+            <div className="lp-wj-pathway-col">
+              <div className="lp-wj-pathway-label"><span>🌎</span> International Pathways</div>
+              <div className="lp-wj-pills">
+                {INTL_EXAMS.map(e => <span key={e} className="lp-wj-pill lp-wj-pill-intl">{e}</span>)}
+              </div>
+            </div>
+          </div>
+
+          <div className="lp-wj-cta">
+            <Link to="/register" className="lp-btn-india" style={{display:'inline-flex',alignItems:'center',gap:8}}>
+              <Rocket size={16}/> Start Your Journey Today
+            </Link>
+            <p className="lp-wj-cta-note">One Mentor • One Platform • Multiple Exam Pathways</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── MENTOR SECTION ── */}
+      <section className="lp-mentor-section" id="mentor">
+        <div className="lp-mentor-inner">
+
+          {/* Left — Avatar & Key Badges */}
+          <div className="lp-mentor-left">
+            <div className="lp-mentor-avatar-ring">
+              <div className="lp-mentor-avatar-outer">
+                <img
+                  src="/mentor's pic.jpeg"
+                  alt="Dr. Rajendra Kumar Jinjwaria"
+                  className="lp-mentor-avatar"
+                  style={{ objectFit: 'cover', objectPosition: 'top' }}
+                />
+              </div>
+              <div className="lp-mentor-gold-badge">🥇 Gold Medalist</div>
+            </div>
+
+            <h3 className="lp-mentor-name">Dr. Rajendra Kumar Jinjwaria</h3>
+            <p className="lp-mentor-creds">PhD, MSN, RN</p>
+            <p className="lp-mentor-tagline">Nurse Educator • Researcher • Clinical Mentor</p>
+
+            <div className="lp-mentor-flags">
+              <span className="lp-mentor-flag">🇮🇳 India</span>
+              <span className="lp-mentor-flag">🇺🇸 USA</span>
+              <span className="lp-mentor-flag">🇨🇦 Canada</span>
+            </div>
+
+            <div className="lp-mentor-exp-badge">
+              <span className="lp-mentor-exp-num">15+</span>
+              <span className="lp-mentor-exp-label">Years of Government &amp;<br/>Clinical Experience</span>
+            </div>
+          </div>
+
+          {/* Right — Bio & Achievements */}
+          <div className="lp-mentor-right">
+            <div className="lp-mentor-bio-header">
+              <div className="lp-section-tag lp-tag-gold"><Award size={13}/> MEET YOUR MENTOR</div>
+              <h2 className="lp-mentor-h2">Why Learn From<br/><span className="lp-mentor-accent">Dr. Jinjwaria?</span></h2>
+            </div>
+
+            <p className="lp-mentor-bio">
+              Dr. Rajendra Kumar Jinjwaria is an experienced nursing professional, educator and researcher with
+              15+ years of government and tertiary-care nursing experience. His professional journey includes
+              working as a <strong>Nursing Officer, Nursing Supervisor, Nursing Tutor, Clinical Instructor,
+              Researcher, Matron</strong> and <strong>BSF Sub-Inspector / Staff Nurse</strong>, giving him a
+              unique understanding of clinical practice, nursing examinations, teaching, leadership and
+              professional growth.
+            </p>
+
+            <div className="lp-mentor-achievements">
+              {MENTOR_ACHIEVEMENTS.map((a, i) => (
+                <div className="lp-mentor-ach-chip" key={i}>
+                  <span className="lp-ach-emoji">{a.emoji}</span>
+                  <span className="lp-ach-label">{a.label}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="lp-mentor-clinical">
+              <div className="lp-mentor-clinical-title">Clinical Expertise</div>
+              <div className="lp-mentor-clinical-chips">
+                {['Critical Care', 'ICU', 'Emergency & Trauma', 'Operating Room', 'Neurosurgery',
+                  'Orthopaedics', 'CTVS ICU', 'Cardiac Cath Lab', 'Medical-Surgical', 'Nursing Administration'
+                ].map(s => <span key={s} className="lp-mentor-clin-chip">{s}</span>)}
+              </div>
+            </div>
+
+            <div className="lp-mentor-approach">
+              <div className="lp-mentor-approach-title">🎯 More Than Lectures — A Complete Mentoring Approach</div>
+              <p className="lp-mentor-approach-desc">
+                At JINA, preparation is built around <strong>strong concepts, clinical reasoning, high-yield
+                practice, examination strategy, mock testing</strong> and <strong>continuous mentorship</strong>.
+              </p>
+              <div className="lp-mentor-approach-tags">
+                {['Strong Concepts','Clinical Reasoning','High-Yield Practice','Exam Strategy','Mock Testing','Continuous Mentorship'].map(t => (
+                  <span key={t} className="lp-mentor-atag"><CheckCircle size={12} color="#27ae60"/> {t}</span>
+                ))}
+              </div>
+            </div>
+
+            <div className="lp-mentor-cta">
+              <Link to="/register" className="lp-btn-india" style={{display:'inline-flex',alignItems:'center',gap:8}}>
+                <Rocket size={15}/> Start Learning with Dr. Jinjwaria
+              </Link>
+              <p className="lp-mentor-disclaimer">
+                * 100% Passing Guarantee is subject to official eligibility, participation and refund terms and conditions.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* ── WHY STUDENTS LOVE ── */}
       <section className="lp-why-section">
