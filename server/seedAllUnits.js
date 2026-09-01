@@ -661,11 +661,13 @@ const seedDatabase = async () => {
     }
 
     console.log('✅ Successfully seeded practice tests for all units with 20 hard MCQs!');
-    process.exit(0);
+    console.log('✅ Successfully seeded practice tests for all units with 20 hard MCQs!');
+
   } catch (error) {
     console.error('Error seeding database:', error);
-    process.exit(1);
+    console.error('Error seeding database:', error);
+
   }
 };
 
-seedDatabase();
+module.exports = seedDatabase;

@@ -1,0 +1,650 @@
+/* ======================================================
+   Admin Login Page — AdminLoginPage.css
+   Split layout: dark navy left, clean white right
+   ====================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* ── Reset & page shell ── */
+.al-page {
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background: #f0f2ff;
+}
+
+/* ============================================================
+   LEFT PANEL
+   ============================================================ */
+.al-left {
+  position: relative;
+  width: 50%;
+  min-height: 100vh;
+  background: linear-gradient(145deg, #0f0c29 0%, #1a1060 45%, #24243e 100%);
+  display: flex;
+  flex-direction: column;
+  padding: 40px 44px 40px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Dot-grid background */
+.al-grid-bg {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+}
+
+/* Glow blobs */
+.al-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  opacity: 0.35;
+  animation: blobFloat 8s ease-in-out infinite alternate;
+}
+.al-blob-1 {
+  width: 320px; height: 320px;
+  background: radial-gradient(circle, #7c3aed, transparent 70%);
+  top: -80px; right: -60px;
+}
+.al-blob-2 {
+  width: 260px; height: 260px;
+  background: radial-gradient(circle, #4f46e5, transparent 70%);
+  bottom: 60px; left: -40px;
+  animation-delay: -4s;
+}
+@keyframes blobFloat {
+  from { transform: translateY(0) scale(1); }
+  to   { transform: translateY(30px) scale(1.08); }
+}
+
+/* ── Brand ── */
+.al-brand {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 2;
+}
+.al-brand-icon {
+  width: 40px; height: 40px;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  color: #a5b4fc;
+  backdrop-filter: blur(4px);
+}
+.al-brand-name {
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+/* ── Portal Badge ── */
+.al-portal-badge {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 28px;
+  padding: 6px 14px;
+  background: rgba(99, 102, 241, 0.18);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  border-radius: 20px;
+  color: #a5b4fc;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  width: fit-content;
+}
+
+/* ── Hero text ── */
+.al-hero {
+  position: relative;
+  z-index: 2;
+  margin-top: 22px;
+}
+.al-hero-title {
+  color: #fff;
+  font-size: clamp(28px, 3.5vw, 40px);
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.15;
+}
+.al-hero-accent {
+  color: #818cf8;
+  font-size: clamp(28px, 3.5vw, 40px);
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.15;
+}
+.al-hero-sub {
+  color: rgba(255,255,255,.65);
+  font-size: 14.5px;
+  line-height: 1.7;
+  margin-top: 14px;
+}
+
+/* ── Illustration ── */
+.al-illustration {
+  position: relative;
+  z-index: 2;
+  margin-top: 30px;
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+/* Monitor */
+.al-illus-monitor {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 340px;
+  animation: monitorFloat 5s ease-in-out infinite alternate;
+}
+@keyframes monitorFloat {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-12px); }
+}
+
+/* Screen */
+.al-screen {
+  width: 100%;
+  background: rgba(15, 12, 41, 0.85);
+  border: 2px solid rgba(99,102,241,.3);
+  border-radius: 14px 14px 0 0;
+  padding: 10px 12px 12px;
+  box-shadow: 0 0 60px rgba(99,102,241,.25), inset 0 1px 0 rgba(255,255,255,.07);
+  min-height: 200px;
+}
+.al-screen-header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+.al-screen-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
+.al-screen-dot.red    { background: #ff5f57; }
+.al-screen-dot.yellow { background: #febc2e; }
+.al-screen-dot.green  { background: #28c840; }
+.al-screen-title {
+  color: rgba(255,255,255,.7);
+  font-size: 11px;
+  font-weight: 600;
+  margin-left: 6px;
+}
+.al-screen-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 8px;
+}
+
+/* Ring Chart */
+.al-ring-wrap {
+  position: relative;
+  width: 68px; height: 68px;
+  grid-row: 1 / 2;
+}
+.al-ring { width: 68px; height: 68px; transform: rotate(-90deg); }
+.al-ring-pct {
+  position: absolute;
+  inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* Mini Stats */
+.al-mini-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  grid-column: 2 / 3;
+  grid-row: 1 / 3;
+}
+.al-mini-stat {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+  padding: 5px 8px;
+}
+.al-mini-label {
+  color: rgba(255,255,255,.45);
+  font-size: 9px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.al-mini-num {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.al-mini-tag {
+  color: #4ade80;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+/* Bars */
+.al-bars {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 50px;
+}
+.al-bar {
+  flex: 1;
+  background: linear-gradient(to top, #6366f1, #a78bfa);
+  border-radius: 3px 3px 0 0;
+  min-height: 6px;
+  animation: barGrow 1.2s ease-out both;
+}
+@keyframes barGrow {
+  from { transform: scaleY(0); transform-origin: bottom; }
+  to   { transform: scaleY(1); transform-origin: bottom; }
+}
+
+/* Monitor stand + base */
+.al-stand {
+  width: 40px; height: 20px;
+  background: linear-gradient(to bottom, rgba(99,102,241,.4), rgba(99,102,241,.15));
+  margin: 0 auto;
+  clip-path: polygon(20% 0, 80% 0, 100% 100%, 0% 100%);
+}
+.al-base {
+  width: 100px; height: 8px;
+  background: linear-gradient(to right, transparent, rgba(99,102,241,.5), transparent);
+  border-radius: 50%;
+  margin: 0 auto;
+}
+
+/* Decorative plant & mug */
+.al-plant {
+  position: absolute;
+  bottom: 30px;
+  left: -10px;
+  font-size: 48px;
+  filter: hue-rotate(60deg) saturate(1.5);
+  animation: plantBob 4s ease-in-out infinite alternate;
+}
+@keyframes plantBob {
+  from { transform: rotate(-3deg); }
+  to   { transform: rotate(3deg); }
+}
+.al-mug {
+  position: absolute;
+  bottom: 30px;
+  right: -5px;
+  width: 44px; height: 50px;
+  background: linear-gradient(145deg, #1e1b4b, #312e81);
+  border-radius: 4px 4px 8px 8px;
+  border: 2px solid rgba(99,102,241,.4);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 4px 4px 16px rgba(0,0,0,.4);
+}
+.al-mug::after {
+  content: '';
+  position: absolute;
+  right: -12px;
+  top: 8px;
+  width: 10px; height: 20px;
+  border: 2px solid rgba(99,102,241,.5);
+  border-radius: 0 8px 8px 0;
+  border-left: none;
+}
+.al-mug-cross {
+  color: #818cf8;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* ============================================================
+   RIGHT PANEL
+   ============================================================ */
+.al-right {
+  width: 50%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 36px;
+  box-sizing: border-box;
+  background: #f8f9ff;
+}
+
+.al-form-card {
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  border-radius: 24px;
+  padding: 44px 40px;
+  box-shadow: 0 20px 60px rgba(99,102,241,.1), 0 4px 16px rgba(0,0,0,.06);
+  animation: cardSlideUp .5s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes cardSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Shield */
+.al-shield-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+.al-shield {
+  width: 64px; height: 64px;
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #4f46e5;
+}
+
+/* Title */
+.al-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #111827;
+  text-align: center;
+  margin: 0 0 6px;
+}
+.al-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  text-align: center;
+  margin: 0 0 28px;
+}
+
+/* Error banner */
+.al-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  animation: shake .4s ease;
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25%     { transform: translateX(-6px); }
+  75%     { transform: translateX(6px); }
+}
+
+/* Field group */
+.al-field-group {
+  margin-bottom: 20px;
+}
+.al-label {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 7px;
+}
+.al-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 7px;
+}
+.al-forgot {
+  font-size: 13px;
+  color: #4f46e5;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color .2s;
+}
+.al-forgot:hover { color: #7c3aed; }
+
+/* Input */
+.al-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.al-input-icon {
+  position: absolute;
+  left: 14px;
+  color: #9ca3af;
+  display: flex; align-items: center;
+  pointer-events: none;
+  z-index: 1;
+}
+.al-input {
+  width: 100%;
+  height: 48px;
+  padding: 0 44px 0 42px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #111827;
+  background: #fafafa;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color .2s, box-shadow .2s, background .2s;
+}
+.al-input::placeholder { color: #9ca3af; }
+.al-input:focus {
+  border-color: #6366f1;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(99,102,241,.12);
+}
+
+/* Eye toggle */
+.al-eye-btn {
+  position: absolute;
+  right: 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  display: flex; align-items: center;
+  padding: 0;
+  transition: color .2s;
+}
+.al-eye-btn:hover { color: #6366f1; }
+
+/* Options row */
+.al-options-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+.al-remember {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  font-size: 13.5px;
+  color: #374151;
+  font-weight: 500;
+  user-select: none;
+}
+.al-remember input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0; height: 0;
+}
+.al-checkmark {
+  width: 18px; height: 18px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 5px;
+  background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: background .2s, border-color .2s;
+  position: relative;
+}
+.al-remember input:checked + .al-checkmark {
+  background: #4f46e5;
+  border-color: #4f46e5;
+}
+.al-remember input:checked + .al-checkmark::after {
+  content: '';
+  position: absolute;
+  width: 4px; height: 8px;
+  border: 2px solid #fff;
+  border-top: none; border-left: none;
+  transform: rotate(40deg) translate(0px, -1px);
+}
+.al-help {
+  font-size: 13px;
+  color: #4f46e5;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color .2s;
+}
+.al-help:hover { color: #7c3aed; }
+
+/* Submit button */
+.al-submit-btn {
+  width: 100%;
+  height: 50px;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%);
+  background-size: 200% 200%;
+  color: #fff;
+  border: none;
+  border-radius: 13px;
+  font-size: 15.5px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px;
+  transition: transform .2s, box-shadow .2s;
+  box-shadow: 0 6px 24px rgba(99,102,241,.4);
+  animation: gradientShift 4s ease infinite;
+}
+@keyframes gradientShift {
+  0%  { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100%{ background-position: 0% 50%; }
+}
+.al-submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(99,102,241,.5);
+}
+.al-submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+.al-submit-btn:disabled { opacity: .75; cursor: not-allowed; }
+.al-submit-btn.al-loading { pointer-events: none; }
+
+/* Spinner */
+.al-spinner {
+  width: 20px; height: 20px;
+  border: 2.5px solid rgba(255,255,255,.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Divider */
+.al-divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 20px 0;
+  color: #9ca3af;
+  font-size: 13px;
+}
+.al-divider::before,
+.al-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+/* OTP button */
+.al-otp-btn {
+  width: 100%;
+  height: 48px;
+  background: transparent;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 13px;
+  font-size: 14.5px;
+  font-weight: 600;
+  font-family: inherit;
+  color: #374151;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px;
+  transition: border-color .2s, background .2s, color .2s, transform .2s;
+}
+.al-otp-btn:hover {
+  border-color: #6366f1;
+  color: #4f46e5;
+  background: #f5f3ff;
+  transform: translateY(-1px);
+}
+
+/* SSL Badge */
+.al-ssl-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 24px;
+  color: #9ca3af;
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+}
+.al-ssl-badge svg { flex-shrink: 0; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 900px) {
+  .al-page { flex-direction: column; }
+  .al-left {
+    width: 100%;
+    min-height: auto;
+    padding: 32px 28px 40px;
+  }
+  .al-illustration { min-height: 260px; }
+  .al-right {
+    width: 100%;
+    padding: 32px 20px 40px;
+  }
+  .al-form-card { max-width: 100%; }
+}
+
+@media (max-width: 480px) {
+  .al-form-card { padding: 32px 22px; }
+  .al-title { font-size: 22px; }
+  .al-illus-monitor { width: 260px; }
+}

@@ -1,0 +1,133 @@
+/* AdminAIInsights.css */
+.aii-page {
+  font-family: 'Inter', sans-serif;
+  background-color: #f9fafb;
+  min-height: 100vh;
+  padding: 32px;
+  color: #111827;
+}
+
+/* Header */
+.aii-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.aii-header-left { display: flex; align-items: center; gap: 16px; }
+.aii-header-icon {
+  width: 40px; height: 40px; background: #fff; border: 1px solid #e5e7eb; color: #4f46e5; border-radius: 8px;
+  display: flex; justify-content: center; align-items: center; flex-shrink: 0;
+}
+.aii-header-title h1 { font-size: 24px; font-weight: 700; margin: 0 0 4px 0; }
+.aii-header-title p { color: #6b7280; font-size: 14px; margin: 0; }
+.aii-header-right { display: flex; gap: 12px; align-items: center; }
+
+/* Buttons & Inputs */
+.aii-btn-outline {
+  display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #d1d5db;
+  border-radius: 8px; padding: 10px 16px; font-size: 13px; font-weight: 600; color: #374151;
+  cursor: pointer; transition: all 0.2s;
+}
+.aii-btn-outline:hover { background: #f9fafb; }
+
+.aii-select {
+  padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff;
+  font-size: 13px; font-weight: 500; color: #374151; outline: none; cursor: pointer;
+}
+
+/* Tabs & Toolbar */
+.aii-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid #e5e7eb; }
+.aii-tabs { display: flex; gap: 24px; }
+.aii-tab {
+  font-size: 14px; font-weight: 600; color: #6b7280; cursor: pointer; padding-bottom: 16px;
+  margin-bottom: -1px; border-bottom: 2px solid transparent; transition: all 0.2s;
+}
+.aii-tab.active { color: #4f46e5; border-bottom-color: #4f46e5; color: #111827;}
+.aii-toolbar-right { display: flex; gap: 12px; align-items: center; padding-bottom: 12px;}
+
+/* Top Metrics */
+.aii-metrics { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px; }
+.aii-metric-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; display: flex; gap: 16px; align-items: center; }
+.aii-mc-icon { width: 48px; height: 48px; border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
+.aii-mc-body { display: flex; flex-direction: column; }
+.aii-mc-label { font-size: 13px; color: #111827; font-weight: 700; margin-bottom: 4px;}
+.aii-mc-val { font-size: 24px; font-weight: 700; color: #111827; margin-bottom: 4px; }
+.aii-mc-trend { font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 4px;}
+
+/* Grid Layouts */
+.aii-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+.aii-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+.aii-grid-layout { display: grid; grid-template-columns: 1fr 300px; gap: 24px; align-items: start; }
+.aii-grid-main { display: flex; flex-direction: column; gap: 24px; }
+
+/* Cards */
+.aii-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; position: relative; }
+.aii-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.aii-card-title { font-size: 15px; font-weight: 700; color: #111827; }
+.aii-card-link { font-size: 13px; font-weight: 600; color: #4f46e5; cursor: pointer; display: flex; align-items: center; gap: 4px;}
+
+/* Donut Score (Business Health) */
+.aii-score-container { display: flex; gap: 32px; align-items: center; }
+.aii-score-ring { width: 140px; height: 140px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: conic-gradient(#10b981 87%, #f3f4f6 0); position: relative;}
+.aii-score-inner { width: 120px; height: 120px; background: #fff; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+.aii-score-val { font-size: 32px; font-weight: 700; color: #111827; line-height: 1; }
+.aii-score-max { font-size: 14px; color: #6b7280; }
+.aii-score-text { flex: 1; }
+.aii-badge-success { display: inline-block; background: #d1fae5; color: #10b981; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 16px; margin-bottom: 12px;}
+.aii-score-desc { font-size: 13px; color: #4b5563; line-height: 1.5; margin-bottom: 16px;}
+.aii-score-metrics { display: flex; flex-direction: column; gap: 8px; }
+.aii-sm-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 500;}
+
+/* Mock Line Chart */
+.aii-chart-wrap { position: relative; width: 100%; height: 200px; display: flex; flex-direction: column; }
+.aii-chart-top { display: flex; gap: 24px; margin-bottom: 16px;}
+.aii-chart-stat { display: flex; flex-direction: column; gap: 4px; }
+.aii-cs-lbl { font-size: 12px; color: #6b7280; font-weight: 500;}
+.aii-cs-val { font-size: 20px; font-weight: 700; color: #111827; display: flex; align-items: center; gap: 8px;}
+.aii-chart-svg { flex: 1; width: 100%; }
+.aii-cl-line { stroke: #8b5cf6; stroke-width: 3; fill: none; }
+.aii-cl-area { fill: url(#aii-grad); opacity: 0.2; }
+.aii-cl-dot { fill: #fff; stroke: #8b5cf6; stroke-width: 2; }
+.aii-cl-tooltip { position: absolute; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; z-index: 10; }
+.aii-cl-axis { font-size: 10px; fill: #9ca3af; }
+.aii-cl-grid { stroke: #f3f4f6; stroke-width: 1; }
+
+/* Simple Bar Chart */
+.aii-bar-chart { display: flex; align-items: flex-end; justify-content: space-around; height: 160px; padding-top: 20px; position: relative;}
+.aii-bc-group { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 40px; position: relative;}
+.aii-bc-bar1, .aii-bc-bar2 { width: 12px; border-radius: 4px 4px 0 0; position: absolute; bottom: 20px;}
+.aii-bc-bar1 { background: #4f46e5; left: 6px; }
+.aii-bc-bar2 { background: #10b981; right: 6px; }
+.aii-bc-lbl { font-size: 11px; color: #6b7280; position: absolute; bottom: 0; }
+.aii-bc-legend { display: flex; gap: 16px; margin-bottom: 16px; font-size: 12px; font-weight: 500; color: #374151;}
+.aii-bc-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px;}
+
+/* Top Insights List */
+.aii-insights-list { display: flex; flex-direction: column; gap: 16px; }
+.aii-ins-item { display: flex; gap: 12px; align-items: flex-start;}
+.aii-ins-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0;}
+.aii-ins-text { display: flex; flex-direction: column; gap: 4px; }
+.aii-ins-title { font-size: 13px; font-weight: 700; color: #111827; }
+.aii-ins-desc { font-size: 12px; color: #4b5563; line-height: 1.4; }
+
+/* Tables */
+.aii-table { width: 100%; border-collapse: collapse; }
+.aii-table th { text-align: left; padding: 12px; font-size: 11px; font-weight: 600; color: #6b7280; border-bottom: 1px solid #e5e7eb; }
+.aii-table td { padding: 12px; font-size: 13px; color: #111827; border-bottom: 1px solid #f3f4f6; }
+.aii-t-num { color: #9ca3af; font-size: 12px; width: 24px;}
+.aii-t-trend { font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 2px;}
+
+/* AI Recommendations */
+.aii-rec-list { display: flex; flex-direction: column; gap: 12px; }
+.aii-rec-item { border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; display: flex; gap: 12px; align-items: flex-start;}
+.aii-rec-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; justify-content: center; align-items: center; flex-shrink: 0;}
+.aii-rec-text { display: flex; flex-direction: column; gap: 4px; }
+.aii-rec-title { font-size: 13px; font-weight: 700; color: #111827; }
+.aii-rec-desc { font-size: 11px; color: #6b7280; line-height: 1.4; margin-bottom: 8px;}
+.aii-rec-action { font-size: 12px; font-weight: 600; color: #4f46e5; cursor: pointer; }
+
+/* Smart Alerts */
+.aii-alerts-wrap { margin-top: 24px; }
+.aii-alert-title { font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 16px; }
+.aii-alerts-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.aii-al-card { border: 1px solid; border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 8px; position: relative;}
+.aii-al-header { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700;}
+.aii-al-desc { font-size: 11px; line-height: 1.4; flex: 1;}
+.aii-al-link { font-size: 12px; font-weight: 700; cursor: pointer; margin-top: 8px;}
+.aii-al-close { position: absolute; top: 12px; right: 12px; cursor: pointer; opacity: 0.5;}
