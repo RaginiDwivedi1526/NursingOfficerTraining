@@ -49,6 +49,9 @@ export const getWeeklyProgress = () => API.get('/analytics/weekly-progress');
 export const getRecommendations = () => API.get('/analytics/recommendations');
 export const getStatsStrip = () => API.get('/analytics/stats-strip');
 export const patchStudyPlanTask = (data) => API.patch('/analytics/study-plan/complete', data);
+export const getPerformance = () => API.get('/analytics/performance');
+export const getInsights = () => API.get('/analytics/insights');
+export const getMistakes = () => API.get('/analytics/mistakes');
 
 // AI
 export const askAI = (data) => API.post('/ai/ask', data);

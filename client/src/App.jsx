@@ -11,6 +11,23 @@ import TestList from './pages/TestList';
 import TakeTest from './pages/TakeTest';
 import TestResult from './pages/TestResult';
 import LiveClasses from './pages/LiveClasses';
+import RecordedClasses from './pages/RecordedClasses';
+import AILearning from './pages/AILearning';
+import StudyMaterial from './pages/StudyMaterial';
+import Notes from './pages/Notes';
+import TestSeries from './pages/TestSeries';
+import PYQPractice from './pages/PYQPractice';
+import QuestionBank from './pages/QuestionBank';
+import Performance from './pages/Performance';
+import MyMistakes from './pages/MyMistakes';
+import AIInsights from './pages/AIInsights';
+import MyPlan from './pages/MyPlan';
+import Bookmarks from './pages/Bookmarks';
+import Downloads from './pages/Downloads';
+import Certificates from './pages/Certificates';
+import FreeTests from './pages/FreeTests';
+import SkillLab from './pages/SkillLab';
+import ClinicalCases from './pages/ClinicalCases';
 import Library from './pages/Library';
 import PricingPage from './pages/PricingPage';
 import CareerPortalPage from './pages/CareerPortalPage';
@@ -45,10 +62,11 @@ import AdminReviews from './pages/admin/AdminReviews';
 import AdminReports from './pages/admin/AdminReports';
 
 import AdminLayout from './components/admin/AdminLayout';
+import StudentLayout from './components/dashboard/StudentLayout';
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
-  return user ? children : <Navigate to="/login" />;
+  return user ? <StudentLayout>{children}</StudentLayout> : <Navigate to="/login" />;
 };
 
 const AdminRoute = ({ children }) => {
@@ -63,7 +81,8 @@ const AdminRoute = ({ children }) => {
 function AppRoutes() {
   const { user } = useAuth();
   const location = useLocation();
-  const hideNav = location.pathname.startsWith('/admin');
+  const hideNav = location.pathname.startsWith('/admin') || 
+                  ['/dashboard', '/tests', '/test/', '/result/', '/live-classes', '/recorded', '/ai-learning', '/study-material', '/notes', '/test-series', '/pyq-practice', '/question-bank', '/performance', '/mistakes', '/insights', '/my-plan', '/bookmarks', '/downloads', '/certificates', '/free-tests', '/skill-lab', '/clinical-cases', '/library'].some(p => location.pathname.startsWith(p));
   return (
     <>
       {!hideNav && <Navbar />}
@@ -78,6 +97,23 @@ function AppRoutes() {
         <Route path="/test/:id" element={<ProtectedRoute><TakeTest /></ProtectedRoute>} />
         <Route path="/result/:id" element={<ProtectedRoute><TestResult /></ProtectedRoute>} />
         <Route path="/live-classes" element={<ProtectedRoute><LiveClasses /></ProtectedRoute>} />
+        <Route path="/recorded" element={<ProtectedRoute><RecordedClasses /></ProtectedRoute>} />
+        <Route path="/ai-learning" element={<ProtectedRoute><AILearning /></ProtectedRoute>} />
+        <Route path="/study-material" element={<ProtectedRoute><StudyMaterial /></ProtectedRoute>} />
+        <Route path="/notes" element={<ProtectedRoute><Notes /></ProtectedRoute>} />
+        <Route path="/test-series" element={<ProtectedRoute><TestSeries /></ProtectedRoute>} />
+        <Route path="/pyq-practice" element={<ProtectedRoute><PYQPractice /></ProtectedRoute>} />
+        <Route path="/question-bank" element={<ProtectedRoute><QuestionBank /></ProtectedRoute>} />
+        <Route path="/performance" element={<ProtectedRoute><Performance /></ProtectedRoute>} />
+        <Route path="/mistakes" element={<ProtectedRoute><MyMistakes /></ProtectedRoute>} />
+        <Route path="/insights" element={<ProtectedRoute><AIInsights /></ProtectedRoute>} />
+        <Route path="/my-plan" element={<ProtectedRoute><MyPlan /></ProtectedRoute>} />
+        <Route path="/bookmarks" element={<ProtectedRoute><Bookmarks /></ProtectedRoute>} />
+        <Route path="/downloads" element={<ProtectedRoute><Downloads /></ProtectedRoute>} />
+        <Route path="/certificates" element={<ProtectedRoute><Certificates /></ProtectedRoute>} />
+        <Route path="/free-tests" element={<ProtectedRoute><FreeTests /></ProtectedRoute>} />
+        <Route path="/skill-lab" element={<ProtectedRoute><SkillLab /></ProtectedRoute>} />
+        <Route path="/clinical-cases" element={<ProtectedRoute><ClinicalCases /></ProtectedRoute>} />
         <Route path="/library" element={<ProtectedRoute><Library /></ProtectedRoute>} />
         <Route path="/pricing" element={<PricingPage />} />
         <Route path="/career" element={<CareerPortalPage />} />

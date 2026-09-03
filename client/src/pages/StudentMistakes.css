@@ -1,0 +1,151 @@
+.mist-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: var(--font-body);
+  padding-bottom: 40px;
+}
+
+/* Header */
+.mist-header {
+  display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;
+}
+.mist-header-left h1 { font-size: 24px; font-weight: 800; color: #0b1a30; margin: 0 0 4px 0; display: flex; align-items: center; gap: 10px; font-family: var(--font-display); }
+.mist-header-left p { color: #64748b; font-size: 13px; margin: 0; }
+.mist-month-btn { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; color: #334155; cursor: pointer; }
+
+/* Top Stats Strip */
+.mist-stats-strip {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px;
+}
+.mist-stat-card {
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.mist-sc-lbl { font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 6px; }
+.mist-sc-icon { font-size: 20px; }
+.mist-sc-val { font-size: 26px; font-weight: 800; color: #0f172a; line-height: 1; }
+.mist-sc-sub { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+.mist-sc-trend-down { font-size: 11px; font-weight: 600; color: #10b981; }
+.mist-sc-trend-up { font-size: 11px; font-weight: 600; color: #ef4444; }
+/* Ring stat */
+.mist-ring-card {
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px;
+  display: flex; align-items: center; gap: 16px;
+}
+.mist-ring-wrap { position: relative; width: 70px; height: 70px; flex-shrink: 0; }
+.mist-ring-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.mist-ring-val { font-size: 16px; font-weight: 800; color: #f59e0b; }
+
+/* Main 3-column grid */
+.mist-main-grid {
+  display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;
+}
+.mist-card {
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px;
+}
+.mist-card-head {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+}
+.mist-card-title { font-size: 15px; font-weight: 700; color: #0f172a; }
+.mist-card-filter { font-size: 11px; color: #64748b; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+
+/* Mistakes Trend - Motivational Bar */
+.mist-moti-bar {
+  background: #f5f3ff; border-radius: 10px; padding: 12px 16px;
+  display: flex; align-items: center; justify-content: space-between; margin-top: 12px;
+}
+.mist-moti-text { font-size: 12px; font-weight: 700; color: #4c1d95; }
+.mist-moti-sub { font-size: 11px; color: #7c3aed; }
+.mist-moti-icon { font-size: 24px; }
+
+/* Subject Donut */
+.mist-sub-inner { display: flex; gap: 16px; align-items: center; }
+.mist-sub-donut { width: 130px; height: 130px; position: relative; flex-shrink: 0; }
+.mist-sub-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.mist-sub-lval { font-size: 24px; font-weight: 800; color: #0f172a; line-height: 1; }
+.mist-sub-ltotal { font-size: 11px; color: #94a3b8; }
+.mist-sub-legend { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.mist-sub-row { display: flex; align-items: center; gap: 8px; }
+.mist-sub-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+.mist-sub-name { font-size: 11px; color: #334155; flex: 1; }
+.mist-sub-count { font-size: 11px; font-weight: 700; color: #0f172a; }
+.mist-sub-pct { font-size: 10px; color: #94a3b8; }
+.mist-view-all { font-size: 11px; color: #4f46e5; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px; margin-top: 10px; border-top: 1px solid #f1f5f9; padding-top: 10px; }
+
+/* Difficulty */
+.mist-diff-row { margin-bottom: 16px; }
+.mist-diff-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.mist-diff-name { font-size: 13px; font-weight: 700; color: #334155; }
+.mist-diff-count { font-size: 12px; font-weight: 700; color: #0f172a; }
+.mist-diff-track { height: 6px; background: #f1f5f9; border-radius: 3px; }
+.mist-diff-fill { height: 100%; border-radius: 3px; }
+.mist-diff-pct { font-size: 11px; color: #64748b; margin-top: 3px; }
+.mist-focus-tip {
+  background: #fefce8; border: 1px solid #fde68a; border-radius: 10px;
+  padding: 12px; margin-top: 12px; display: flex; align-items: flex-start; gap: 10px;
+}
+.mist-ft-title { font-size: 12px; font-weight: 700; color: #92400e; margin-bottom: 3px; }
+.mist-ft-text { font-size: 11px; color: #a16207; }
+
+/* Tabs + Filters */
+.mist-tabs { display: flex; gap: 0; border-bottom: 2px solid #e2e8f0; margin-bottom: 16px; }
+.mist-tab { padding: 12px 20px; font-size: 13px; font-weight: 600; color: #64748b; cursor: pointer; position: relative; }
+.mist-tab.active { color: #4f46e5; }
+.mist-tab.active::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 2px; background: #4f46e5; }
+
+.mist-filter-row { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.mist-select { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 28px 8px 12px; font-size: 12px; color: #334155; outline: none; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg' width%3D'10' height%3D'10'%3E%3Cpath fill%3D'%2364748b' d%3D'M0 2.5l5 5 5-5z'/%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+.mist-filter-btn { display: flex; align-items: center; gap: 6px; background: #fff; border: 1px solid #e2e8f0; color: #334155; border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; margin-left: auto; }
+
+/* Questions Table */
+.mist-table-wrap { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; margin-bottom: 20px; }
+.mist-table-header { display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr 1fr 80px; gap: 12px; padding: 12px 20px; font-size: 10px; font-weight: 700; color: #94a3b8; border-bottom: 1px solid #f1f5f9; background: #fafafa; text-transform: uppercase; letter-spacing: 0.04em; }
+.mist-table-row { display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr 1fr 80px; gap: 12px; padding: 16px 20px; border-bottom: 1px solid #f8fafc; align-items: center; transition: background 0.15s; }
+.mist-table-row:hover { background: #fafafa; }
+.mist-table-row:last-of-type { border: none; }
+
+.mist-q-cell { display: flex; align-items: flex-start; gap: 10px; }
+.mist-q-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.mist-q-info {}
+.mist-q-text { font-size: 13px; font-weight: 600; color: #0f172a; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+.mist-q-test { font-size: 10px; color: #94a3b8; }
+.mist-cell-val { font-size: 12px; color: #475569; }
+.mist-cell-sub { font-size: 13px; font-weight: 600; color: #334155; }
+.mist-cell-topic { font-size: 11px; color: #64748b; }
+.mist-diff-tag { padding: 3px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; display: inline-block; }
+.dt-easy { background: #dcfce7; color: #16a34a; }
+.dt-medium { background: #ffedd5; color: #ea580c; }
+.dt-hard { background: #fee2e2; color: #dc2626; }
+.mist-correct { font-size: 14px; font-weight: 800; color: #0f172a; }
+.mist-review-btn { background: #4f46e5; color: white; border: none; padding: 7px 14px; border-radius: 7px; font-size: 11px; font-weight: 700; cursor: pointer; }
+.mist-load-more { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px; font-size: 13px; font-weight: 600; color: #4f46e5; background: white; border: none; border-top: 1px solid #e2e8f0; cursor: pointer; }
+
+/* Right sidebar */
+.mist-sidebar { display: flex; flex-direction: column; gap: 20px; }
+.mist-side-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; }
+.mist-sc-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.mist-sc-title { font-weight: 700; color: #0f172a; font-size: 14px; }
+
+/* Difficulty bars */
+.mist-right-diff-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.mist-rd-name { font-size: 13px; font-weight: 700; color: #334155; width: 56px; }
+.mist-rd-track { flex: 1; height: 6px; background: #f1f5f9; border-radius: 3px; }
+.mist-rd-fill { height: 100%; border-radius: 3px; }
+.mist-rd-count { font-size: 12px; font-weight: 700; color: #0f172a; width: 20px; text-align: right; }
+.mist-focus-note { background: #fefce8; border: 1px solid #fde68a; border-radius: 10px; padding: 12px; margin-top: 12px; }
+.mist-fn-title { font-size: 12px; font-weight: 700; color: #92400e; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+.mist-fn-text { font-size: 11px; color: #a16207; }
+
+/* Top Weak Topics */
+.mist-weak-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f8fafc; }
+.mist-weak-item:last-of-type { border: none; }
+.mist-weak-name { font-size: 13px; font-weight: 700; color: #0f172a; }
+.mist-weak-count { font-size: 11px; font-weight: 600; color: #ef4444; display: flex; align-items: center; gap: 4px; }
+.mist-weak-bar { height: 3px; background: #fee2e2; border-radius: 2px; margin-top: 4px; }
+.mist-weak-fill { height: 100%; border-radius: 2px; background: #ef4444; }
+
+/* How to Reduce */
+.mist-how-card { background: linear-gradient(135deg, #fdf4ff, #f3e8ff); border: 1px solid #e9d5ff; border-radius: 16px; padding: 20px; }
+.mist-how-title { font-weight: 700; color: #4c1d95; font-size: 14px; margin-bottom: 12px; }
+.mist-how-item { display: flex; align-items: flex-start; gap: 10px; font-size: 12px; color: #6d28d9; margin-bottom: 10px; }
+.mist-how-check { color: #dc2626; font-weight: 700; flex-shrink: 0; }

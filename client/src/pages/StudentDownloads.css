@@ -1,0 +1,113 @@
+.dl-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: var(--font-body);
+  padding-bottom: 40px;
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 24px;
+}
+
+/* ─── LEFT CONTENT ─── */
+.dl-left { display: flex; flex-direction: column; gap: 20px; }
+
+/* Header */
+.dl-header h1 { font-size: 24px; font-weight: 800; color: #0b1a30; margin: 0 0 4px 0; display: flex; align-items: center; gap: 10px; font-family: var(--font-display); }
+.dl-header p { color: #64748b; font-size: 13px; margin: 0; }
+
+/* Tabs */
+.dl-tabs { display: flex; gap: 24px; border-bottom: 2px solid #e2e8f0; overflow-x: auto; }
+.dl-tabs::-webkit-scrollbar { height: 0; }
+.dl-tab { padding: 12px 4px; font-size: 13px; font-weight: 600; color: #64748b; cursor: pointer; position: relative; display: flex; align-items: center; gap: 8px; white-space: nowrap; transition: color 0.2s; }
+.dl-tab:hover { color: #4f46e5; }
+.dl-tab.active { color: #4f46e5; }
+.dl-tab.active::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 2px; background: #4f46e5; }
+
+/* Stats Strip */
+.dl-stats { display: flex; gap: 16px; margin-bottom: 4px; }
+.dl-stat-box { flex: 1; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 16px; }
+.dl-s-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.dl-s-val { font-size: 24px; font-weight: 800; color: #0f172a; line-height: 1; margin-bottom: 4px; display: flex; align-items: baseline; gap: 4px; }
+.dl-s-lbl { font-size: 11px; font-weight: 600; color: #64748b; }
+.dl-s-trend { font-size: 10px; color: #10b981; font-weight: 700; margin-top: 6px; }
+
+/* Filter Row */
+.dl-filter-row { display: flex; gap: 12px; align-items: center; }
+.dl-search { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 9px 16px; width: 280px; flex-shrink: 0; }
+.dl-search input { border: none; background: transparent; outline: none; font-size: 13px; width: 100%; }
+.dl-select { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 9px 32px 9px 14px; font-size: 13px; color: #334155; outline: none; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg' width%3D'10' height%3D'10'%3E%3Cpath fill%3D'%2364748b' d%3D'M0 2.5l5 5 5-5z'/%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
+.dl-filter-btn { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #e2e8f0; color: #334155; border-radius: 8px; padding: 9px 16px; font-size: 13px; font-weight: 600; cursor: pointer; margin-left: auto; }
+
+/* Table */
+.dl-table-wrap { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; }
+.dl-table-header { padding: 16px 20px; font-size: 15px; font-weight: 700; color: #0f172a; border-bottom: 1px solid #f1f5f9; }
+.dl-table { width: 100%; border-collapse: collapse; }
+.dl-table th { text-align: left; font-size: 10px; font-weight: 700; color: #94a3b8; padding: 12px 20px; border-bottom: 1px solid #f1f5f9; background: #fafafa; text-transform: uppercase; letter-spacing: 0.05em; }
+.dl-table td { padding: 16px 20px; font-size: 12px; border-bottom: 1px solid #f8fafc; color: #334155; vertical-align: top; }
+.dl-table tr:hover { background: #fafafa; }
+.dl-table tr:last-child td { border: none; }
+
+.dl-item-cell { display: flex; align-items: flex-start; gap: 12px; }
+.dl-item-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.dl-item-info { flex: 1; }
+.dl-item-title { font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 4px; line-height: 1.3; }
+.dl-item-sub { font-size: 11px; color: #64748b; }
+.dl-type-badge { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+.tb-pdf { background: #fee2e2; color: #ef4444; }
+.tb-zip { background: #e0e7ff; color: #4f46e5; }
+.tb-mp4 { background: #ffedd5; color: #f59e0b; }
+
+.dl-actions { display: flex; align-items: center; gap: 12px; }
+.dl-btn-icon { background: none; border: none; cursor: pointer; color: #94a3b8; display: flex; align-items: center; justify-content: center; transition: color 0.2s; }
+.dl-btn-icon:hover { color: #4f46e5; }
+.dl-btn-icon.danger:hover { color: #ef4444; }
+
+.dl-load-more { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px; font-size: 13px; font-weight: 600; color: #4f46e5; background: white; border: none; border-top: 1px solid #e2e8f0; cursor: pointer; }
+
+/* Promo Footer */
+.dl-promo-banner { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+.dl-pb-left { display: flex; align-items: center; gap: 16px; }
+.dl-pb-img { font-size: 40px; }
+.dl-pb-title { font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
+.dl-pb-text { font-size: 12px; color: #64748b; }
+.dl-pb-btn { background: white; border: 1px solid #c4b5fd; color: #4f46e5; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+
+/* ─── RIGHT SIDEBAR ─── */
+.dl-sidebar { display: flex; flex-direction: column; gap: 20px; }
+.dl-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; }
+.dl-card-title { font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 16px; }
+
+/* Storage Donut */
+.dl-storage-inner { display: flex; align-items: center; gap: 20px; }
+.dl-donut { width: 110px; height: 110px; position: relative; flex-shrink: 0; }
+.dl-donut-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.dl-donut-val { font-size: 18px; font-weight: 800; color: #0f172a; line-height: 1; display: flex; align-items: baseline; gap: 2px; }
+.dl-donut-sub { font-size: 9px; color: #64748b; margin-top: 2px; }
+.dl-legend { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+.dl-legend-row { display: flex; align-items: center; gap: 6px; font-size: 11px; }
+.dl-leg-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+.dl-leg-name { color: #334155; flex: 1; }
+.dl-leg-val { color: #0f172a; font-weight: 700; }
+
+/* Quick Access */
+.dl-qa-list { display: flex; flex-direction: column; gap: 12px; }
+.dl-qa-item { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid #f1f5f9; border-radius: 12px; cursor: pointer; transition: background 0.15s; }
+.dl-qa-item:hover { background: #f8fafc; }
+.dl-qa-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.dl-qa-info { flex: 1; }
+.dl-qa-title { font-size: 12px; font-weight: 700; color: #0f172a; margin-bottom: 2px; }
+.dl-qa-sub { font-size: 10px; color: #64748b; }
+
+/* Tips */
+.dl-tips-card { background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); border: 1px solid #ddd6fe; border-radius: 16px; padding: 20px; position: relative; }
+.dl-tips-title { font-size: 14px; font-weight: 700; color: #4c1d95; margin-bottom: 12px; }
+.dl-tip { display: flex; align-items: flex-start; gap: 8px; font-size: 11px; color: #5b21b6; margin-bottom: 10px; line-height: 1.4; }
+.dl-tip-check { font-weight: 700; color: #7c3aed; flex-shrink: 0; }
+.dl-tips-img { position: absolute; right: 10px; bottom: 10px; font-size: 60px; opacity: 0.8; }
+
+/* Upgrade Card */
+.dl-up-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; text-align: center; }
+.dl-up-title { font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 8px; text-align: left; }
+.dl-up-text { font-size: 11px; color: #64748b; line-height: 1.4; margin-bottom: 16px; text-align: left; }
+.dl-up-img { font-size: 60px; margin-bottom: 16px; }
+.dl-up-btn { width: 100%; background: #4f46e5; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }

@@ -1,0 +1,579 @@
+.sail-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: var(--font-body);
+  padding-bottom: 40px;
+}
+
+/* Header */
+.sail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.sail-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sail-title h1 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #0b1a30;
+  margin: 0 0 4px 0;
+  font-family: var(--font-display);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sail-title p {
+  color: #64748b;
+  font-size: 13px;
+  margin: 0;
+}
+.sail-quick-chips {
+  display: flex;
+  gap: 12px;
+}
+.sail-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.sail-chip:hover {
+  border-color: #c4b5fd;
+  background: #faf5ff;
+}
+.sail-chip-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+.sail-chip-text {
+  display: flex;
+  flex-direction: column;
+}
+.sail-chip-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.sail-chip-sub {
+  font-size: 10px;
+  color: #64748b;
+}
+
+/* Hero Split */
+.sail-hero {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+@media (max-width: 1100px) {
+  .sail-hero { grid-template-columns: 1fr; }
+}
+
+/* AI Chat Card */
+.sail-chat-card {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+  border-radius: 20px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  min-height: 300px;
+}
+.sail-chat-card::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 200px;
+  height: 200px;
+  background: rgba(139, 92, 246, 0.2);
+  border-radius: 50%;
+}
+.sail-chat-card::after {
+  content: '';
+  position: absolute;
+  bottom: -60px;
+  left: -40px;
+  width: 160px;
+  height: 160px;
+  background: rgba(99, 102, 241, 0.15);
+  border-radius: 50%;
+}
+.sail-chat-inner {
+  position: relative;
+  z-index: 2;
+}
+.sail-ai-mascot {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+  font-size: 36px;
+}
+.sail-greeting {
+  font-size: 22px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 8px;
+}
+.sail-sub-greeting {
+  font-size: 14px;
+  color: #c4b5fd;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+.sail-input-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.sail-chat-input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 14px;
+  color: white;
+  outline: none;
+  backdrop-filter: blur(8px);
+}
+.sail-chat-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+.sail-send-btn {
+  width: 48px;
+  height: 48px;
+  background: #8b5cf6;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+  transition: all 0.2s;
+}
+.sail-send-btn:hover { background: #7c3aed; transform: scale(1.05); }
+.sail-try-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.sail-try-label {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+  width: 100%;
+  margin-bottom: 4px;
+}
+.sail-try-chip {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e0e7ff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.sail-try-chip:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Overview Card */
+.sail-overview-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 24px;
+}
+.sail-overview-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.sail-overview-title {
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 15px;
+}
+.sail-overview-filter {
+  font-size: 11px;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.sail-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.sail-ov-stat {
+  display: flex;
+  flex-direction: column;
+}
+.sail-ov-val {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+}
+.sail-ov-trend {
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.sail-ov-lbl { font-size: 11px; color: #94a3b8; }
+.up { color: #10b981; }
+.down { color: #ef4444; }
+
+.sail-topics-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 12px;
+}
+.sail-topic-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.sail-topic-rank {
+  width: 16px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+}
+.sail-topic-name {
+  flex: 1;
+  font-size: 12px;
+  color: #334155;
+}
+.sail-topic-track {
+  width: 80px;
+  height: 4px;
+  background: #f1f5f9;
+  border-radius: 2px;
+}
+.sail-topic-fill { height: 100%; border-radius: 2px; }
+.sail-topic-pct { font-size: 11px; color: #64748b; width: 28px; text-align: right; }
+.sail-chart-area {
+  margin-top: 16px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 16px;
+}
+.sail-chart-lbl {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 12px;
+}
+
+/* AI Tools Carousel */
+.sail-tools-section {
+  margin-bottom: 24px;
+}
+.sail-tools-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sail-tools-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+@media (max-width: 1100px) {
+  .sail-tools-row { grid-template-columns: repeat(3, 1fr); }
+}
+.sail-tool-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: all 0.2s;
+}
+.sail-tool-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+.sail-tool-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+.sail-tool-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.sail-tool-desc {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.5;
+  flex: 1;
+}
+.sail-tool-btn {
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+.sail-tool-btn:hover { opacity: 0.9; transform: scale(1.02); }
+
+/* Bottom Split */
+.sail-bottom {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+@media (max-width: 1100px) {
+  .sail-bottom { grid-template-columns: 1fr; }
+}
+
+/* Sessions */
+.sail-sessions-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+}
+.sail-sessions-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.sail-sessions-title { font-weight: 700; color: #0f172a; font-size: 15px; }
+.sail-view-all { font-size: 12px; color: #4f46e5; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+.sail-session-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid #f8fafc;
+}
+.sail-session-item:last-of-type { border: none; }
+.sail-session-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.sail-session-body { flex: 1; }
+.sail-session-title { font-weight: 600; color: #0f172a; font-size: 13px; margin-bottom: 4px; }
+.sail-session-desc { font-size: 11px; color: #64748b; }
+.sail-session-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  min-width: 100px;
+}
+.sail-session-time { font-size: 11px; color: #94a3b8; }
+.sail-session-dur { font-size: 11px; color: #64748b; }
+.sail-session-status {
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.sail-session-status.done { background: #dcfce7; color: #15803d; }
+.sail-ask-btn {
+  width: 100%;
+  border: 1px dashed #c4b5fd;
+  background: #faf5ff;
+  color: #7c3aed;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  transition: all 0.2s;
+}
+.sail-ask-btn:hover { background: #f3e8ff; }
+
+/* Right Sidebar */
+.sail-right-sidebar { display: flex; flex-direction: column; gap: 20px; }
+
+.sail-reco-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+}
+.sail-reco-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 4px;
+}
+.sail-reco-title { font-weight: 700; color: #0f172a; font-size: 15px; }
+.sail-reco-sub { font-size: 11px; color: #64748b; margin-bottom: 16px; }
+.sail-reco-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+.sail-reco-item:last-of-type { border: none; }
+.sail-reco-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.sail-reco-body { flex: 1; }
+.sail-reco-type { font-size: 10px; font-weight: 600; color: #64748b; }
+.sail-reco-name { font-size: 13px; font-weight: 700; color: #0f172a; }
+.sail-priority {
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.p-high { background: #fee2e2; color: #dc2626; }
+.p-med { background: #fef3c7; color: #d97706; }
+.sail-reco-act {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  margin-left: 8px;
+}
+.reco-purple { background: #4f46e5; color: white; }
+.reco-orange { background: #f97316; color: white; }
+.reco-blue { background: #3b82f6; color: white; }
+
+/* Upgrade Card */
+.sail-upgrade-card {
+  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+  border: 1px solid #ddd6fe;
+  border-radius: 16px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.sail-upgrade-title { font-weight: 700; color: #4c1d95; font-size: 14px; margin-bottom: 4px; }
+.sail-upgrade-sub { font-size: 12px; color: #6d28d9; margin-bottom: 16px; }
+.sail-upgrade-feat {
+  font-size: 12px;
+  color: #5b21b6;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sail-upgrade-btn {
+  background: #4f46e5;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+.sail-upgrade-crown {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  font-size: 48px;
+  opacity: 0.6;
+}
+
+/* Footer */
+.sail-footer-bar {
+  display: flex;
+  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+  border: 1px solid #ddd6fe;
+  border-radius: 12px;
+  padding: 20px 24px;
+  align-items: center;
+  justify-content: space-between;
+}
+.sail-footer-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #4c1d95;
+}
+.sail-footer-sub { font-size: 12px; color: #7c3aed; font-weight: 400; }
+.sail-how-btn {
+  background: #4f46e5;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

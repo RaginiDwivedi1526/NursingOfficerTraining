@@ -1,0 +1,170 @@
+.ai-ins-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: var(--font-body);
+  padding-bottom: 40px;
+}
+
+/* Header */
+.ai-ins-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+.ai-ins-header-left h1 {
+  font-size: 24px; font-weight: 800; color: #0b1a30;
+  margin: 0 0 4px 0; display: flex; align-items: center; gap: 10px;
+  font-family: var(--font-display);
+}
+.ai-ins-header-left p { color: #64748b; font-size: 13px; margin: 0; }
+.ai-ins-month-btn {
+  display: flex; align-items: center; gap: 8px;
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 8px;
+  padding: 8px 16px; font-size: 13px; font-weight: 600; color: #334155; cursor: pointer;
+}
+
+/* Top Metrics Strip */
+.ai-ins-metrics {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.ai-ins-metric-card {
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
+  padding: 20px;
+  display: flex; flex-direction: column; gap: 16px;
+  position: relative; overflow: hidden;
+}
+.ai-ins-metric-title { font-size: 11px; font-weight: 700; color: #64748b; text-align: center; }
+.ai-ins-metric-body { display: flex; align-items: center; gap: 16px; }
+.ai-ins-m-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.ai-ins-m-val { font-size: 24px; font-weight: 800; color: #0f172a; line-height: 1.2; }
+.ai-ins-m-sub { font-size: 11px; color: #64748b; font-weight: 500; }
+.ai-ins-m-trend { font-size: 11px; font-weight: 600; color: #10b981; border-top: 1px solid #f1f5f9; padding-top: 12px; display: flex; align-items: center; gap: 4px; }
+.ai-ins-m-trend-purple { color: #8b5cf6; }
+
+/* Main Grid Layout */
+.ai-ins-main-grid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 20px;
+}
+
+/* Left Content Area */
+.ai-ins-left-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 3-Col row in Left Content */
+.ai-ins-3col {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+/* Base Card Style */
+.ai-ins-card {
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px;
+  display: flex; flex-direction: column;
+}
+.ai-ins-card-title { font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 16px; }
+
+/* Strength vs Weakness */
+.ai-ins-radar-wrap { height: 180px; width: 100%; position: relative; margin-bottom: 12px; }
+.ai-ins-radar-legend { display: flex; justify-content: center; gap: 16px; font-size: 10px; color: #64748b; margin-top: -10px; margin-bottom: 12px; }
+.ai-ins-legend-item { display: flex; align-items: center; gap: 4px; }
+.ai-ins-legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+.ai-ins-legend-dash { width: 12px; height: 2px; border-top: 2px dashed #94a3b8; }
+.ai-ins-insight-box { background: #f5f3ff; border-radius: 8px; padding: 12px; display: flex; align-items: flex-start; gap: 10px; }
+.ai-ins-ib-icon { font-size: 16px; }
+.ai-ins-ib-text { font-size: 11px; color: #4c1d95; font-weight: 600; line-height: 1.4; }
+
+/* Learning Trend */
+.ai-ins-line-legend { display: flex; justify-content: center; gap: 16px; font-size: 10px; color: #64748b; margin-bottom: 12px; }
+.ai-ins-insight-box-blue { background: #eff6ff; border-radius: 8px; padding: 12px; display: flex; align-items: flex-start; gap: 10px; }
+.ai-ins-ibb-text { font-size: 11px; color: #1d4ed8; font-weight: 600; line-height: 1.4; }
+
+/* Time & Accuracy */
+.ai-ins-ta-row { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+.ai-ins-donut { width: 110px; height: 110px; position: relative; flex-shrink: 0; }
+.ai-ins-donut-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.ai-ins-donut-val { font-size: 20px; font-weight: 800; color: #0f172a; line-height: 1; }
+.ai-ins-donut-sub { font-size: 10px; color: #64748b; }
+.ai-ins-ta-stats { display: flex; flex-direction: column; gap: 10px; }
+.ai-ins-ta-stat { display: flex; align-items: flex-start; gap: 8px; }
+.ai-ins-ta-dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 4px; }
+.ai-ins-ta-sval { font-size: 13px; font-weight: 700; color: #0f172a; margin-top: 2px; }
+
+/* 2-Col row in Left Content */
+.ai-ins-2col {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+/* Topic Insights Table */
+.ai-ins-table { width: 100%; border-collapse: collapse; }
+.ai-ins-table th { text-align: left; font-size: 10px; font-weight: 700; color: #94a3b8; padding: 12px 16px; border-bottom: 1px solid #f1f5f9; text-transform: uppercase; letter-spacing: 0.05em; }
+.ai-ins-table td { padding: 16px; font-size: 12px; border-bottom: 1px solid #f8fafc; }
+.ai-ins-t-subject { display: flex; align-items: center; gap: 8px; font-weight: 600; color: #334155; }
+.ai-ins-t-icon { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+.ai-ins-t-trend-up { color: #10b981; font-weight: 800; }
+.ai-ins-t-trend-down { color: #ef4444; font-weight: 800; }
+.ai-ins-t-trend-flat { color: #94a3b8; font-weight: 800; }
+.ai-ins-view-all-topics { margin-top: 16px; text-align: center; }
+.ai-ins-vat-btn { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 16px; font-size: 12px; font-weight: 600; color: #4f46e5; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+
+/* Study Behavior */
+.ai-ins-sb-row { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+.ai-ins-sb-donut { width: 110px; height: 110px; position: relative; flex-shrink: 0; margin-left: 10px; }
+.ai-ins-sb-legend { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.ai-ins-sbl-item { display: flex; align-items: center; gap: 8px; font-size: 11px; }
+.ai-ins-sbl-name { color: #334155; font-weight: 600; flex: 1; }
+.ai-ins-sbl-val { color: #0f172a; font-weight: 700; }
+
+/* Right Sidebar Content */
+.ai-ins-sidebar {
+  display: flex; flex-direction: column; gap: 20px;
+}
+
+/* AI Study Coach */
+.ai-ins-coach-head { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.ai-ins-coach-img { width: 48px; height: 48px; border-radius: 12px; background: #e0e7ff; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+.ai-ins-coach-greet { font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+.ai-ins-coach-msg { font-size: 11px; color: #64748b; line-height: 1.4; }
+.ai-ins-task { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+.ai-ins-task-icon { width: 32px; height: 32px; border-radius: 8px; background: #f5f3ff; color: #7c3aed; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ai-ins-task-info {}
+.ai-ins-task-title { font-size: 12px; font-weight: 700; color: #0f172a; margin-bottom: 2px; }
+.ai-ins-task-sub { font-size: 11px; color: #64748b; }
+.ai-ins-btn-primary { width: 100%; background: #4f46e5; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+
+/* Recommended Plan */
+.ai-ins-plan-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.ai-ins-badge-purp { background: #e0e7ff; color: #4f46e5; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 12px; }
+
+/* Learning Personality */
+.ai-ins-pers-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.ai-ins-pers-type { font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 6px; }
+.ai-ins-pers-desc { font-size: 11px; color: #64748b; line-height: 1.4; margin-bottom: 16px; }
+.ai-ins-pers-radar { height: 120px; width: 100%; }
+
+/* Footer Banner */
+.ai-ins-footer {
+  margin-top: 20px;
+  background: linear-gradient(90deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+  border-radius: 12px; padding: 16px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  color: white;
+}
+.ai-ins-f-left { display: flex; align-items: center; gap: 16px; }
+.ai-ins-f-icon { font-size: 32px; opacity: 0.8; }
+.ai-ins-f-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.ai-ins-f-sub { font-size: 11px; color: #c4b5fd; }
+.ai-ins-f-right { display: flex; gap: 32px; }
+.ai-ins-f-stat { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 600; }
+.ai-ins-f-stat-icon { color: #a5b4fc; font-size: 16px; }

@@ -299,5 +299,132 @@ router.get('/stats-strip', protect, async (req, res) => {
   }
 });
 
+// GET /api/analytics/performance - Detailed performance metrics
+router.get('/performance', protect, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const results = await TestResult.find({ user: userId }).sort('completedAt');
+    
+    if (results.length === 0) {
+      return res.json({ trendData: [], scoreDistribution: [], subjectData: [] });
+    }
+
+    // Trend data
+    const trendData = results.map(r => ({
+      date: r.completedAt,
+      score: r.score
+    }));
+
+    // Score distribution
+    const dist = { '0-20%': 0, '21-40%': 0, '41-60%': 0, '61-80%': 0, '81-100%': 0 };
+    results.forEach(r => {
+      if (r.score <= 20) dist['0-20%']++;
+      else if (r.score <= 40) dist['21-40%']++;
+      else if (r.score <= 60) dist['41-60%']++;
+      else if (r.score <= 80) dist['61-80%']++;
+      else dist['81-100%']++;
+    });
+
+    // Subject data
+    const topicAgg = {};
+    results.forEach(r => {
+      r.topicPerformance.forEach(tp => {
+        if (!topicAgg[tp.topic]) topicAgg[tp.topic] = { total: 0, correct: 0 };
+        topicAgg[tp.topic].total += tp.totalQuestions;
+        topicAgg[tp.topic].correct += tp.correctAnswers;
+      });
+    });
+
+    const subjectData = Object.entries(topicAgg).map(([topic, data]) => ({
+      subject: topic,
+      accuracy: Math.round((data.correct / data.total) * 100)
+    }));
+
+    res.json({ trendData, scoreDistribution: Object.values(dist), subjectData });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// GET /api/analytics/insights - AI Insights summary
+router.get('/insights', protect, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const results = await TestResult.find({ user: userId }).sort('-completedAt');
+    
+    const totalQs = results.reduce((s, r) => s + r.totalQuestions, 0);
+    const totalCorrect = results.reduce((s, r) => s + r.correctAnswers, 0);
+    const totalIncorrect = results.reduce((s, r) => s + r.incorrectAnswers, 0);
+    const accuracy = totalQs > 0 ? Math.round((totalCorrect / totalQs) * 100) : 0;
+    
+    const topicAgg = {};
+    results.forEach(r => {
+      r.topicPerformance.forEach(tp => {
+        if (!topicAgg[tp.topic]) topicAgg[tp.topic] = { total: 0, correct: 0 };
+        topicAgg[tp.topic].total += tp.totalQuestions;
+        topicAgg[tp.topic].correct += tp.correctAnswers;
+      });
+    });
+
+    const topicInsights = Object.entries(topicAgg).map(([topic, data]) => ({
+      topic,
+      mastery: Math.round((data.correct / data.total) * 100),
+      trend: 'up', // Simplified for mock
+      accuracy: Math.round((data.correct / data.total) * 100),
+      recommendation: 'Keep practicing'
+    }));
+
+    res.json({
+      learningScore: accuracy,
+      conceptMastery: accuracy - 10,
+      predictedScore: Math.round(accuracy * 2), // 200 total
+      totalQs,
+      totalCorrect,
+      totalIncorrect,
+      topicInsights
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// GET /api/analytics/mistakes - Mistakes tracking
+router.get('/mistakes', protect, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const results = await TestResult.find({ user: userId }).sort('-completedAt');
+    
+    // In a real app we'd query individual incorrect answers. 
+    // Here we'll generate aggregate data based on test results.
+    const totalIncorrect = results.reduce((s, r) => s + r.incorrectAnswers, 0);
+    
+    const topicAgg = {};
+    results.forEach(r => {
+      r.topicPerformance.forEach(tp => {
+        const incorrect = tp.totalQuestions - tp.correctAnswers;
+        if (!topicAgg[tp.topic]) topicAgg[tp.topic] = { total: 0, incorrect: 0 };
+        topicAgg[tp.topic].total += tp.totalQuestions;
+        topicAgg[tp.topic].incorrect += incorrect;
+      });
+    });
+
+    const weakTopics = Object.entries(topicAgg)
+      .map(([topic, data]) => ({
+        topic,
+        mistakes: data.incorrect,
+        accuracy: Math.round(((data.total - data.incorrect) / data.total) * 100)
+      }))
+      .filter(t => t.mistakes > 0)
+      .sort((a, b) => b.mistakes - a.mistakes);
+
+    res.json({
+      totalMistakes: totalIncorrect,
+      weakTopics
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = router;
 

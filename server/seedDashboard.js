@@ -56,6 +56,44 @@ const seedDashboard = async () => {
         status: 'Completed'
       });
     }
+    
+    // Seed TestResults for analytics
+    console.log('Seeding TestResults for analytics...');
+    const TestResult = require('./models/TestResult');
+    await TestResult.deleteMany({});
+    
+    const topics = ['Pharmacology', 'Medical Surgical Nursing', 'Community Health Nursing', 'Mental Health Nursing', 'Child Health Nursing'];
+    
+    for (let i = 0; i < 20; i++) {
+      const pastDate = new Date();
+      pastDate.setDate(pastDate.getDate() - Math.floor(Math.random() * 30));
+      
+      const totalQs = 50;
+      const correct = Math.floor(Math.random() * 30) + 15; // 15-45 correct
+      const wrong = totalQs - correct;
+      const score = Math.round((correct / totalQs) * 100);
+      
+      const topicPerf = topics.map(t => ({
+        topic: t,
+        totalQuestions: 10,
+        correctAnswers: Math.floor(Math.random() * 8) + 2,
+        accuracy: 0
+      }));
+      topicPerf.forEach(t => t.accuracy = Math.round((t.correctAnswers / t.totalQuestions) * 100));
+
+      await TestResult.create({
+        user: adminUser._id,
+        test: new mongoose.Types.ObjectId(), // Fake test ID for now
+        totalQuestions: totalQs,
+        correctAnswers: correct,
+        incorrectAnswers: wrong,
+        score: score,
+        timeTaken: Math.floor(Math.random() * 1800) + 1200, // 20-50 mins
+        topicPerformance: topicPerf,
+        completedAt: pastDate
+      });
+    }
+
     console.log('Dashboard data seeded successfully.');
   } catch (error) {
     console.error('Error seeding dashboard data:', error.message);
