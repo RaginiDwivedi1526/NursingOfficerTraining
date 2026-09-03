@@ -118,10 +118,6 @@ export default function AdminLayout({ children }) {
             <div className="al-topbar-title">Admin Panel</div>
           </div>
 
-          <div className="al-search">
-            <span className="al-search-icon"><Search size={14} /></span>
-            <input type="text" placeholder="Search..." />
-          </div>
 
           <div className="al-topbar-actions">
             <button className="al-icon-btn" title="Call"><Phone size={15} /></button>

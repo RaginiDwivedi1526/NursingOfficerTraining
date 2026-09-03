@@ -2,20 +2,12 @@ import React, { useState } from 'react';
 import { Menu, Search, Plus, FileText, Star, Folder, Clock, Trash2, List, Grid, Edit3, Mic, Download, ChevronRight, MoreVertical } from 'lucide-react';
 import './AdminNotes.css';
 
-const MOCK_NOTES = [
-  { id: 1, title: 'Pharmacology - Important Drug Classes', desc: 'Detailed notes on classification and uses of important drug classes...', folder: 'Pharmacology', course: 'BSc Nursing 2nd Year', tags: [{lbl:'Important',c:'#8b5cf6',bg:'#f3e8ff'},{lbl:'Theory',c:'#3b82f6',bg:'#dbeafe'}], date: '20 May 2024', time: '10:30 AM', iconColor: '#8b5cf6', iconBg: '#f3e8ff', isStarred: true },
-  { id: 2, title: 'AIIMS NORCET 2024 - Preparation Strategy', desc: 'My preparation plan, schedule and important resources for NORCET...', folder: 'Test Series', course: 'AIIMS NORCET 2024', tags: [{lbl:'Strategy',c:'#10b981',bg:'#d1fae5'},{lbl:'Plan',c:'#3b82f6',bg:'#dbeafe'}], date: '19 May 2024', time: '09:15 AM', iconColor: '#10b981', iconBg: '#d1fae5', isStarred: false },
-  { id: 3, title: 'Anatomy - Heart Diagram Notes', desc: 'Handwritten notes and labelled diagrams of human heart...', folder: 'Anatomy & Physiology', course: 'BSc Nursing 1st Year', tags: [{lbl:'Diagrams',c:'#f59e0b',bg:'#ffedd5'},{lbl:'Important',c:'#3b82f6',bg:'#dbeafe'}], date: '18 May 2024', time: '07:30 PM', iconColor: '#f59e0b', iconBg: '#ffedd5', isStarred: true },
-  { id: 4, title: 'Medical Surgical Nursing - Vital Signs', desc: 'Normal values, factors affecting and measurement procedures...', folder: 'Medical Surgical Nursing', course: 'BSc Nursing 3rd Year', tags: [{lbl:'Theory',c:'#3b82f6',bg:'#dbeafe'},{lbl:'Quick Rev.',c:'#8b5cf6',bg:'#f3e8ff'}], date: '17 May 2024', time: '04:20 PM', iconColor: '#3b82f6', iconBg: '#dbeafe', isStarred: false },
-  { id: 5, title: 'Nursing Process - Quick Revision', desc: '5 steps of nursing process with examples and key points...', folder: 'Nursing Fundamentals', course: 'BSc Nursing 1st Year', tags: [{lbl:'Revision',c:'#ef4444',bg:'#fee2e2'},{lbl:'Important',c:'#f59e0b',bg:'#ffedd5'}], date: '16 May 2024', time: '11:05 AM', iconColor: '#ef4444', iconBg: '#fee2e2', isStarred: true },
-  { id: 6, title: 'Community Health Nursing - Notes', desc: 'Community health programs, health education and services...', folder: 'Community Health Nursing', course: 'BSc Nursing 2nd Year', tags: [{lbl:'CHN',c:'#10b981',bg:'#d1fae5'},{lbl:'Theory',c:'#3b82f6',bg:'#dbeafe'}], date: '15 May 2024', time: '06:40 PM', iconColor: '#8b5cf6', iconBg: '#f3e8ff', isStarred: false },
-  { id: 7, title: 'Fluid & Electrolyte Balance', desc: 'Detailed notes on types, imbalance and nursing management...', folder: 'Nutrition & Biochemistry', course: 'BSc Nursing 1st Year', tags: [{lbl:'Theory',c:'#3b82f6',bg:'#dbeafe'},{lbl:'Important',c:'#8b5cf6',bg:'#f3e8ff'}], date: '14 May 2024', time: '10:10 AM', iconColor: '#f59e0b', iconBg: '#ffedd5', isStarred: false },
-  { id: 8, title: 'Important Formulas & Calculations', desc: 'All important formulas for dosage, infusion rate and calculations...', folder: 'Pharmacology', course: 'BSc Nursing 2nd Year', tags: [{lbl:'Formulas',c:'#ec4899',bg:'#fce7f3'},{lbl:'Calculations',c:'#f59e0b',bg:'#ffedd5'}], date: '13 May 2024', time: '08:50 PM', iconColor: '#10b981', iconBg: '#d1fae5', isStarred: false }
-];
+const MOCK_NOTES = [];
 
 export default function AdminNotes() {
   const [activeTab, setActiveTab] = useState('All');
   const [view, setView] = useState('list');
+  const [searchTerm, setSearchTerm] = useState('');
 
   return (
     <div className="an-page">
@@ -30,7 +22,8 @@ export default function AdminNotes() {
         <div className="an-header-right">
           <div className="an-search">
             <Search size={16} color="#9ca3af" />
-            <input type="text" placeholder="Search notes..." />
+            <input type="text" placeholder="Search notes..."
+              value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
           </div>
           <button className="an-btn-primary"><Plus size={16}/> New Note</button>
         </div>
@@ -113,7 +106,12 @@ export default function AdminNotes() {
               </tr>
             </thead>
             <tbody>
-              {MOCK_NOTES.map((note) => (
+              {MOCK_NOTES.filter(note =>
+                note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                note.desc.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                note.folder.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                note.course.toLowerCase().includes(searchTerm.toLowerCase())
+              ).map((note) => (
                 <tr key={note.id}>
                   <td><input type="checkbox" className="an-checkbox"/></td>
                   <td style={{width: 320}}>

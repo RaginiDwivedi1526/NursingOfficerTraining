@@ -3,19 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Filter, Plus, BookOpen, FileText, PlaySquare, Users, Edit3, MoreVertical, X, Image as ImageIcon, GripVertical, Trash2 } from 'lucide-react';
 import './AdminCourses.css';
 
-const MOCK_COURSES = [
-  { id: 1, name: 'Medical Surgical Nursing', desc: 'Comprehensive course covering medical surgical nursing concepts and practices.', cat: 'Clinical Nursing', topics: 56, sections: 18, status: 'Published', statSub: 'Live', students: 1245, icon: 'stethoscope', color: '#3b82f6', bg: '#eff6ff' },
-  { id: 2, name: 'Pharmacology', desc: 'Detailed study of drugs, dosages, and pharmacological principles.', cat: 'Pharmacology', topics: 42, sections: 12, status: 'Published', statSub: 'Live', students: 986, icon: 'heartPulse', color: '#ef4444', bg: '#fee2e2' },
-  { id: 3, name: 'Pediatric Nursing', desc: 'Essential concepts and care strategies for child health and development.', cat: 'Pediatric Nursing', topics: 38, sections: 10, status: 'Published', statSub: 'Live', students: 812, icon: 'baby', color: '#8b5cf6', bg: '#f3e8ff' },
-  { id: 4, name: 'Mental Health Nursing', desc: 'Theory and practice in mental health nursing and patient care.', cat: 'Mental Health', topics: 31, sections: 9, status: 'Draft', statSub: 'Not Published', students: 0, icon: 'brain', color: '#059669', bg: '#d1fae5' },
-  { id: 5, name: 'Infection Control & Safety', desc: 'Infection prevention, control measures and patient safety protocols.', cat: 'Community Health', topics: 27, sections: 8, status: 'Published', statSub: 'Live', students: 654, icon: 'virus', color: '#d97706', bg: '#fef3c7' },
-  { id: 6, name: 'Maternity & Gynecological Nursing', desc: 'Maternal care, gynecological health and related nursing practices.', cat: 'Women\'s Health', topics: 33, sections: 11, status: 'In Review', statSub: 'Under Review', students: 0, icon: 'mom', color: '#0891b2', bg: '#cffafe' }
-];
+const MOCK_COURSES = [];
 
 export default function AdminCourses() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('All');
   const [editingCourse, setEditingCourse] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -103,7 +97,8 @@ export default function AdminCourses() {
           </div>
           <div className="ac-search">
             <Search size={16} color="#9ca3af" />
-            <input type="text" placeholder="Search courses..." />
+            <input type="text" placeholder="Search courses..."
+              value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
           </div>
         </div>
 
@@ -120,7 +115,10 @@ export default function AdminCourses() {
             </tr>
           </thead>
           <tbody>
-            {MOCK_COURSES.map((course) => (
+            {MOCK_COURSES.filter(course =>
+              course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              course.cat.toLowerCase().includes(searchTerm.toLowerCase())
+            ).map((course) => (
               <tr key={course.id}>
                 <td style={{width: 320}}>
                   <div className="ac-course-cell">

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import './IssueCertificateModal.css';
 
 /* ── UI Helpers ── */
@@ -42,26 +43,93 @@ const OptionCard = ({ active, onClick, title, sub, icon }) => (
 );
 
 
-export default function IssueCertificateModal({ onClose }) {
-  const [student, setStudent] = useState('Riya Sharma');
-  const [course, setCourse] = useState('Nursing Fundamentals - Complete Course');
-  
+export default function IssueCertificateModal({ onClose, onCreated }) {
+  const [users, setUsers] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [loadingData, setLoadingData] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+
+  const [studentId, setStudentId] = useState('');
+  const [course, setCourse] = useState('');
   const [template, setTemplate] = useState('Modern Blue Certificate');
   const [title, setTitle] = useState('Certificate of Completion');
   const [desc, setDesc] = useState('For successfully completing the Nursing Fundamentals - Complete Course.');
-  const [certId, setCertId] = useState('CERT-2024-000125');
-  const [issueDate, setIssueDate] = useState('2024-05-22');
+  const [certId, setCertId] = useState('CERT-' + Date.now().toString().slice(-6));
+  const [issueDate, setIssueDate] = useState(new Date().toISOString().split('T')[0]);
   const [expiryDate, setExpiryDate] = useState('');
 
   const [options, setOptions] = useState({
-    download: true,
-    email: true,
-    print: false,
-    share: false,
-    verify: false
+    download: true, email: true, print: false, share: false, verify: false
   });
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userStr = localStorage.getItem('nursingUser');
+        const token = userStr ? JSON.parse(userStr).token : null;
+        const config = { headers: { Authorization: `Bearer ${token}` } };
+        const envUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+        const baseUrl = envUrl.endsWith('/api') ? envUrl : `${envUrl}/api`;
+        
+        const [usersRes, statsRes] = await Promise.all([
+          axios.get(`${baseUrl}/admin/users`, config),
+          axios.get(`${baseUrl}/admin/stats`, config)
+        ]);
+        
+        setUsers(usersRes.data || []);
+        if (usersRes.data?.length > 0) {
+          setStudentId(usersRes.data[0]._id);
+        }
+        
+        const cList = statsRes.data?.courses || [];
+        setCourses(cList);
+        if (cList.length > 0) {
+          setCourse(cList[0].title);
+        } else {
+          setCourse('General Prep');
+        }
+      } catch (err) {
+        console.error(err);
+        setError('Failed to fetch data');
+      } finally {
+        setLoadingData(false);
+      }
+    };
+    fetchData();
+  }, []);
+
   const toggleOption = (key) => setOptions(prev => ({ ...prev, [key]: !prev[key] }));
+
+  const handleIssue = async () => {
+    try {
+      setSubmitting(true);
+      setError('');
+      const userStr = localStorage.getItem('nursingUser');
+      const token = userStr ? JSON.parse(userStr).token : null;
+      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const envUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+      const baseUrl = envUrl.endsWith('/api') ? envUrl : `${envUrl}/api`;
+
+      await axios.post(`${baseUrl}/admin/certificates`, {
+        student: studentId,
+        course,
+        title,
+        type: template,
+        status: 'Active',
+        issuedDate: issueDate
+      }, config);
+
+      if (onCreated) onCreated();
+      else onClose();
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || 'Failed to issue certificate');
+      setSubmitting(false);
+    }
+  };
+
+  const selectedUser = users.find(u => u._id === studentId);
 
   return (
     <div className="icm-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
@@ -87,29 +155,36 @@ export default function IssueCertificateModal({ onClose }) {
           <div className="icm-grid-2">
             <Field label="Select Student" req>
               <div className="icm-input-wrap">
-                <span className="icm-inp-icon"><Ic d={icons.search} stroke="#9ca3af" size={16}/></span>
-                <input className="icm-inp icm-inp-with-icon" value={student} onChange={e=>setStudent(e.target.value)} placeholder="Search by name, email or enrollment ID" />
+                <span className="icm-inp-icon"><Ic d={icons.user} stroke="#9ca3af" size={16}/></span>
+                <select className="icm-inp icm-inp-with-icon" value={studentId} onChange={e=>setStudentId(e.target.value)} disabled={loadingData}>
+                  {loadingData ? <option>Loading...</option> : users.map(u => (
+                    <option key={u._id} value={u._id}>{u.name} ({u.email})</option>
+                  ))}
+                </select>
               </div>
-              <div className="icm-card">
-                <div className="icm-card-icon"><Ic d={icons.user} stroke="#8b5cf6" size={20}/></div>
-                <div>
-                  <div className="icm-card-title">{student}</div>
-                  <div className="icm-card-sub">riya.sharma@email.com</div>
-                  <div className="icm-card-sub" style={{marginTop:4}}>Enrollment ID: ENR-2024-00125</div>
+              {selectedUser && (
+                <div className="icm-card">
+                  <div className="icm-card-icon"><Ic d={icons.user} stroke="#8b5cf6" size={20}/></div>
+                  <div>
+                    <div className="icm-card-title">{selectedUser.name}</div>
+                    <div className="icm-card-sub">{selectedUser.email}</div>
+                    <div className="icm-card-sub" style={{marginTop:4}}>Joined: {new Date(selectedUser.createdAt).toLocaleDateString()}</div>
+                  </div>
                 </div>
-              </div>
+              )}
             </Field>
 
             <Field label="Select Course / Program" req>
-              <select className="icm-inp" value={course} onChange={e=>setCourse(e.target.value)}>
-                <option value="Nursing Fundamentals - Complete Course">Nursing Fundamentals - Complete Course</option>
+              <select className="icm-inp" value={course} onChange={e=>setCourse(e.target.value)} disabled={loadingData}>
+                {courses.length > 0 ? courses.map((c, i) => (
+                  <option key={i} value={c.title}>{c.title}</option>
+                )) : <option value="General Prep">General Prep</option>}
               </select>
               <div className="icm-card">
                 <div className="icm-card-icon" style={{background:'#eff6ff'}}><Ic d={icons.book} stroke="#3b82f6" size={20}/></div>
                 <div>
                   <div className="icm-card-title">{course}</div>
-                  <div className="icm-card-sub">Total Duration: 20 Hours</div>
-                  <div className="icm-card-sub" style={{marginTop:4}}>Completed on: <span style={{color:'#10b981', fontWeight:600}}>20 May 2024</span></div>
+                  <div className="icm-card-sub">Selected Course</div>
                 </div>
               </div>
             </Field>
@@ -177,10 +252,12 @@ export default function IssueCertificateModal({ onClose }) {
 
         {/* Footer */}
         <div className="icm-footer">
-          <button className="icm-btn icm-btn-outline" onClick={onClose}>Cancel</button>
+          {error && <div style={{color:'red', fontSize:13, marginRight:'auto'}}>{error}</div>}
+          <button className="icm-btn icm-btn-outline" onClick={onClose} disabled={submitting}>Cancel</button>
           <div style={{display:'flex', gap:12}}>
-            <button className="icm-btn icm-btn-outline" onClick={onClose}>Save as Draft</button>
-            <button className="icm-btn icm-btn-primary" onClick={onClose}><Ic d={icons.certificate} size={16}/> Issue Certificate</button>
+            <button className="icm-btn icm-btn-primary" onClick={handleIssue} disabled={submitting || loadingData}>
+              {submitting ? 'Issuing...' : <><Ic d={icons.certificate} size={16}/> Issue Certificate</>}
+            </button>
           </div>
         </div>
 

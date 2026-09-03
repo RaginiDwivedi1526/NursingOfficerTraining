@@ -6,6 +6,7 @@ import {
   CheckCircle, FileText, Download, Phone, Calendar, User, Shield, 
   MapPin, AlertCircle, Laptop, Smartphone
 } from 'lucide-react';
+import EditStudentModal from './EditStudentModal';
 import './StudentProfile.css';
 
 const TABS = [
@@ -19,24 +20,26 @@ export default function StudentProfile() {
   const [activeTab, setActiveTab] = useState('Overview');
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const fetchStudent = async () => {
+    try {
+      const userStr = localStorage.getItem('nursingUser');
+      const token = userStr ? JSON.parse(userStr).token : null;
+      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+      const url = baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
+      // Fetch specific user
+      const { data } = await axios.get(`${url}/admin/users/${id}`, config);
+      setStudent(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchStudent = async () => {
-      try {
-        const userStr = localStorage.getItem('nursingUser');
-        const token = userStr ? JSON.parse(userStr).token : null;
-        const config = { headers: { Authorization: `Bearer ${token}` } };
-        const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
-        const url = baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
-        // Fetch specific user
-        const { data } = await axios.get(`${url}/admin/users/${id}`, config);
-        setStudent(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchStudent();
   }, [id]);
 
@@ -465,8 +468,8 @@ export default function StudentProfile() {
           <div className="sp-breadcrumbs">Students / <span>{student.name} ({enrId})</span></div>
         </div>
         <div className="sp-top-actions">
-          <button className="sp-btn-outline"><Mail size={16}/> Send Message</button>
-          <button className="sp-btn-outline"><Edit3 size={16}/> Edit Student</button>
+          <button className="sp-btn-outline" onClick={() => navigate('/admin/messages/new')}><Mail size={16}/> Send Message</button>
+          <button className="sp-btn-outline" onClick={() => setIsEditing(true)}><Edit3 size={16}/> Edit Student</button>
           <button className="sp-btn-icon-only"><MoreVertical size={16}/></button>
         </div>
       </div>
@@ -605,8 +608,18 @@ export default function StudentProfile() {
           </div>
 
         </div>
-
       </div>
+      
+      {isEditing && (
+        <EditStudentModal
+          student={student}
+          onClose={() => setIsEditing(false)}
+          onUpdated={() => {
+            setIsEditing(false);
+            fetchStudent();
+          }}
+        />
+      )}
     </div>
   );
 }

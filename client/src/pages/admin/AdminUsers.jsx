@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import axios from 'axios';
 import { Search, Download, Plus, Users, UserCheck, UserMinus, UserPlus, MoreVertical, Eye } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import AddStudentModal from './AddStudentModal';
 import './AdminUsers.css';
 
 /* Icons from lucide-react */
@@ -10,6 +12,7 @@ export default function AdminUsers() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('all');
+  const [showAddStudent, setShowAddStudent] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -69,7 +72,7 @@ export default function AdminUsers() {
             />
           </div>
           <button className="au-btn-icon"><Download size={18} /></button>
-          <button className="au-btn-primary"><Plus size={18} /> Add Student</button>
+          <button className="au-btn-primary" onClick={() => setShowAddStudent(true)}><Plus size={18} /> Add Student</button>
         </div>
       </div>
 
@@ -161,7 +164,7 @@ export default function AdminUsers() {
                         {u.profilePhoto ? <img src={u.profilePhoto} alt=""/> : (u.name?.[0] || 'U')}
                       </div>
                       <div>
-                        <div className="au-stu-name">{u.name}</div>
+                        <Link to={`/admin/student/${u._id}`} className="au-stu-name" style={{textDecoration:'none'}}>{u.name}</Link>
                         <div className="au-stu-email">{u.email}</div>
                       </div>
                     </div>
@@ -201,6 +204,15 @@ export default function AdminUsers() {
         </div>
 
       </div>
+
+      {/* Add Student Modal — rendered via portal to bypass overflow stacking context */}
+      {showAddStudent && createPortal(
+        <AddStudentModal
+          onClose={() => setShowAddStudent(false)}
+          onCreated={() => { setShowAddStudent(false); fetchUsers(); }}
+        />,
+        document.body
+      )}
     </div>
   );
 }

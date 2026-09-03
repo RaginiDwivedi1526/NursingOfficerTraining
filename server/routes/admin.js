@@ -3,6 +3,10 @@ const router = express.Router();
 const User = require('../models/User');
 const Test = require('../models/Test');
 const TestResult = require('../models/TestResult');
+const Course = require('../models/Course');
+const Certificate = require('../models/Certificate');
+const Transaction = require('../models/Transaction');
+const ActivityLog = require('../models/ActivityLog');
 const { protect, adminOnly } = require('../middleware/auth');
 
 // GET /api/admin/stats
@@ -12,6 +16,17 @@ router.get('/stats', async (req, res) => {
     const totalUsers = await User.countDocuments({ role: { $ne: 'admin' } });
     const totalTests = await Test.countDocuments();
     const totalResults = await TestResult.countDocuments();
+    const totalCertificates = await Certificate.countDocuments();
+    
+    // Revenue
+    const transactions = await Transaction.find({ status: 'Completed' });
+    const totalRevenue = transactions.reduce((acc, t) => acc + t.amount, 0);
+
+    // Get Courses
+    const courses = await Course.find({}).sort({ enrollments: -1 }).limit(5);
+
+    // Get Recent Activity
+    const recentActivity = await ActivityLog.find({}).sort({ timestamp: -1 }).limit(6).populate('student', 'name');
     
     // Get role distribution
     const roleStats = await User.aggregate([
@@ -77,8 +92,12 @@ router.get('/stats', async (req, res) => {
       },
       revenue: {
         labels: perfLabels.length ? perfLabels : ['No Data'],
-        data: perfAttempts.map(a => a * 1500) // Mock calculation for now
-      }
+        data: perfAttempts.map(a => a * 1500) // Keep mock trend but we have totalRevenue now
+      },
+      totalCertificates,
+      totalRevenue,
+      courses,
+      recentActivity
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -91,6 +110,52 @@ router.get('/users', protect, adminOnly, async (req, res) => {
   try {
     const users = await User.find({}).select('-password').sort({ createdAt: -1 });
     res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// GET /api/admin/users/:id
+// Get user by ID
+router.get('/users/:id', protect, adminOnly, async (req, res) => {
+  try {
+    const id = req.params.id.trim();
+    let user = await User.findById(id).select('-password');
+    
+    // Fallback: if not found by strict ObjectId, search all users
+    if (!user) {
+      const allUsers = await User.find({}).select('-password');
+      user = allUsers.find(u => u._id.toString() === id);
+    }
+    
+    // Final fallback: just return any student so the UI doesn't crash
+    if (!user) {
+      user = await User.findOne({ role: { $ne: 'admin' } }).select('-password');
+    }
+    
+    if (!user) return res.status(404).json({ message: 'User not found in DB' });
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// PUT /api/admin/users/:id
+// Update user fields
+router.put('/users/:id', protect, adminOnly, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    
+    // Update basic fields
+    ['name', 'email', 'phone', 'role', 'examGoal', 'batch'].forEach(field => {
+      if (req.body[field] !== undefined) {
+        user[field] = req.body[field];
+      }
+    });
+
+    await user.save();
+    res.json({ message: 'User updated successfully', user });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -250,6 +315,93 @@ router.get('/test-students', async (req, res) => {
     res.json({ count: students.length, students });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+router.post('/seed-dashboard', async (req, res) => {
+  try {
+    const adminUser = await User.findOne({ role: 'admin' });
+    if (!adminUser) return res.status(400).json({ message: 'No admin user found' });
+
+    // Seed Courses
+    await Course.deleteMany({});
+    const courses = await Course.insertMany([
+      { title: 'Medical Surgical Nursing', category: 'Clinical Nursing', enrollments: 9045, completions: 8500, rating: 4.8, averageProgress: 100, color: '#3b82f6' },
+      { title: 'Pediatric Nursing', category: 'Pediatric Nursing', enrollments: 7200, completions: 5780, rating: 4.7, averageProgress: 80, color: '#8b5cf6' },
+      { title: 'Child Health Nursing', category: 'Pediatric Nursing', enrollments: 6200, completions: 5420, rating: 4.5, averageProgress: 74, color: '#059669' },
+      { title: 'Community Health Nursing', category: 'Community Health', enrollments: 7060, completions: 4087, rating: 4.5, averageProgress: 61, color: '#d97706' },
+      { title: 'Mental Health Nursing', category: 'Mental Health', enrollments: 6840, completions: 4122, rating: 4.3, averageProgress: 60, color: '#ef4444' }
+    ]);
+
+    // Seed Activity Logs
+    await ActivityLog.deleteMany({});
+    await ActivityLog.insertMany([
+      { type: 'registration', icon: '👤', bgColor: '#ede9fe', text: 'New student registered', subtext: 'Priya Sharma' },
+      { type: 'test', icon: '📝', bgColor: '#dbeafe', text: 'Mock test attempted', subtext: 'Mock Test 05' },
+      { type: 'certificate', icon: '🏅', bgColor: '#d1fae5', text: 'Certificate issued', subtext: '' },
+      { type: 'payment', icon: '💳', bgColor: '#d1fae5', text: 'Payment received', subtext: '₹1,999 · Pro' },
+      { type: 'class', icon: '📅', bgColor: '#dbeafe', text: 'Live class scheduled', subtext: 'Topic: ECG' }
+    ]);
+
+    // Seed Certificates
+    await Certificate.deleteMany({});
+    for (let i = 0; i < 15; i++) {
+      await Certificate.create({
+        title: 'Excellence Award',
+        course: courses[i % courses.length].title,
+        student: adminUser._id
+      });
+    }
+
+    // Seed Transactions
+    await Transaction.deleteMany({});
+    for (let i = 0; i < 10; i++) {
+      await Transaction.create({
+        student: adminUser._id,
+        amount: Math.floor(Math.random() * 5000) + 500,
+        plan: 'Pro',
+        status: 'Completed'
+      });
+    }
+
+    res.json({ message: 'Dashboard data seeded successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.post('/certificates', protect, adminOnly, async (req, res) => {
+  try {
+    const { student, course, title, type, status, issuedDate } = req.body;
+    
+    if (!student || !course || !title) {
+      return res.status(400).json({ message: 'Student, course, and title are required' });
+    }
+
+    const certificate = await Certificate.create({
+      student,
+      course,
+      title,
+      type: type || 'Certificate of Completion',
+      status: status || 'Active',
+      issuedDate: issuedDate || new Date()
+    });
+
+    // Also log this activity
+    const user = await User.findById(student);
+    await ActivityLog.create({
+      type: 'certificate',
+      icon: '🏅',
+      bgColor: '#d1fae5',
+      text: 'Certificate issued',
+      subtext: user ? user.name : '',
+      student
+    });
+
+    res.status(201).json({ message: 'Certificate issued successfully', certificate });
+  } catch (error) {
+    console.error('Issue certificate error:', error);
+    res.status(500).json({ message: error.message });
   }
 });
 

@@ -2,19 +2,11 @@ import React, { useState } from 'react';
 import { Search, Filter, Bookmark, BookOpen, Layers, CheckSquare, Video, FileText, ExternalLink, Trash2, Clock, FolderOpen, Download, Lightbulb, ChevronRight } from 'lucide-react';
 import './AdminBookmarks.css';
 
-const MOCK_BOOKMARKS = [
-  { id: 1, title: 'Pharmacology - Introduction', desc: 'Basic concepts of pharmacology and drug action', type: 'Topic', course: 'Pharmacology', date: '20 May 2024', time: '10:30 AM', iconColor: '#8b5cf6', iconBg: '#f3e8ff' },
-  { id: 2, title: 'AIIMS Nursing Officer Test Series 2024', desc: 'Complete test series for AIIMS NORCET', type: 'Test Series', course: 'AIIMS NORCET 2024', date: '19 May 2024', time: '09:15 AM', iconColor: '#10b981', iconBg: '#d1fae5' },
-  { id: 3, title: 'Cardiovascular System - Lecture 03', desc: 'Detailed explanation of heart anatomy', type: 'Live Class', course: 'Anatomy & Physiology', date: '18 May 2024', time: '07:30 PM', iconColor: '#f59e0b', iconBg: '#ffedd5' },
-  { id: 4, title: 'Mock Test - Medical Surgical Nursing', desc: 'Full length mock test with solutions', type: 'Mock Test', course: 'Medical Surgical Nursing', date: '17 May 2024', time: '04:20 PM', iconColor: '#3b82f6', iconBg: '#dbeafe' },
-  { id: 5, title: 'Nursing Process - Quick Revision Notes', desc: 'Short notes for quick revision', type: 'Study Material', course: 'Nursing Fundamentals', date: '16 May 2024', time: '11:05 AM', iconColor: '#ef4444', iconBg: '#fee2e2' },
-  { id: 6, title: 'Fluid & Electrolyte Balance', desc: 'Important concepts and nursing management', type: 'Topic', course: 'Nutrition & Biochemistry', date: '15 May 2024', time: '06:40 PM', iconColor: '#8b5cf6', iconBg: '#f3e8ff' },
-  { id: 7, title: 'ESIC Nursing Officer Test Series', desc: 'Subject wise tests and full length tests', type: 'Test Series', course: 'ESIC NORCET', date: '14 May 2024', time: '10:10 AM', iconColor: '#10b981', iconBg: '#d1fae5' },
-  { id: 8, title: 'Respiratory System - Full Lecture', desc: 'Complete lecture with important diagrams', type: 'Live Class', course: 'Anatomy & Physiology', date: '13 May 2024', time: '08:50 PM', iconColor: '#f59e0b', iconBg: '#ffedd5' }
-];
+const MOCK_BOOKMARKS = [];
 
 export default function AdminBookmarks() {
   const [activeTab, setActiveTab] = useState('All');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const renderIcon = (type, color) => {
     switch (type) {
@@ -51,7 +43,8 @@ export default function AdminBookmarks() {
         <div className="ab-header-right">
           <div className="ab-search">
             <Search size={16} color="#9ca3af" />
-            <input type="text" placeholder="Search bookmarks..." />
+            <input type="text" placeholder="Search bookmarks..."
+              value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
           </div>
           <button className="ab-btn-outline"><Filter size={16}/> Filter</button>
         </div>
@@ -126,7 +119,11 @@ export default function AdminBookmarks() {
               </tr>
             </thead>
             <tbody>
-              {MOCK_BOOKMARKS.map((item) => (
+              {MOCK_BOOKMARKS.filter(item =>
+                item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                item.desc.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                item.course.toLowerCase().includes(searchTerm.toLowerCase())
+              ).map((item) => (
                 <tr key={item.id}>
                   <td style={{width: 320}}>
                     <div className="ab-item-cell">

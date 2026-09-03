@@ -3,22 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, RefreshCw, FileDown, FileText, Video, Image as ImageIcon, Headphones, Search, Filter, Download, MoreVertical, FolderOpen, Calendar, Clock, ArrowRight, Info, ChevronRight, Star } from 'lucide-react';
 import './AdminDownloads.css';
 
-const MOCK_FILES = [
-  { id: 1, name: 'Pharmacology - Important Notes.pdf', desc: 'Detailed notes for all important topics', type: 'PDF', course: 'Pharmacology', size: '2.45 MB', date: '20 May 2024', time: '10:30 AM', iconColor: '#ef4444', iconBg: '#fee2e2' },
-  { id: 2, name: 'Medical Surgical Nursing - Unit 1.pdf', desc: 'Fundamentals of Medical Surgical Nursing', type: 'PDF', course: 'Medical Surgical Nursing', size: '3.12 MB', date: '19 May 2024', time: '09:15 AM', iconColor: '#ef4444', iconBg: '#fee2e2' },
-  { id: 3, name: 'Nursing Process - Quick Revision.docx', desc: 'Quick revision notes', type: 'DOCX', course: 'Nursing Fundamentals', size: '1.05 MB', date: '18 May 2024', time: '08:45 PM', iconColor: '#10b981', iconBg: '#d1fae5' },
-  { id: 4, name: 'Cardiovascular System - Lecture 03.mp4', desc: 'Video lecture', type: 'MP4', course: 'Anatomy & Physiology', size: '156.4 MB', date: '18 May 2024', time: '07:30 PM', iconColor: '#8b5cf6', iconBg: '#f3e8ff' },
-  { id: 5, name: 'Heart Anatomy Diagram.png', desc: 'Diagram', type: 'PNG', course: 'Anatomy & Physiology', size: '1.23 MB', date: '17 May 2024', time: '04:20 PM', iconColor: '#3b82f6', iconBg: '#dbeafe' },
-  { id: 6, name: 'Respiratory Sounds - Lecture.mp3', desc: 'Audio lecture', type: 'MP3', course: 'Medical Surgical Nursing', size: '8.45 MB', date: '17 May 2024', time: '03:10 PM', iconColor: '#f59e0b', iconBg: '#ffedd5' },
-  { id: 7, name: 'Pharmacology MCQs.pdf', desc: '500+ Important MCQs', type: 'PDF', course: 'Pharmacology', size: '1.78 MB', date: '16 May 2024', time: '11:05 AM', iconColor: '#ef4444', iconBg: '#fee2e2' },
-  { id: 8, name: 'Fluid & Electrolyte Balance.xlsx', desc: 'Important formulas and charts', type: 'XLSX', course: 'Nutrition & Biochemistry', size: '0.95 MB', date: '15 May 2024', time: '06:40 PM', iconColor: '#10b981', iconBg: '#d1fae5' },
-  { id: 9, name: 'Intravenous Therapy - Demo.mp4', desc: 'Practical demonstration', type: 'MP4', course: 'Nursing Procedures', size: '98.6 MB', date: '15 May 2024', time: '05:15 PM', iconColor: '#8b5cf6', iconBg: '#f3e8ff' },
-  { id: 10, name: 'Community Health Nursing Notes.pdf', desc: 'Complete unit-wise notes', type: 'PDF', course: 'Community Health Nursing', size: '4.22 MB', date: '14 May 2024', time: '10:10 AM', iconColor: '#ef4444', iconBg: '#fee2e2' }
-];
+const MOCK_FILES = [];
 
 export default function AdminDownloads() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('All');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const renderFileIcon = (type, color) => {
     switch (type) {
@@ -127,7 +117,8 @@ export default function AdminDownloads() {
             <div className="ad-search-filter">
               <div className="ad-search">
                 <Search size={16} color="#9ca3af" />
-                <input type="text" placeholder="Search downloads..." />
+                <input type="text" placeholder="Search downloads..."
+                  value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
               </div>
               <button className="ad-btn-outline"><Filter size={16}/> Filter</button>
             </div>
@@ -145,7 +136,10 @@ export default function AdminDownloads() {
               </tr>
             </thead>
             <tbody>
-              {MOCK_FILES.map((file) => (
+              {MOCK_FILES.filter(file =>
+                file.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                file.course.toLowerCase().includes(searchTerm.toLowerCase())
+              ).map((file) => (
                 <tr key={file.id}>
                   <td style={{width: 320}}>
                     <div className="ad-file-cell">

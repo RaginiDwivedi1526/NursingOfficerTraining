@@ -3,15 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Filter, Plus, Award, CheckCircle, Clock, Copy, MoreVertical, Edit3, Image as ImageIcon } from 'lucide-react';
 import './AdminCertificates.css';
 
-const MOCK_CERTS = [
-  { id: 1, title: 'Certificate of Completion', course: 'Pharmacology Masterclass', type: 'Course Completion', issued: 1245, status: 'Active', template: 'Classic', icon: 'Award', color: '#4f46e5', bg: '#e0e7ff' },
-  { id: 2, title: 'Excellence Award', course: 'NORCET Mock Test Series', type: 'Achievement', issued: 85, status: 'Active', template: 'Modern', icon: 'Award', color: '#10b981', bg: '#d1fae5' },
-  { id: 3, title: 'Participation Certificate', course: 'Pediatric Nursing Webinar', type: 'Event Participation', issued: 520, status: 'Draft', template: 'Minimal', icon: 'Award', color: '#f59e0b', bg: '#fef3c7' }
-];
+const MOCK_CERTS = [];
 
 export default function AdminCertificates() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('All');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -81,7 +78,8 @@ export default function AdminCertificates() {
           </div>
           <div className="acf-search">
             <Search size={16} color="#9ca3af" />
-            <input type="text" placeholder="Search certificates..." />
+            <input type="text" placeholder="Search certificates..."
+              value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
           </div>
         </div>
 
@@ -97,7 +95,10 @@ export default function AdminCertificates() {
             </tr>
           </thead>
           <tbody>
-            {MOCK_CERTS.map((cert) => (
+            {MOCK_CERTS.filter(cert =>
+              cert.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              cert.course.toLowerCase().includes(searchTerm.toLowerCase())
+            ).map((cert) => (
               <tr key={cert.id}>
                 <td style={{width: 320}}>
                   <div className="acf-cert-cell">

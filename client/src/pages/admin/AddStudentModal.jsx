@@ -116,6 +116,50 @@ const I = {
   circle:  <><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></>,
 };
 
+/* ─── Reusable field components (defined OUTSIDE component to avoid remount on each render) ─── */
+const Field = ({ label, req, error, children }) => (
+  <div className="asm-field">
+    <label className="asm-label">{label}{req && <span className="req"> *</span>}</label>
+    {children}
+    {error && <span className="asm-error-text">{error}</span>}
+  </div>
+);
+const Input = ({ id, icon, error, ...props }) => (
+  <div className="asm-input-wrap">
+    {icon && <span className="asm-input-icon"><SVG d={icon}/></span>}
+    <input id={id} className={`asm-input${!icon?' no-icon':''}${error?' error':''}`} {...props}/>
+  </div>
+);
+const Select = ({ id, icon, error, children, ...props }) => (
+  <div className="asm-input-wrap">
+    {icon && <span className="asm-input-icon"><SVG d={icon}/></span>}
+    <select id={id} className={`asm-select${!icon?' no-icon':''}${error?' error':''}`} {...props}>{children}</select>
+    <span className="asm-select-arrow"><SVG d={I.chevron}/></span>
+  </div>
+);
+const RItem = ({ label, value }) => (
+  <div className="asm-review-row">
+    <span className="asm-review-key">{label}</span>
+    <span className="asm-review-val">{value || '—'}</span>
+  </div>
+);
+const ReviewSection = ({ icon, num, title, onEdit, children }) => (
+  <div className="asm-rv-section">
+    <div className="asm-rv-section-head">
+      <div className="asm-rv-section-left">
+        <span className="asm-rv-icon">{icon}</span>
+        <span className="asm-rv-num">{num}.</span>
+        <span className="asm-rv-title">{title}</span>
+        <span className="asm-badge-complete">Complete</span>
+      </div>
+      <button className="asm-rv-edit-btn" onClick={onEdit}>
+        <SVG d={I.edit} size={13}/> Edit
+      </button>
+    </div>
+    <div className="asm-rv-body">{children}</div>
+  </div>
+);
+
 /* ════════════════════════════════════════════════════
    COMPONENT
    ════════════════════════════════════════════════════ */
@@ -191,69 +235,31 @@ export default function AddStudentModal({ onClose, onCreated }) {
     if (Object.keys(e).length) { setErrors(e); return; }
     setApiError(''); setLoading(true);
     try {
+      // Strip huge base64 photo from JSON payload (use a dedicated file upload endpoint for photos)
+      const photoToSend = form.profilePhoto && form.profilePhoto.startsWith('data:') ? '' : form.profilePhoto;
+
       await axios.post(`${apiBase()}/admin/students`, {
         firstName: form.firstName, lastName: form.lastName,
         email: form.email, phone: form.phone,
-        dob: form.dob, gender: form.gender.toLowerCase(),
-        category: form.category, address: form.address, profilePhoto: form.profilePhoto,
+        dob: form.dob, gender: form.gender ? form.gender.toLowerCase() : '',
+        category: form.category, address: form.address,
+        profilePhoto: photoToSend,
         emergencyContact: { name: form.ecName, relationship: form.ecRelationship, phone: form.ecPhone },
         qualification: form.qualification, college: form.college,
         passingYear: form.passingYear, registrationNo: form.rollNumber,
         examGoal: form.stream,
+        batch: form.batch,
         enrolledCourses: form.course ? [COURSE_OPTIONS.find(c=>c.value===form.course)?.label ?? form.course] : [],
         password: form.password, role: form.role,
       }, { headers: { Authorization: `Bearer ${getToken()}` } });
       setSuccess(true); onCreated?.();
     } catch (err) {
-      setApiError(err.response?.data?.message || 'Something went wrong.');
+      console.error('Add student error:', err.response?.data || err.message);
+      const msg = err.response?.data?.message || err.message || 'Something went wrong. Please try again.';
+      setApiError(msg);
     } finally { setLoading(false); }
   };
 
-  /* ── Reusable field components ── */
-  const Field = ({ label, req, error, children }) => (
-    <div className="asm-field">
-      <label className="asm-label">{label}{req && <span className="req"> *</span>}</label>
-      {children}
-      {error && <span className="asm-error-text">{error}</span>}
-    </div>
-  );
-  const Input = ({ id, icon, error, ...props }) => (
-    <div className="asm-input-wrap">
-      {icon && <span className="asm-input-icon"><SVG d={icon}/></span>}
-      <input id={id} className={`asm-input${!icon?' no-icon':''}${error?' error':''}`} {...props}/>
-    </div>
-  );
-  const Select = ({ id, icon, error, children, ...props }) => (
-    <div className="asm-input-wrap">
-      {icon && <span className="asm-input-icon"><SVG d={icon}/></span>}
-      <select id={id} className={`asm-select${!icon?' no-icon':''}${error?' error':''}`} {...props}>{children}</select>
-      <span className="asm-select-arrow"><SVG d={I.chevron}/></span>
-    </div>
-  );
-
-  /* ── Review row helper ── */
-  const RItem = ({ label, value }) => (
-    <div className="asm-review-row">
-      <span className="asm-review-key">{label}</span>
-      <span className="asm-review-val">{value || '—'}</span>
-    </div>
-  );
-  const ReviewSection = ({ icon, num, title, onEdit, children }) => (
-    <div className="asm-rv-section">
-      <div className="asm-rv-section-head">
-        <div className="asm-rv-section-left">
-          <span className="asm-rv-icon">{icon}</span>
-          <span className="asm-rv-num">{num}.</span>
-          <span className="asm-rv-title">{title}</span>
-          <span className="asm-badge-complete">Complete</span>
-        </div>
-        <button className="asm-rv-edit-btn" onClick={onEdit}>
-          <SVG d={I.edit} size={13}/> Edit
-        </button>
-      </div>
-      <div className="asm-rv-body">{children}</div>
-    </div>
-  );
 
   /* ── Course label helper ── */
   const courseLabel = COURSE_OPTIONS.find(c => c.value === form.course)?.label ?? form.course;

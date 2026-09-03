@@ -3,15 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Filter, Plus, FileText, CheckCircle, Clock, XCircle, MoreVertical, Edit3, Settings } from 'lucide-react';
 import './AdminTestSeries.css';
 
-const MOCK_SERIES = [
-  { id: 1, name: 'NORCET 2025 Test Series', desc: 'Complete mock tests for AIIMS NORCET 2025.', cat: 'NORCET', tests: 25, duration: '90 mins', status: 'Active', statSub: 'Live', students: 1245, icon: 'FileText', color: '#4f46e5', bg: '#e0e7ff' },
-  { id: 2, name: 'RRB Staff Nurse Test Series', desc: 'Section-wise tests and full length mocks for RRB.', cat: 'RRB', tests: 15, duration: '120 mins', status: 'Active', statSub: 'Live', students: 986, icon: 'CheckCircle', color: '#10b981', bg: '#d1fae5' },
-  { id: 3, name: 'AIIMS Nursing Officer Mocks', desc: 'High yield questions for AIIMS Nursing Officer exam.', cat: 'AIIMS', tests: 30, duration: '180 mins', status: 'Draft', statSub: 'Not Published', students: 0, icon: 'Clock', color: '#f59e0b', bg: '#fef3c7' }
-];
+const MOCK_SERIES = [];
 
 export default function AdminTestSeries() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('All');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -87,7 +84,8 @@ export default function AdminTestSeries() {
           </div>
           <div className="ats-search">
             <Search size={16} color="#9ca3af" />
-            <input type="text" placeholder="Search test series..." />
+            <input type="text" placeholder="Search test series..."
+              value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
           </div>
         </div>
 
@@ -104,7 +102,10 @@ export default function AdminTestSeries() {
             </tr>
           </thead>
           <tbody>
-            {MOCK_SERIES.map((ts) => (
+            {MOCK_SERIES.filter(ts =>
+              ts.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              ts.cat.toLowerCase().includes(searchTerm.toLowerCase())
+            ).map((ts) => (
               <tr key={ts.id}>
                 <td style={{width: 320}}>
                   <div className="ats-series-cell">

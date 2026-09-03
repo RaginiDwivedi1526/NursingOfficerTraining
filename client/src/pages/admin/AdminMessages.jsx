@@ -3,20 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { MessageSquare, Plus, Download, Search, Filter, MoreVertical, Users, CheckCircle, User, FileText, Send, Smile, Paperclip, Bell, Trash2 } from 'lucide-react';
 import './AdminMessages.css';
 
-const MOCK_CHATS = [
-  { id: 1, name: 'Anjali Sharma', role: 'Student • B.Sc. Nursing 2nd Year', msg: 'Sir, I have a doubt in the Pharmacology chapter.', time: '10:30 AM', unread: 2, isOnline: true },
-  { id: 2, name: 'Rohit Kumar', role: 'Student', msg: 'Please share the assignment details for Medical-Surgical...', time: '09:15 AM', unread: 1, isOnline: false },
-  { id: 3, name: 'Priya Verma', role: 'Student', msg: 'Thank you sir! The test series is really helpful.', time: 'Yesterday', unread: 0, isOnline: false },
-  { id: 4, name: 'Faculty Group', role: 'Group', msg: 'Dr. Meena: Please review the new test questions.', time: 'Yesterday', unread: 3, isGroup: true },
-  { id: 5, name: 'System Updates', role: 'System', msg: 'Scheduled maintenance on 25 May from 01:00 AM to 03:00 AM.', time: '23 May', unread: 0, isSystem: true },
-  { id: 6, name: 'Arjun Singh', role: 'Student', msg: 'When will the next live class be scheduled?', time: '22 May', unread: 0, isOnline: false },
-  { id: 7, name: 'Neha Patel', role: 'Student', msg: 'Can you share the notes for yesterday\'s class?', time: '20 May', unread: 0, isOnline: false }
-];
+const MOCK_CHATS = [];
 
 export default function AdminMessages() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('All');
   const [activeChatId, setActiveChatId] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const activeChat = MOCK_CHATS.find(c => c.id === activeChatId);
 
@@ -94,13 +87,17 @@ export default function AdminMessages() {
           <div className="am-cl-toolbar">
             <div className="am-search-box">
               <Search size={16} color="#9ca3af"/>
-              <input type="text" placeholder="Search messages..."/>
+              <input type="text" placeholder="Search messages..."
+                value={searchTerm} onChange={e => setSearchTerm(e.target.value)}/>
             </div>
             <div className="am-filter-btn"><Filter size={14}/> Filters</div>
           </div>
 
           <div className="am-cl-items">
-            {MOCK_CHATS.map(chat => (
+            {MOCK_CHATS.filter(chat =>
+              chat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              chat.msg.toLowerCase().includes(searchTerm.toLowerCase())
+            ).map(chat => (
               <div key={chat.id} className={`am-cl-item ${activeChatId===chat.id?'active':''}`} onClick={()=>setActiveChatId(chat.id)}>
                 {chat.isGroup ? (
                   <div className="am-cl-avatar" style={{background:'#f3e8ff', color:'#8b5cf6'}}><Users size={20}/></div>

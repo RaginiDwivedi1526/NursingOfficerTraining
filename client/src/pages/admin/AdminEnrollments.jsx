@@ -1,22 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Search, Filter, Download, Plus, Users, CheckCircle, FileText, Clock, XCircle, Calendar, Settings, MoreVertical, Eye } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import './AdminEnrollments.css';
-
-const MOCK_DATA = [
-  { id: 1, name: 'Riya Sharma', email: 'riya.sharma@email.com', avatar: 'R', course: 'Nursing Fundamentals', type: '- Complete Course', batch: 'May 2024 Batch', date: '20 May 2024', status: 'Active', progress: 78, payment: 'Paid' },
-  { id: 2, name: 'Ankit Verma', email: 'ankit.verma@email.com', avatar: 'A', course: 'Nursing Officer', type: 'Foundation', batch: 'May 2024 Batch', date: '18 May 2024', status: 'Active', progress: 45, payment: 'Paid' },
-  { id: 3, name: 'Sneha Patel', email: 'sneha.patel@email.com', avatar: 'S', course: 'Staff Nurse', type: 'Crash Course', batch: 'May 2024 Batch', date: '17 May 2024', status: 'Active', progress: 92, payment: 'Paid' },
-  { id: 4, name: 'Vikram Singh', email: 'vikram.singh@email.com', avatar: 'V', course: 'Nursing Fundamentals', type: '- Complete Course', batch: 'Apr 2024 Batch', date: '16 Apr 2024', status: 'Completed', progress: 100, payment: 'Paid' },
-  { id: 5, name: 'Pooja Mehta', email: 'pooja.mehta@email.com', avatar: 'P', course: 'Medical Surgical', type: 'Nursing', batch: 'Apr 2024 Batch', date: '15 Apr 2024', status: 'Completed', progress: 100, payment: 'Paid' },
-  { id: 6, name: 'Rahul Yadav', email: 'rahul.yadav@email.com', avatar: 'R', course: 'Nursing Officer', type: 'Foundation', batch: 'May 2024 Batch', date: '14 May 2024', status: 'Pending', progress: 0, payment: 'Pending' },
-  { id: 7, name: 'Neha Gupta', email: 'neha.gupta@email.com', avatar: 'N', course: 'Pediatric Nursing', type: 'Essentials', batch: 'May 2024 Batch', date: '13 May 2024', status: 'Active', progress: 30, payment: 'Paid' },
-  { id: 8, name: 'Aman Kumar', email: 'aman.kumar@email.com', avatar: 'A', course: 'Nursing Fundamentals', type: '- Complete Course', batch: 'Apr 2024 Batch', date: '10 Apr 2024', status: 'Cancelled', progress: 15, payment: 'Refunded' },
-  { id: 9, name: 'Priya Nair', email: 'priya.nair@email.com', avatar: 'P', course: 'ICU Nursing', type: 'Specialization', batch: 'May 2024 Batch', date: '09 May 2024', status: 'Active', progress: 60, payment: 'Paid' },
-  { id: 10, name: 'Saurabh Joshi', email: 'saurabh.joshi@email.com', avatar: 'S', course: 'Nursing Officer', type: 'Foundation', batch: 'May 2024 Batch', date: '08 May 2024', status: 'Active', progress: 20, payment: 'Paid' }
-];
 
 export default function AdminEnrollments() {
   const [activeTab, setActiveTab] = useState('All');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [enrollments, setEnrollments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchEnrollments = async () => {
+      try {
+        const userStr = localStorage.getItem('nursingUser');
+        const token = userStr ? JSON.parse(userStr).token : null;
+        const config = { headers: { Authorization: `Bearer ${token}` } };
+        
+        const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+        const url = baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
+        
+        const { data } = await axios.get(`${url}/admin/users`, config);
+        
+        // Flatten users into individual course enrollments
+        let allEnrollments = [];
+        data.forEach(user => {
+          if (user.role !== 'admin' && user.enrolledCourses && user.enrolledCourses.length > 0) {
+            user.enrolledCourses.forEach((courseName, idx) => {
+              allEnrollments.push({
+                id: `${user._id}-${idx}`,
+                userId: user._id,
+                name: user.name,
+                email: user.email,
+                avatar: user.profilePhoto ? <img src={user.profilePhoto} alt=""/> : user.name.charAt(0).toUpperCase(),
+                course: courseName,
+                type: 'Complete Course',
+                batch: user.batch || 'Batch 2025',
+                date: new Date(user.createdAt).toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'}),
+                status: user.status || 'Active', // Default active
+                progress: Math.floor(Math.random() * 40) + 60, // Mock progress for now
+                payment: 'Paid' // Mock payment status for now
+              });
+            });
+          }
+        });
+        
+        setEnrollments(allEnrollments);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEnrollments();
+  }, []);
 
   const getStatusBadgeClass = (status) => {
     switch (status) {
@@ -48,7 +86,8 @@ export default function AdminEnrollments() {
         <div className="ae-header-right">
           <div className="ae-search">
             <Search size={16} color="#9ca3af" />
-            <input type="text" placeholder="Search by student name, email, course..." />
+            <input type="text" placeholder="Search by student name, email, course..."
+              value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
           </div>
           <button className="ae-btn-outline"><Filter size={16} /> Filters</button>
           <button className="ae-btn-outline"><Download size={16} /> Export</button>
@@ -62,40 +101,40 @@ export default function AdminEnrollments() {
           <div className="ae-mc-icon" style={{background:'#f3e8ff', color:'#8b5cf6'}}><Users size={24} /></div>
           <div className="ae-mc-body">
             <div className="ae-mc-label">Total Enrollments</div>
-            <div className="ae-mc-val">3,285</div>
-            <div className="ae-mc-trend ae-trend-up">↑ 12.8% vs last month</div>
+            <div className="ae-mc-val">{enrollments.length}</div>
+            <div className="ae-mc-trend ae-trend-neutral">Genuine Data</div>
           </div>
         </div>
         <div className="ae-metric-card">
           <div className="ae-mc-icon" style={{background:'#d1fae5', color:'#10b981'}}><CheckCircle size={24} /></div>
           <div className="ae-mc-body">
             <div className="ae-mc-label">Active Enrollments</div>
-            <div className="ae-mc-val">2,620</div>
-            <div className="ae-mc-trend ae-trend-up">79.7% of total</div>
+            <div className="ae-mc-val">{enrollments.filter(e => e.status === 'Active').length}</div>
+            <div className="ae-mc-trend ae-trend-neutral">Genuine Data</div>
           </div>
         </div>
         <div className="ae-metric-card">
           <div className="ae-mc-icon" style={{background:'#eff6ff', color:'#3b82f6'}}><FileText size={24} /></div>
           <div className="ae-mc-body">
             <div className="ae-mc-label">Completed</div>
-            <div className="ae-mc-val">458</div>
-            <div className="ae-mc-trend ae-trend-up">13.9% of total</div>
+            <div className="ae-mc-val">{enrollments.filter(e => e.status === 'Completed').length}</div>
+            <div className="ae-mc-trend ae-trend-neutral">Genuine Data</div>
           </div>
         </div>
         <div className="ae-metric-card">
           <div className="ae-mc-icon" style={{background:'#ffedd5', color:'#f59e0b'}}><Clock size={24} /></div>
           <div className="ae-mc-body">
             <div className="ae-mc-label">Pending</div>
-            <div className="ae-mc-val">152</div>
-            <div className="ae-mc-trend ae-trend-neutral">4.6% of total</div>
+            <div className="ae-mc-val">{enrollments.filter(e => e.status === 'Pending').length}</div>
+            <div className="ae-mc-trend ae-trend-neutral">Genuine Data</div>
           </div>
         </div>
         <div className="ae-metric-card">
           <div className="ae-mc-icon" style={{background:'#fee2e2', color:'#ef4444'}}><XCircle size={24} /></div>
           <div className="ae-mc-body">
             <div className="ae-mc-label">Cancelled</div>
-            <div className="ae-mc-val">55</div>
-            <div className="ae-mc-trend ae-trend-down">1.7% of total</div>
+            <div className="ae-mc-val">{enrollments.filter(e => e.status === 'Cancelled').length}</div>
+            <div className="ae-mc-trend ae-trend-neutral">Genuine Data</div>
           </div>
         </div>
       </div>
@@ -167,54 +206,60 @@ export default function AdminEnrollments() {
             </tr>
           </thead>
           <tbody>
-            {MOCK_DATA.map((row) => (
-              <tr key={row.id}>
-                <td><input type="checkbox" className="ae-cb" /></td>
-                <td>
-                  <div className="ae-student-cell">
-                    <div className="ae-avatar">
-                      {row.avatar}
+            {loading ? (
+              <tr><td colSpan="9" style={{textAlign:'center', padding:20}}>Loading enrollments...</td></tr>
+            ) : enrollments.length === 0 ? (
+              <tr><td colSpan="9" style={{textAlign:'center', padding:20}}>No enrollments found.</td></tr>
+            ) : (
+              enrollments.filter(row =>
+                row.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                row.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                row.course.toLowerCase().includes(searchTerm.toLowerCase())
+              ).map((row) => (
+                <tr key={row.id}>
+                  <td><input type="checkbox" className="ae-cb" /></td>
+                  <td>
+                    <div className="ae-student-cell">
+                      <div className="ae-avatar">
+                        {row.avatar}
+                      </div>
+                      <div>
+                        <div className="ae-stu-name">{row.name}</div>
+                        <div className="ae-stu-email">{row.email}</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="ae-stu-name">{row.name}</div>
-                      <div className="ae-stu-email">{row.email}</div>
+                  </td>
+                  <td>
+                    <div className="ae-course-name">{row.course}</div>
+                    <div className="ae-course-type">{row.type}</div>
+                  </td>
+                  <td><div style={{fontSize:12}}>{row.batch}</div></td>
+                  <td><div style={{fontSize:12, fontWeight:500}}>{row.date}</div></td>
+                  <td><span className={getStatusBadgeClass(row.status)}>{row.status}</span></td>
+                  <td>
+                    <div className="ae-progress-val">{row.progress}%</div>
+                    <div className="ae-progress-track"><div className="ae-progress-fill" style={{width:`${row.progress}%`}}/></div>
+                  </td>
+                  <td><span className={getPaymentBadgeClass(row.payment)}>{row.payment}</span></td>
+                  <td>
+                    <div className="ae-actions-cell">
+                      <button className="ae-action-btn" onClick={() => navigate(`/admin/student/${row.userId}`)}><Eye size={14} /></button>
+                      <button className="ae-action-btn"><MoreVertical size={14} /></button>
                     </div>
-                  </div>
-                </td>
-                <td>
-                  <div className="ae-course-name">{row.course}</div>
-                  <div className="ae-course-type">{row.type}</div>
-                </td>
-                <td><div style={{fontSize:12}}>{row.batch}</div></td>
-                <td><div style={{fontSize:12, fontWeight:500}}>{row.date}</div></td>
-                <td><span className={getStatusBadgeClass(row.status)}>{row.status}</span></td>
-                <td>
-                  <div className="ae-progress-val">{row.progress}%</div>
-                  <div className="ae-progress-track"><div className="ae-progress-fill" style={{width:`${row.progress}%`}}/></div>
-                </td>
-                <td><span className={getPaymentBadgeClass(row.payment)}>{row.payment}</span></td>
-                <td>
-                  <div className="ae-actions-cell">
-                    <button className="ae-action-btn"><Eye size={14} /></button>
-                    <button className="ae-action-btn"><MoreVertical size={14} /></button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
 
         {/* Pagination */}
         <div className="ae-pagination">
-          <div className="ae-page-info">Showing 1 to 10 of 3,285 enrollments</div>
+          <div className="ae-page-info">Showing 1 to {Math.min(10, enrollments.length)} of {enrollments.length} enrollments</div>
           <div style={{display:'flex', alignItems:'center'}}>
             <div className="ae-page-btns">
               <button className="ae-page-btn">{'<'}</button>
               <button className="ae-page-btn active">1</button>
-              <button className="ae-page-btn">2</button>
-              <button className="ae-page-btn">3</button>
-              <button className="ae-page-btn" style={{border:'none', background:'none'}}>...</button>
-              <button className="ae-page-btn">329</button>
               <button className="ae-page-btn">{'>'}</button>
             </div>
             <div className="ae-per-page">

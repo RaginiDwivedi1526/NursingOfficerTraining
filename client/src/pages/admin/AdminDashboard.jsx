@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import {
@@ -30,39 +31,7 @@ const avatarColor = (i) => AVATAR_COLORS[i % AVATAR_COLORS.length];
 const today = new Date();
 const dateStr = today.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
 
-/* ─── Mock / static data ─── */
-const TOP_STUDENTS = [
-  { name:'Priya Sharma',   exam:'NORCET 2025', avg:91, tests:40, prog:88, pass:'95%' },
-  { name:'Anjali Verma',   exam:'AIIMS NORCET',avg:89, tests:42, prog:85, pass:'90%' },
-  { name:'Neha Kumari',    exam:'NORCET 2025', avg:87, tests:45, prog:82, pass:'85%' },
-  { name:'Rohit Yadav',    exam:'SSC Nursing', avg:85, tests:38, prog:78, pass:'82%' },
-  { name:'Anjali Patel',   exam:'AIIMS/NORCET',avg:80, tests:37, prog:75, pass:'80%' },
-];
 
-const RECENT_ACTIVITY = [
-  { icon:'👤', bg:'#ede9fe', text:'New student registered', sub:'Priya Sharma', time:'3 min ago' },
-  { icon:'📝', bg:'#dbeafe', text:'Mock test attempted',    sub:'Mock Test 05', time:'6 min ago' },
-  { icon:'🏅', bg:'#d1fae5', text:'Certificate issued',     sub:'',             time:'18 min ago' },
-  { icon:'⭐', bg:'#fef3c7', text:'New review received',    sub:'4 Stars',      time:'21 min ago' },
-  { icon:'💳', bg:'#d1fae5', text:'Payment received',       sub:'₹1,999 · Pro', time:'35 min ago' },
-  { icon:'📅', bg:'#dbeafe', text:'Live class scheduled',   sub:'Topic: ECG',   time:'1 hr ago'   },
-];
-
-const RECENT_ENROLLMENTS = [
-  { name:'Sunita Singh',   course:'NORCET 2025',       date:'30 May 2026',  status:'Active'  },
-  { name:'Sandeep Yadav',  course:'AIIMS NORCET',      date:'30 May 2026',  status:'Active'  },
-  { name:'Meera Joshi',    course:'SSC Nursing Officer',date:'29 May 2026',  status:'Pending' },
-  { name:'Vikram Raj',     course:'MRB Nursing Officer',date:'29 May 2026',  status:'Active'  },
-  { name:'Pooja Mehta',    course:'NORCET 2025',        date:'29 May 2026',  status:'Active'  },
-];
-
-const COURSES = [
-  { name:'Medical Surgical Nursing',  enroll:9045, comp:9045, prog:100, rating:4.8 },
-  { name:'Pediatric Nursing',         enroll:7200, comp:5780, prog:80,  rating:4.7 },
-  { name:'Child Health Nursing',      enroll:6200, comp:5420, prog:74,  rating:4.5 },
-  { name:'Community Health Nursing',  enroll:7060, comp:4087, prog:61,  rating:4.5 },
-  { name:'Mental Health Nursing',     enroll:6840, comp:4122, prog:60,  rating:4.3 },
-];
 
 const EXAM_GOALS = [
   { label:'NORCET',            num:12542, pct:49, color:'#4f46e5' },
@@ -170,6 +139,11 @@ function AdminDashboard() {
   const handleStudentCreated = async () => {
     fetchStats();
   };
+
+  const topStudents = stats?.recentStudents || [];
+  const recentActivity = stats?.recentActivity || [];
+  const courses = stats?.courses || [];
+  const recentEnrollments = stats?.recentStudents || []; // Using recent students as enrollments for now
 
   const totalUsers = stats?.totalUsers ?? 0;
   const totalTests = stats?.totalTests ?? 0;
@@ -284,6 +258,7 @@ function AdminDashboard() {
   );
 
   return (
+    <>
     <div className="ap-dashboard-content">
 
         {/* Date bar */}
@@ -298,11 +273,11 @@ function AdminDashboard() {
         <div className="ap-stats-grid">
           {[
             { icon:'👥', bg:'#ede9fe', num:fmt(totalUsers),   label:'Total Students',       delta:'+10.5%', sub:'in last 7 days', dir:'up' },
-            { icon:'🟢', bg:'#d1fae5', num:'18,692',          label:'Active Students',      delta:'+8.2%',  sub:'in last 7 days', dir:'up' },
-            { icon:'🆕', bg:'#dbeafe', num:fmt(totalUsers>1000?2543:totalUsers), label:'New Registrations', delta:'+12.1%',sub:'in last 7 days', dir:'up' },
+            { icon:'🟢', bg:'#d1fae5', num:fmt(stats?.performance?.active?.reduce((a,b)=>a+b, 0) || totalUsers), label:'Active Students', delta:'+8.2%',  sub:'in last 7 days', dir:'up' },
+            { icon:'🆕', bg:'#dbeafe', num:fmt(stats?.recentStudents?.length || 0), label:'New Registrations', delta:'+12.1%',sub:'in last 7 days', dir:'up' },
             { icon:'📝', bg:'#fef3c7', num:fmt(totalResults), label:'Tests Attempted',      delta:'+9.8%',  sub:'in last 7 days', dir:'up' },
-            { icon:'🏅', bg:'#d1fae5', num:'3,278',           label:'Certificates Issued',  delta:'+4.3%',  sub:'in last month',  dir:'up' },
-            { icon:'💰', bg:'#ede9fe', num:'₹2,48,650',       label:'Revenue This Month',   delta:'+15.9%', sub:'vs last month',  dir:'up' },
+            { icon:'🏅', bg:'#d1fae5', num:fmt(stats?.totalCertificates || 0), label:'Certificates Issued',  delta:'+4.3%',  sub:'in last month',  dir:'up' },
+            { icon:'💰', bg:'#ede9fe', num:`₹${(stats?.totalRevenue || 0).toLocaleString('en-IN')}`, label:'Revenue This Month',   delta:'+15.9%', sub:'vs last month',  dir:'up' },
           ].map((s,i) => (
             <div className="ap-stat-card" key={i}>
               <div className="ap-stat-icon" style={{ background:s.bg }}>{s.icon}</div>
@@ -381,7 +356,7 @@ function AdminDashboard() {
                         <div className="ap-tbl-avatar" style={{ background:avatarColor(i) }}>
                           {s.name.charAt(0)}
                         </div>
-                        <span className="ap-tbl-name">{s.name}</span>
+                        <Link to={`/admin/student/${s._id}`} className="ap-tbl-name" style={{textDecoration:'none', color:'inherit'}}>{s.name}</Link>
                       </div>
                     </td>
                     <td style={{ color:'#6b7280', fontSize:11.5 }}>{s.examGoal || s.exam || 'Nursing Officer'}</td>
@@ -552,7 +527,7 @@ function AdminDashboard() {
               <span className="ap-view-all">View Details</span>
             </div>
             <div style={{ marginBottom:10 }}>
-              <div style={{ fontSize:22, fontWeight:800, color:'#1a1d23' }}>₹2,48,650</div>
+              <div style={{ fontSize:22, fontWeight:800, color:'#1a1d23' }}>₹{(stats?.totalRevenue || 0).toLocaleString('en-IN')}</div>
               <div style={{ fontSize:11, color:'#10b981', fontWeight:600 }}>▲ 15.9% vs last month</div>
             </div>
             <div style={{ height:140 }}>
@@ -573,20 +548,22 @@ function AdminDashboard() {
                 <tr><th>Topic / Course</th><th>Enrollments</th><th>Completions</th><th>Avg. Progress</th><th>Rating</th></tr>
               </thead>
               <tbody>
-                {COURSES.map((c,i) => (
+                {courses.length === 0 ? (
+                  <tr><td colSpan="5" style={{textAlign:'center', color:'#9ca3af', padding:'20px'}}>No courses available</td></tr>
+                ) : courses.map((c,i) => (
                   <tr key={i}>
                     <td>
                       <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                        <div style={{ width:7, height:7, borderRadius:'50%', background:EXAM_GOALS[i]?.color ?? '#4f46e5' }} />
-                        <span style={{ fontWeight:600, fontSize:12 }}>{c.name}</span>
+                        <div style={{ width:7, height:7, borderRadius:'50%', background:c.color || '#4f46e5' }} />
+                        <span style={{ fontWeight:600, fontSize:12 }}>{c.title}</span>
                       </div>
                     </td>
-                    <td style={{ fontWeight:600 }}>{c.enroll.toLocaleString('en-IN')}</td>
-                    <td style={{ fontWeight:600 }}>{c.comp.toLocaleString('en-IN')}</td>
+                    <td style={{ fontWeight:600 }}>{c.enrollments.toLocaleString('en-IN')}</td>
+                    <td style={{ fontWeight:600 }}>{c.completions.toLocaleString('en-IN')}</td>
                     <td>
                       <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-                        <div className="ap-progress-bar-bg"><div className="ap-progress-bar-fill green" style={{ width:`${c.prog}%` }} /></div>
-                        <span style={{ fontSize:11, color:'#6b7280' }}>{c.prog}%</span>
+                        <div className="ap-progress-bar-bg"><div className="ap-progress-bar-fill green" style={{ width:`${c.averageProgress}%` }} /></div>
+                        <span style={{ fontSize:11, color:'#6b7280' }}>{c.averageProgress}%</span>
                       </div>
                     </td>
                     <td>
@@ -639,19 +616,19 @@ function AdminDashboard() {
           </div>
           <div className="ap-cta-stats">
             <div className="ap-cta-stat">
-              <div className="ap-cta-stat-num">1,25,000+</div>
+              <div className="ap-cta-stat-num">{fmt(totalUsers)}</div>
               <div className="ap-cta-stat-label">Total Students</div>
             </div>
             <div className="ap-cta-stat">
-              <div className="ap-cta-stat-num">85,000+</div>
+              <div className="ap-cta-stat-num">{fmt(totalResults)}</div>
               <div className="ap-cta-stat-label">Tests Completed</div>
             </div>
             <div className="ap-cta-stat">
-              <div className="ap-cta-stat-num">15,000+</div>
+              <div className="ap-cta-stat-num">{stats?.totalCertificates ?? 0}</div>
               <div className="ap-cta-stat-label">Certificates Issued</div>
             </div>
             <div className="ap-cta-stat">
-              <div className="ap-cta-stat-num">4.6/5</div>
+              <div className="ap-cta-stat-num">N/A</div>
               <div className="ap-cta-stat-label">Average Rating</div>
             </div>
           </div>
@@ -718,22 +695,38 @@ function AdminDashboard() {
 
       {/* CSS keyframe for loading spinner */}
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
 
-      {/* ── Add Student Modal ── */}
-      {showAddStudent && (
+      {/* ── Modals rendered via portal to bypass overflow:auto stacking context ── */}
+      {showAddStudent && createPortal(
         <AddStudentModal
           onClose={() => setShowAddStudent(false)}
           onCreated={handleStudentCreated}
-        />
+        />,
+        document.body
       )}
 
-      {/* ── Create Test Series Modal ── */}
-      {showCreateTest && <CreateTestSeriesModal onClose={() => setShowCreateTest(false)} onCreated={() => { setShowCreateTest(false); fetchStats(); }} />}
-      {showSendAnnouncement && <SendAnnouncementModal onClose={() => setShowSendAnnouncement(false)} />}
-      {showScheduleClass && <ScheduleClassModal onClose={() => setShowScheduleClass(false)} />}
-      {showUploadMaterial && <UploadMaterialModal onClose={() => setShowUploadMaterial(false)} />}
-      {showIssueCertificate && <IssueCertificateModal onClose={() => setShowIssueCertificate(false)} />}
-    </div>
+      {showCreateTest && createPortal(
+        <CreateTestSeriesModal onClose={() => setShowCreateTest(false)} onCreated={() => { setShowCreateTest(false); fetchStats(); }} />,
+        document.body
+      )}
+      {showSendAnnouncement && createPortal(
+        <SendAnnouncementModal onClose={() => setShowSendAnnouncement(false)} />,
+        document.body
+      )}
+      {showScheduleClass && createPortal(
+        <ScheduleClassModal onClose={() => setShowScheduleClass(false)} />,
+        document.body
+      )}
+      {showUploadMaterial && createPortal(
+        <UploadMaterialModal onClose={() => setShowUploadMaterial(false)} />,
+        document.body
+      )}
+      {showIssueCertificate && createPortal(
+        <IssueCertificateModal onClose={() => setShowIssueCertificate(false)} onCreated={() => { setShowIssueCertificate(false); fetchStats(); }} />,
+        document.body
+      )}
+    </>
   );
 }
 
