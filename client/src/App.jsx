@@ -82,7 +82,7 @@ function AppRoutes() {
   const { user } = useAuth();
   const location = useLocation();
   const hideNav = location.pathname.startsWith('/admin') || 
-                  ['/dashboard', '/tests', '/test/', '/result/', '/live-classes', '/recorded', '/ai-learning', '/study-material', '/notes', '/test-series', '/pyq-practice', '/question-bank', '/performance', '/mistakes', '/insights', '/my-plan', '/bookmarks', '/downloads', '/certificates', '/free-tests', '/skill-lab', '/clinical-cases', '/library'].some(p => location.pathname.startsWith(p));
+                  ['/dashboard', '/tests', '/test/', '/result/', '/live-classes', '/recorded', '/ai-learning', '/study-material', '/notes', '/test-series', '/mock-tests', '/pyq-practice', '/question-bank', '/performance', '/mistakes', '/insights', '/my-plan', '/bookmarks', '/downloads', '/certificates', '/free-tests', '/skill-lab', '/clinical-cases', '/library'].some(p => location.pathname.startsWith(p));
   return (
     <>
       {!hideNav && <Navbar />}
@@ -102,6 +102,7 @@ function AppRoutes() {
         <Route path="/study-material" element={<ProtectedRoute><StudyMaterial /></ProtectedRoute>} />
         <Route path="/notes" element={<ProtectedRoute><Notes /></ProtectedRoute>} />
         <Route path="/test-series" element={<ProtectedRoute><TestSeries /></ProtectedRoute>} />
+        <Route path="/mock-tests" element={<ProtectedRoute><TestSeries /></ProtectedRoute>} />
         <Route path="/pyq-practice" element={<ProtectedRoute><PYQPractice /></ProtectedRoute>} />
         <Route path="/question-bank" element={<ProtectedRoute><QuestionBank /></ProtectedRoute>} />
         <Route path="/performance" element={<ProtectedRoute><Performance /></ProtectedRoute>} />
