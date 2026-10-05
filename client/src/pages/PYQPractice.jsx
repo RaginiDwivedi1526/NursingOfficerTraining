@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { generateTest } from '../services/api';
 import { SlidersHorizontal, ChevronDown, MoreVertical, ArrowRight } from 'lucide-react';
 import './StudentPYQ.css';
 
@@ -28,6 +30,26 @@ const QUICK_ACTIONS = [
 
 export default function PYQPractice() {
   const [activeTab, setActiveTab] = useState('Year Wise');
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
+  const handleStartPractice = async (topic) => {
+    if (loading) return;
+    setLoading(true);
+    try {
+      const res = await generateTest({
+        topic: topic || 'Previous Year Questions',
+        difficulty: 'medium',
+        numberOfQuestions: 10
+      });
+      navigate(`/test/${res.data._id}`);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to generate test: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="pyq-container">
@@ -48,7 +70,9 @@ export default function PYQPractice() {
               <div className="pyq-hero-feat"><span>✓</span> Track Your Progress & Accuracy</div>
               <div className="pyq-hero-feat"><span>✓</span> Identify Weak Areas</div>
             </div>
-            <button className="pyq-hero-btn">Start Practicing Now →</button>
+            <button className="pyq-hero-btn" onClick={() => handleStartPractice('NORCET Mixed PYQ')} disabled={loading}>
+              {loading ? 'Generating...' : 'Start Practicing Now →'}
+            </button>
           </div>
           <div className="pyq-hero-right">
             <div className="pyq-hero-lbl">Total PYQs Available</div>
@@ -107,7 +131,9 @@ export default function PYQPractice() {
                 }
               </div>
               <div className="pyq-action-cell">
-                <button className="pyq-action-btn">Start Practice</button>
+                <button className="pyq-action-btn" onClick={() => handleStartPractice(p.name)} disabled={loading}>
+                  {loading ? '...' : 'Start Practice'}
+                </button>
                 <button className="pyq-more-btn"><MoreVertical size={16}/></button>
               </div>
             </div>

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { generateTest } from '../services/api';
 import { Search, SlidersHorizontal, ArrowRight, ChevronDown, MoreVertical } from 'lucide-react';
 import './StudentTestSeries.css';
 
@@ -64,6 +66,26 @@ const RECOS = [
 
 export default function TestSeries() {
   const [activeTab, setActiveTab] = useState('All Tests');
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
+  const handleStartTest = async (topic) => {
+    if (loading) return;
+    setLoading(true);
+    try {
+      const res = await generateTest({
+        topic: topic || 'Mock Test',
+        difficulty: 'medium',
+        numberOfQuestions: 10
+      });
+      navigate(`/test/${res.data._id}`);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to generate test: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="sts-container">
@@ -85,7 +107,9 @@ export default function TestSeries() {
               <div className="sts-hero-feat"><span>✓</span> Detailed Solutions & Analysis</div>
               <div className="sts-hero-feat"><span>✓</span> Performance Comparison</div>
             </div>
-            <button className="sts-hero-btn">Start Now →</button>
+            <button className="sts-hero-btn" onClick={() => handleStartTest('NORCET Full Length Test')} disabled={loading}>
+              {loading ? 'Generating...' : 'Start Now →'}
+            </button>
           </div>
           <div className="sts-hero-right">
             <div className="sts-hero-graphic">
@@ -164,7 +188,9 @@ export default function TestSeries() {
                 <div className="sts-score-pct">{t.scorePct}</div>
               </div>
               <div style={{display:'flex', gap:8, alignItems:'center'}}>
-                <button className={`sts-action-btn ${t.btnClass}`}>{t.btn}</button>
+                <button className={`sts-action-btn ${t.btnClass}`} onClick={() => handleStartTest(t.title)} disabled={loading}>
+                  {loading ? '...' : t.btn}
+                </button>
                 <button style={{background:'none', border:'none', cursor:'pointer', color:'#94a3b8'}}><MoreVertical size={16}/></button>
               </div>
             </div>
@@ -233,7 +259,9 @@ export default function TestSeries() {
                 <div className="sts-reco-title">{r.title}</div>
                 <div className="sts-reco-sub">{r.sub}</div>
               </div>
-              <button className="sts-reco-btn">Start</button>
+              <button className="sts-reco-btn" onClick={() => handleStartTest(r.title)} disabled={loading}>
+                {loading ? '...' : 'Start'}
+              </button>
             </div>
           ))}
         </div>

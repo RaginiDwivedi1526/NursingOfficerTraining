@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { generateTest } from '../services/api';
 import { Search, SlidersHorizontal, ChevronDown, MoreVertical, ArrowRight, List, LayoutGrid } from 'lucide-react';
 import './StudentQuestionBank.css';
 
@@ -38,6 +40,26 @@ const QUICK_PRACTICE = [
 export default function QuestionBank() {
   const [activeTab, setActiveTab] = useState('All Questions');
   const [activeView, setActiveView] = useState('list');
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
+  const handlePractice = async (topic) => {
+    if (loading) return;
+    setLoading(true);
+    try {
+      const res = await generateTest({
+        topic: topic || 'General Nursing Practice',
+        difficulty: 'medium',
+        numberOfQuestions: 10
+      });
+      navigate(`/test/${res.data._id}`);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to generate test: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="qb-container">
@@ -131,7 +153,9 @@ export default function QuestionBank() {
               <div><span className={`qb-diff-tag ${q.diffClass}`}>{q.diff}</span></div>
               <div className="qb-practiced">{q.practiced}</div>
               <div className="qb-action-cell">
-                <button className="qb-practice-btn">Practice Now</button>
+                <button className="qb-practice-btn" onClick={() => handlePractice(q.title)} disabled={loading}>
+                  {loading ? '...' : 'Practice Now'}
+                </button>
                 <button className="qb-more-btn"><MoreVertical size={16}/></button>
               </div>
             </div>
@@ -228,7 +252,9 @@ export default function QuestionBank() {
           <div className="qb-promo-left">
             <div className="qb-promo-title">Strengthen Your Concepts!</div>
             <div className="qb-promo-text">The more you practice, the better you perform.</div>
-            <button className="qb-promo-btn">Start Practicing Now →</button>
+            <button className="qb-promo-btn" onClick={() => handlePractice('Random Mix Questions')} disabled={loading}>
+              {loading ? 'Generating...' : 'Start Practicing Now →'}
+            </button>
           </div>
           <div className="qb-promo-img">📝</div>
         </div>
