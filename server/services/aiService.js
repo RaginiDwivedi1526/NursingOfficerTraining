@@ -1,4 +1,4 @@
-const OpenAI = require('openai');
+const { chat } = require('./openaiService');
 
 const getAIAnalysis = async (performanceData) => {
   // If no API key, return a mock analysis
@@ -7,8 +7,6 @@ const getAIAnalysis = async (performanceData) => {
   }
 
   try {
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
     const prompt = `You are an expert nursing exam preparation coach. Analyze the following student performance data and provide actionable improvement suggestions.
 
 Student Performance Data:
@@ -37,15 +35,17 @@ Please respond in this exact JSON format:
   }
 }`;
 
-    const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.7,
-      max_tokens: 1000
-    });
+    const content = await chat([{ role: 'user', content: prompt }], 1000);
+    if (!content || content.startsWith('ERROR:')) {
+      console.error('AI Analysis Error:', content);
+      return generateMockAnalysis(performanceData);
+    }
 
-    const content = response.choices[0].message.content;
-    return JSON.parse(content);
+    let jsonStr = content.trim();
+    if (jsonStr.includes('```json')) jsonStr = jsonStr.split('```json')[1].split('```')[0].trim();
+    else if (jsonStr.includes('```')) jsonStr = jsonStr.split('```')[1].split('```')[0].trim();
+
+    return JSON.parse(jsonStr);
   } catch (error) {
     console.error('OpenAI API Error:', error.message);
     return generateMockAnalysis(performanceData);

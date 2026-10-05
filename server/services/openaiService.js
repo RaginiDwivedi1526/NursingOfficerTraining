@@ -9,31 +9,64 @@ const chat = async (messages, maxTokens = 300) => {
   const isGeminiKey = apiKey.startsWith('AIza');
   
   if (isGeminiKey) {
-    const modelsToTry = maxTokens > 1000 ? ['gemini-1.5-pro', 'gemini-1.5-flash'] : ['gemini-1.5-flash'];
+    const endpointsToTry = [
+      { url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, name: 'gemini-1.5-flash (v1beta)' },
+      { url: `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, name: 'gemini-1.5-flash (v1)' },
+      { url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, name: 'gemini-2.0-flash' },
+      { url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent?key=${apiKey}`, name: 'gemini-1.5-flash-8b' },
+      { url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, name: 'gemini-2.5-flash' },
+      { url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`, name: 'gemini-1.5-pro' }
+    ];
     
-    for (const model of modelsToTry) {
+    const systemMsg = messages.find(m => m.role === 'system');
+    const userAndAssistantMsgs = messages.filter(m => m.role !== 'system');
+
+    const contents = userAndAssistantMsgs.map(m => ({
+      role: m.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: m.content }]
+    }));
+
+    if (contents.length === 0 && systemMsg) {
+      contents.push({
+        role: 'user',
+        parts: [{ text: systemMsg.content }]
+      });
+    }
+
+    const payload = {
+      contents,
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: maxTokens
+      }
+    };
+
+    if (systemMsg && contents.length > 0 && contents[0].parts[0].text !== systemMsg.content) {
+      payload.systemInstruction = {
+        parts: [{ text: systemMsg.content }]
+      };
+    }
+
+    for (const endpoint of endpointsToTry) {
       try {
-        console.log(`[AI] Trying model: ${model}, maxTokens: ${maxTokens}`);
+        console.log(`[AI] Trying Gemini model: ${endpoint.name}, maxTokens: ${maxTokens}`);
         const response = await axios.post(
-          'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
-          {
-            model,
-            messages,
-            temperature: 0.7,
-            max_tokens: maxTokens
-          },
+          endpoint.url,
+          payload,
           {
             headers: {
-              'Authorization': `Bearer ${apiKey}`,
               'Content-Type': 'application/json'
             }
           }
         );
-        return response.data.choices[0].message.content;
+        const text = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (text) {
+          return text;
+        }
       } catch (error) {
         const errorMsg = error.response?.data?.error?.message || error.message;
-        console.error(`[AI] Model ${model} failed: ${errorMsg}`);
-        if (model === modelsToTry[modelsToTry.length - 1]) {
+        console.error(`[AI] Gemini model ${endpoint.name} failed (${error.response?.status || 'Network'}): ${errorMsg}`);
+        if (endpoint === endpointsToTry[endpointsToTry.length - 1]) {
           return `ERROR: ${error.response?.status || ''} ${errorMsg}`;
         }
       }
@@ -41,16 +74,24 @@ const chat = async (messages, maxTokens = 300) => {
   } else {
     const { OpenAI } = require('openai');
     const openai = new OpenAI({ apiKey });
-    try {
-      const response = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
-        messages,
-        temperature: 0.7,
-        max_tokens: maxTokens
-      });
-      return response.choices[0].message.content;
-    } catch (error) {
-      return `ERROR: ${error.message}`;
+    const openAiModels = ['gpt-4o-mini', 'gpt-3.5-turbo'];
+    
+    for (const model of openAiModels) {
+      try {
+        console.log(`[AI] Trying OpenAI model: ${model}`);
+        const response = await openai.chat.completions.create({
+          model,
+          messages,
+          temperature: 0.7,
+          max_tokens: maxTokens
+        });
+        return response.choices[0].message.content;
+      } catch (error) {
+        console.error(`[AI] OpenAI model ${model} failed: ${error.message}`);
+        if (model === openAiModels[openAiModels.length - 1]) {
+          return `ERROR: ${error.message}`;
+        }
+      }
     }
   }
 };
