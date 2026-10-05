@@ -102,7 +102,7 @@ function AppRoutes() {
         <Route path="/study-material" element={<ProtectedRoute><StudyMaterial /></ProtectedRoute>} />
         <Route path="/notes" element={<ProtectedRoute><Notes /></ProtectedRoute>} />
         <Route path="/test-series" element={<ProtectedRoute><TestSeries /></ProtectedRoute>} />
-        <Route path="/mock-tests" element={<ProtectedRoute><TestSeries /></ProtectedRoute>} />
+        <Route path="/mock-tests" element={<ProtectedRoute><TestList defaultTab="mock" /></ProtectedRoute>} />
         <Route path="/pyq-practice" element={<ProtectedRoute><PYQPractice /></ProtectedRoute>} />
         <Route path="/question-bank" element={<ProtectedRoute><QuestionBank /></ProtectedRoute>} />
         <Route path="/performance" element={<ProtectedRoute><Performance /></ProtectedRoute>} />

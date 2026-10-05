@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { getTests, generateTest } from '../services/api';
 import { Search, BookOpen, Stethoscope, ChevronRight, Target, Loader2 } from 'lucide-react';
 
@@ -205,16 +205,26 @@ const MOCK_EXAMS = [
   "PARAMILITARY FORCES (BSF, CRPF, ITBP, SSB, CISF)"
 ];
 
-function TestList() {
+function TestList({ defaultTab }) {
+  const location = useLocation();
+  const initialTab = defaultTab || (location.pathname === '/mock-tests' ? 'mock' : 'practice');
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [tests, setTests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('practice'); // 'practice' or 'mock'
   const [selectedSubject, setSelectedSubject] = useState('All Subjects');
   const [selectedMockExam, setSelectedMockExam] = useState('All Mock Exams');
   const [searchQuery, setSearchQuery] = useState('');
   const [isAutoGenerating, setIsAutoGenerating] = useState(false);
   const autoGenRef = useRef(new Set()); // track which topics have already been auto-generated
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.pathname === '/mock-tests' || defaultTab === 'mock') {
+      setActiveTab('mock');
+    } else if (location.pathname === '/tests') {
+      setActiveTab('practice');
+    }
+  }, [location.pathname, defaultTab]);
 
   const fetchTests = async () => {
     try {
