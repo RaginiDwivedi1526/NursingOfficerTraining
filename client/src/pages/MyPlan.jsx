@@ -1,290 +1,234 @@
-import React from 'react';
-import { ChevronDown, ArrowRight, DownloadCloud, CheckCircle2, ChevronLeft, ChevronRight, Info } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ChevronDown, ArrowRight, DownloadCloud, CheckCircle2, ChevronLeft, ChevronRight, RefreshCw, Play } from 'lucide-react';
+import { getStudyPlan, patchStudyPlanTask } from '../services/api';
 import './StudentMyPlan.css';
 
 export default function MyPlan() {
-  const TODAY_TASKS = [
-    { icon: '📖', iconBg: '#f0fdf4', color: '#16a34a', title: 'Anatomy & Physiology', sub: 'Blood & Circulatory System', status: '30%' },
-    { icon: '📝', iconBg: '#f5f3ff', color: '#7c3aed', title: 'Mock Test – 05', sub: 'Full Length Test', status: 'Pending' },
-    { icon: '📋', iconBg: '#fff7ed', color: '#ea580c', title: 'Revise Notes', sub: 'Pharmacology - Antibiotics', status: 'Pending' },
+  const navigate = useNavigate();
+  const [planData, setPlanData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [activeDayIdx, setActiveDayIdx] = useState(0);
+
+  useEffect(() => {
+    fetchPlan();
+  }, []);
+
+  const fetchPlan = async () => {
+    setLoading(true);
+    try {
+      const res = await getStudyPlan();
+      setPlanData(res.data);
+    } catch (err) {
+      console.error('Error loading study plan:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleTaskCompleted = async (dayIndex, taskIndex, currentStatus) => {
+    try {
+      const res = await patchStudyPlanTask({
+        dayIndex,
+        taskIndex,
+        completed: !currentStatus
+      });
+      setPlanData(res.data);
+    } catch (err) {
+      console.error('Error updating task status:', err);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div style={{ padding: 60, textAlign: 'center', color: '#64748b' }}>
+        <RefreshCw className="animate-spin" size={32} style={{ marginBottom: 12, color: '#4f46e5' }} />
+        <div style={{ fontSize: 16, fontWeight: 600 }}>Building Your AIIMS NORCET Weekly Study Plan...</div>
+      </div>
+    );
+  }
+
+  const days = planData?.plan || [
+    { day: 'Monday', tasks: [{ topic: 'Pharmacology - Diuretics', duration: '2 hrs', type: 'Lecture', completed: true }] },
+    { day: 'Tuesday', tasks: [{ topic: 'Anatomy - Cardiovascular', duration: '30 Qs', type: 'MCQ', completed: true }] },
+    { day: 'Wednesday', tasks: [{ topic: 'Medical Surgical Nursing', duration: '1.5 hrs', type: 'Revision', completed: true }] },
+    { day: 'Thursday', tasks: [{ topic: 'Community Health Nursing', duration: '2 hrs', type: 'Lecture', completed: false }] },
+    { day: 'Friday', tasks: [{ topic: 'Mental Health Nursing MCQs', duration: '30 Qs', type: 'MCQ', completed: false }] },
+    { day: 'Saturday', tasks: [{ topic: 'Full NORCET Mock Test', duration: 'Full', type: 'Mock', completed: false }] },
+    { day: 'Sunday', tasks: [{ topic: 'Weekly Revision & Doubt Session', duration: '1 hr', type: 'Rest', completed: false }] },
   ];
 
-  const UPCOMING = [
-    { date: '23 May, 2024\nThu', task: 'Anatomy & Physiology', sub: 'Blood & Circulatory System', type: 'Topic', typeBg: '#dcfce7', typeCol: '#16a34a', dur: '1h 30m', status: 'In Progress', statBg: '#e0e7ff', statCol: '#4f46e5' },
-    { date: '23 May, 2024\nThu', task: 'Mock Test – 05', sub: 'Full Length Test', type: 'Test', typeBg: '#f3e8ff', typeCol: '#a855f7', dur: '3h 00m', status: 'Pending', statBg: '#ffedd5', statCol: '#ea580c' },
-    { date: '23 May, 2024\nThu', task: 'Revise Notes', sub: 'Pharmacology - Antibiotics', type: 'Revision', typeBg: '#ffedd5', typeCol: '#ea580c', dur: '1h 00m', status: 'Pending', statBg: '#ffedd5', statCol: '#ea580c' },
-  ];
-
-  const WEEK_GOALS = [
-    { icon: '⏱️', name: 'Study Time', goal: '15h', val: '9h 30m', pct: '63%', color: '#4f46e5' },
-    { icon: '📝', name: 'Tests', goal: '5', val: '3', pct: '60%', color: '#10b981' },
-    { icon: '📋', name: 'Topics', goal: '12', val: '6', pct: '50%', color: '#f59e0b' },
-    { icon: '🎯', name: 'Accuracy', goal: '70%', val: '68%', pct: '97%', color: '#8b5cf6' },
-  ];
-
-  const CALENDAR = [
-    { day: 'Mon', date: '20 May', tasks: '3 Tasks', topics: 2, tests: 1, time: '5h 30m' },
-    { day: 'Tue', date: '21 May', tasks: '4 Tasks', topics: 3, tests: 1, time: '6h' },
-    { day: 'Wed', date: '22 May', tasks: '3 Tasks', topics: 2, tests: 1, time: '5h' },
-    { day: 'Thu', date: '23 May', tasks: '3 Tasks', topics: 2, tests: 1, time: '5h 30m', active: true },
-    { day: 'Fri', date: '24 May', tasks: '4 Tasks', topics: 3, tests: 1, time: '6h' },
-    { day: 'Sat', date: '25 May', tasks: '2 Tasks', topics: 1, tests: 1, time: '4h' },
-    { day: 'Sun', date: '26 May', tasks: '2 Tasks', topics: 1, tests: 1, time: '4h' },
-  ];
+  const activeDayObj = days[activeDayIdx] || days[0];
 
   return (
     <div className="mp-container">
       {/* Header */}
       <div className="mp-header">
         <div className="mp-header-left">
-          <h1>My Plan 📋</h1>
-          <p>Your personalized study plan to crack NORCET with confidence.</p>
+          <h1>My NORCET Study Plan 📋</h1>
+          <p>Structured daily targets to keep your exam preparation consistent.</p>
         </div>
-        <button className="mp-export-btn"><DownloadCloud size={16}/> Export Plan</button>
+        <button 
+          onClick={() => alert('Exporting study plan PDF...')} 
+          className="mp-export-btn"
+          style={{ cursor: 'pointer' }}
+        >
+          <DownloadCloud size={16}/> Export Plan PDF
+        </button>
       </div>
 
       <div className="mp-main-grid">
         {/* LEFT COLUMN */}
         <div className="mp-left">
-          
           {/* Hero */}
           <div className="mp-hero">
-            <div className="mp-hero-title">Stay Consistent, Achieve Excellence! ✨</div>
-            <div className="mp-hero-sub">Follow your plan daily and achieve your target score.</div>
+            <div className="mp-hero-title">Stay Consistent, Achieve Selection! ✨</div>
+            <div className="mp-hero-sub">Complete daily tasks to stay ahead of 78% of aspirants.</div>
+            
             <div className="mp-hero-stats">
               <div className="mp-hero-circ">
                 <svg viewBox="0 0 36 36">
                   <circle cx="18" cy="18" r="15.9" fill="none" stroke="#e2e8f0" strokeWidth="4"/>
-                  <circle cx="18" cy="18" r="15.9" fill="none" stroke="#4f46e5" strokeWidth="4" strokeDasharray="42 58" strokeLinecap="round" transform="rotate(-90 18 18)"/>
+                  <circle cx="18" cy="18" r="15.9" fill="none" stroke="#4f46e5" strokeWidth="4" strokeDasharray="57 43" strokeLinecap="round" transform="rotate(-90 18 18)"/>
                 </svg>
-                <div className="mp-hero-c-val">42%</div>
+                <div className="mp-hero-c-val">57%</div>
               </div>
+              
               <div className="mp-hero-stat">
-                <div className="mp-h-slbl">Plan Progress</div>
-                <div className="mp-h-sval">42%</div>
+                <div className="mp-h-slbl">Weekly Target</div>
+                <div className="mp-h-sval">57%</div>
                 <div className="mp-h-ssub">Completed</div>
               </div>
+              
               <div className="mp-hero-stat">
-                <div className="mp-h-slbl">Days in Plan</div>
-                <div className="mp-h-sval">28 <span style={{fontSize:12,color:'#94a3b8'}}>/ 90</span></div>
-                <div className="mp-h-ssub">Days Completed</div>
+                <div className="mp-h-slbl">Days Completed</div>
+                <div className="mp-h-sval">4 <span style={{ fontSize: 12, color: '#94a3b8' }}>/ 7</span></div>
+                <div className="mp-h-ssub">This Week</div>
               </div>
+              
               <div className="mp-hero-stat">
                 <div className="mp-h-slbl">Tests Planned</div>
-                <div className="mp-h-sval">36</div>
-                <div className="mp-h-ssub">Total Tests</div>
-              </div>
-              <div className="mp-hero-stat">
-                <div className="mp-h-slbl">Topics Planned</div>
-                <div className="mp-h-sval">78</div>
-                <div className="mp-h-ssub">Total Topics</div>
-              </div>
-              <div className="mp-hero-stat">
-                <div className="mp-h-slbl">Target Exam</div>
-                <div className="mp-h-sval" style={{fontSize:16}}>NORCET 2025</div>
-                <div className="mp-h-ssub">Expected Month: Sept 2025</div>
-              </div>
-            </div>
-            <div className="mp-hero-bg">🎯</div>
-          </div>
-
-          <div className="mp-mid-row">
-            {/* Overall Progress */}
-            <div className="mp-card">
-              <div className="mp-card-title">Overall Plan Progress</div>
-              <div className="mp-prog-bar-wrap">
-                <div className="mp-prog-top">42%</div>
-                <div className="mp-prog-track"><div className="mp-prog-fill" style={{width:'42%'}}></div></div>
-              </div>
-              <div className="mp-prog-stats">
-                <div className="mp-p-stat">
-                  <div className="mp-p-icon" style={{background:'#e0e7ff',color:'#4f46e5'}}>⏱️</div>
-                  <div className="mp-p-lbl">Study Time</div>
-                  <div className="mp-p-val">48h 30m</div>
-                </div>
-                <div className="mp-p-stat">
-                  <div className="mp-p-icon" style={{background:'#dcfce7',color:'#16a34a'}}>✅</div>
-                  <div className="mp-p-lbl">Tests Completed</div>
-                  <div className="mp-p-val">15 / 36</div>
-                </div>
-                <div className="mp-p-stat">
-                  <div className="mp-p-icon" style={{background:'#eff6ff',color:'#3b82f6'}}>📋</div>
-                  <div className="mp-p-lbl">Topics Completed</div>
-                  <div className="mp-p-val">32 / 78</div>
-                </div>
-                <div className="mp-p-stat">
-                  <div className="mp-p-icon" style={{background:'#ffe4e6',color:'#e11d48'}}>🎯</div>
-                  <div className="mp-p-lbl">Accuracy</div>
-                  <div className="mp-p-val">68%</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Today's Plan */}
-            <div className="mp-card">
-              <div className="mp-tp-head">
-                <div className="mp-card-title" style={{margin:0}}>Today's Plan</div>
-                <div className="mp-tp-badge">3 Tasks</div>
-              </div>
-              <div className="mp-tp-list">
-                {TODAY_TASKS.map((t, i) => (
-                  <div className="mp-tp-item" key={i}>
-                    <div className="mp-tp-icon" style={{background:t.iconBg}}>{t.icon}</div>
-                    <div className="mp-tp-info">
-                      <div className="mp-tp-name">{t.title}</div>
-                      <div className="mp-tp-sub">{t.sub}</div>
-                    </div>
-                    <div className="mp-tp-status">{t.status}</div>
-                    <ChevronRight size={14} color="#94a3b8" />
-                  </div>
-                ))}
+                <div className="mp-h-sval">5</div>
+                <div className="mp-h-ssub">Practice Mock Tests</div>
               </div>
             </div>
           </div>
 
-          {/* Calendar */}
-          <div className="mp-card">
-            <div className="mp-cal-head">
-              <div className="mp-card-title" style={{margin:0}}>Study Plan Calendar <Info size={12} color="#94a3b8"/></div>
-              <div className="mp-cal-ctrls">
-                <div className="mp-cal-month">May 2024</div>
-                <ChevronLeft size={16} className="mp-cal-nav"/>
-                <ChevronRight size={16} className="mp-cal-nav"/>
-                <div className="mp-cal-toggle">
-                  <button className="mp-cal-tbtn active">Week</button>
-                  <button className="mp-cal-tbtn">Month</button>
+          {/* Interactive Days Row */}
+          <div style={{ display: 'flex', gap: 10, margin: '20px 0', overflowX: 'auto', paddingBottom: 4 }}>
+            {days.map((d, idx) => (
+              <div
+                key={idx}
+                onClick={() => setActiveDayIdx(idx)}
+                style={{
+                  flex: 1,
+                  minWidth: 90,
+                  padding: '12px 10px',
+                  borderRadius: 12,
+                  border: '1px solid #e2e8f0',
+                  background: activeDayIdx === idx ? '#4f46e5' : '#ffffff',
+                  color: activeDayIdx === idx ? '#ffffff' : '#0f172a',
+                  cursor: 'pointer',
+                  textAlign: 'center',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <div style={{ fontSize: 13, fontWeight: 700 }}>{d.day}</div>
+                <div style={{ fontSize: 11, opacity: 0.8, marginTop: 4 }}>
+                  {d.tasks?.filter(t => t.completed).length || 0}/{d.tasks?.length || 1} Done
                 </div>
               </div>
-            </div>
-            
-            <div className="mp-cal-grid">
-              {CALENDAR.map((d, i) => (
-                <div className={`mp-cal-day ${d.active ? 'active' : ''}`} key={i}>
-                  <div className="mp-cal-dname">{d.day}</div>
-                  <div className="mp-cal-dnum">{d.date}</div>
-                  <div className="mp-cal-dtasks">{d.tasks}</div>
-                  <div className="mp-cal-dots">
-                    {d.topics > 0 && <div className="mp-cal-dot-row"><div className="mp-cal-dot" style={{background:'#10b981'}}></div>{d.topics} {d.topics>1?'Topics':'Topic'}</div>}
-                    {d.tests > 0 && <div className="mp-cal-dot-row"><div className="mp-cal-dot" style={{background:'#8b5cf6'}}></div>{d.tests} {d.tests>1?'Tests':'Test'}</div>}
-                  </div>
-                  <div className="mp-cal-time">{d.time}</div>
-                  {d.active && <div className="mp-cal-today-badge">Today</div>}
-                </div>
-              ))}
-            </div>
-            <div className="mp-cal-legend">
-              <div className="mp-cl-item"><div className="mp-cal-dot" style={{background:'#10b981'}}></div>Topic</div>
-              <div className="mp-cl-item"><div className="mp-cal-dot" style={{background:'#8b5cf6'}}></div>Test</div>
-              <div className="mp-cl-item"><div className="mp-cal-dot" style={{background:'#f59e0b'}}></div>Revision</div>
-              <div className="mp-cl-item"><div className="mp-cal-dot" style={{background:'#3b82f6'}}></div>Other</div>
-            </div>
+            ))}
           </div>
 
-          {/* Upcoming Plan */}
-          <div className="mp-card">
-            <div className="mp-card-title">Upcoming Plan</div>
-            <table className="mp-table">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Task</th>
-                  <th>Topic / Test</th>
-                  <th>Type</th>
-                  <th>Duration</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {UPCOMING.map((u, i) => (
-                  <tr key={i}>
-                    <td className="mp-td-date" style={{whiteSpace:'pre-line'}}>{u.date}</td>
-                    <td className="mp-td-task">{u.task}</td>
-                    <td className="mp-td-sub" style={{fontSize:11, color:'#64748b'}}>{u.sub}</td>
-                    <td><span className="mp-type-badge" style={{background:u.typeBg, color:u.typeCol}}>{u.type}</span></td>
-                    <td style={{fontSize:11}}>{u.dur}</td>
-                    <td><span className="mp-status-badge" style={{background:u.statBg, color:u.statCol}}>{u.status}</span></td>
-                    <td><button className="mp-action-btn">Start</button></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <button className="mp-view-all">View Full Plan →</button>
-          </div>
-
-        </div>
-
-        {/* RIGHT SIDEBAR */}
-        <div className="mp-sidebar">
-          
-          {/* Target */}
-          <div className="mp-card">
-            <div className="mp-target-head">
-              <div className="mp-card-title" style={{margin:0}}>Your Target</div>
-              <div className="mp-edit-link">Edit Goal</div>
-            </div>
-            <div className="mp-tgrid">
-              <div className="mp-tbox">
-                <div className="mp-tb-icon" style={{background:'#dcfce7',color:'#16a34a'}}>🎯</div>
-                <div><div className="mp-tb-lbl">Target Exam</div><div className="mp-tb-val">NORCET 2025</div></div>
+          {/* Active Day Tasks List */}
+          <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 16, padding: 20 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: '#0f172a' }}>
+                Tasks for {activeDayObj.day}
               </div>
-              <div className="mp-tbox" style={{background:'#f5f3ff', borderColor:'#ede9fe'}}>
-                <div className="mp-tb-icon" style={{background:'#e0e7ff',color:'#4f46e5'}}>🎯</div>
-                <div><div className="mp-tb-lbl">Target Score</div><div className="mp-tb-val" style={{color:'#4f46e5'}}>190+ / 200</div></div>
-              </div>
+              <span style={{ fontSize: 12, color: '#10b981', fontWeight: 600 }}>
+                {activeDayObj.tasks?.filter(t => t.completed).length || 0} / {activeDayObj.tasks?.length || 0} Completed
+              </span>
             </div>
-            <div className="mp-tbox" style={{background:'#fff7ed', borderColor:'#ffedd5'}}>
-              <div className="mp-tb-icon" style={{background:'#ffedd5',color:'#ea580c'}}>📅</div>
-              <div><div className="mp-tb-lbl">Target Date</div><div className="mp-tb-val">15 Sept 2025</div></div>
-            </div>
-          </div>
 
-          {/* Motivational Card */}
-          <div className="mp-moti-card">
-            <div className="mp-moti-title">A goal without a plan is just a wish.</div>
-            <div className="mp-moti-text">Keep following your plan and you are closer than you think!</div>
-            <div className="mp-moti-img">🏆</div>
-          </div>
-
-          {/* Weekly Study Goals */}
-          <div className="mp-card">
-            <div className="mp-target-head">
-              <div className="mp-card-title" style={{margin:0}}>Weekly Study Goals</div>
-              <div className="mp-edit-link">Edit Goals</div>
-            </div>
-            <div style={{marginTop:16}}>
-              {WEEK_GOALS.map((w, i) => (
-                <div className="mp-wg-item" key={i}>
-                  <div className="mp-wg-head">
-                    <div className="mp-wg-left">
-                      <div className="mp-wg-icon" style={{color:w.color}}>{w.icon}</div>
-                      <div>
-                        <div className="mp-wg-name">{w.name}</div>
-                        <div className="mp-wg-sub">Goal: {w.goal}</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {activeDayObj.tasks?.map((t, taskIdx) => (
+                <div 
+                  key={taskIdx}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: 14,
+                    borderRadius: 10,
+                    border: '1px solid #f1f5f9',
+                    background: t.completed ? '#f0fdf4' : '#f8fafc',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <div 
+                    onClick={() => toggleTaskCompleted(activeDayIdx, taskIdx, t.completed)}
+                    style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', flex: 1 }}
+                  >
+                    {t.completed ? (
+                      <CheckCircle2 size={20} color="#10b981"/>
+                    ) : (
+                      <div style={{ width: 20, height: 20, borderRadius: '50%', border: '2px solid #cbd5e1' }} />
+                    )}
+                    <div>
+                      <div style={{ fontWeight: 600, fontSize: 14, color: '#0f172a', textDecoration: t.completed ? 'line-through' : 'none' }}>
+                        {t.topic}
+                      </div>
+                      <div style={{ fontSize: 12, color: '#64748b' }}>
+                        Type: {t.type} • Duration: {t.duration}
                       </div>
                     </div>
-                    <div className="mp-wg-right">
-                      <div className="mp-wg-val">{w.val} <span style={{fontSize:9,color:'#94a3b8',fontWeight:500}}>/ {w.goal}</span></div>
-                      <div className="mp-wg-pct">{w.pct}</div>
-                    </div>
                   </div>
-                  <div className="mp-wg-track"><div className="mp-wg-fill" style={{width:w.pct, background:w.color}}></div></div>
+
+                  <button 
+                    onClick={() => navigate('/tests')}
+                    style={{ padding: '6px 12px', borderRadius: 6, background: '#4f46e5', color: '#fff', border: 'none', fontWeight: 600, fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
+                  >
+                    Start Task <Play size={10}/>
+                  </button>
                 </div>
               ))}
             </div>
-            <div className="mp-reset-info"><Info size={10}/> Resets every Monday</div>
           </div>
+        </div>
 
-          {/* Tips */}
-          <div className="mp-tips-card">
-            <div className="mp-tips-title">💡 Plan Tips</div>
-            <div className="mp-tip-item"><span className="mp-tip-check">✓</span> Follow your plan daily for best results.</div>
-            <div className="mp-tip-item"><span className="mp-tip-check">✓</span> Take tests regularly to track progress.</div>
-            <div className="mp-tip-item"><span className="mp-tip-check">✓</span> Revise your weak topics and notes.</div>
-            <div className="mp-tip-item"><span className="mp-tip-check">✓</span> Stay consistent and don't break your streak!</div>
-            <div className="mp-tips-img">📝</div>
+        {/* RIGHT COLUMN */}
+        <div>
+          <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 16, padding: 20, marginBottom: 20 }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', marginBottom: 12 }}>Weekly Target Summary</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 4 }}>
+                  <span>Study Hours</span> <strong>14h / 20h</strong>
+                </div>
+                <div style={{ height: 6, background: '#f1f5f9', borderRadius: 3 }}>
+                  <div style={{ width: '70%', height: '100%', background: '#4f46e5', borderRadius: 3 }} />
+                </div>
+              </div>
+
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 4 }}>
+                  <span>Questions Solved</span> <strong>350 / 500 Qs</strong>
+                </div>
+                <div style={{ height: 6, background: '#f1f5f9', borderRadius: 3 }}>
+                  <div style={{ width: '70%', height: '100%', background: '#10b981', borderRadius: 3 }} />
+                </div>
+              </div>
+            </div>
+
+            <button 
+              onClick={() => navigate('/tests')}
+              style={{ marginTop: 20, width: '100%', padding: '10px 0', background: '#4f46e5', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 600, fontSize: 13, cursor: 'pointer' }}
+            >
+              Take Today's Planned MCQs →
+            </button>
           </div>
-
         </div>
       </div>
     </div>
