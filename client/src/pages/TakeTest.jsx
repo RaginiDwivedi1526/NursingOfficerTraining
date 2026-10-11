@@ -6,6 +6,7 @@ import {
   ChevronRight, Award, RotateCcw, Activity, BarChart2, Layers, Clock, ArrowRight
 } from 'lucide-react';
 import AskAIButton from '../components/tests/AskAIButton';
+import FormattedExplanation from '../components/tests/FormattedExplanation';
 import './TakeCATTest.css';
 
 export default function TakeTest() {
@@ -282,20 +283,14 @@ export default function TakeTest() {
                     </span>
                   </div>
                   <p className="history-q-text">{q.questionText}</p>
-                  
-                  <div className="history-options-grid">
-                    {q.options?.map((opt, oIdx) => (
-                      <div 
-                        key={oIdx} 
-                        className={`history-opt-box ${oIdx === q.correctAnswer ? 'opt-correct' : (oIdx === q.selectedAnswer && !q.isCorrect ? 'opt-wrong' : '')}`}
-                      >
-                        <strong>{String.fromCharCode(65 + oIdx)}.</strong> {opt}
-                      </div>
-                    ))}
-                  </div>
 
-                  <div className="history-explanation">
-                    <strong>Clinical Rationale:</strong> {q.explanation}
+                  <div style={{ marginTop: 14 }}>
+                    <FormattedExplanation 
+                      explanation={q.explanation} 
+                      correctAnswer={q.correctAnswer} 
+                      selectedAnswer={q.selectedAnswer} 
+                      optionsList={q.options} 
+                    />
                   </div>
                 </div>
               ))}
@@ -413,42 +408,117 @@ export default function TakeTest() {
         </div>
       </div>
 
-      {/* Immediate Adaptive Feedback Modal */}
+      {/* Immediate Adaptive Feedback Modal - UWorld & Archer Clinical Summary Pattern */}
       {showFeedbackModal && lastFeedback && (
         <div className="cat-modal-overlay">
           <div className="cat-feedback-modal">
+            {/* Adaptive Escalation / Calibration Header */}
             <div className={`feedback-header ${lastFeedback.isCorrect ? 'correct' : 'incorrect'}`}>
-              {lastFeedback.isCorrect ? (
-                <>
-                  <CheckCircle size={36} />
-                  <div>
-                    <h3>Correct Answer!</h3>
-                    <p>Computer Adaptive Engine is scaling up difficulty to <strong>Level {session.currentDifficultyLevel}: {session.difficultyName}</strong></p>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <XCircle size={36} />
-                  <div>
-                    <h3>Incorrect Answer</h3>
-                    <p>Computer Adaptive Engine adjusted level to <strong>Level {session.currentDifficultyLevel}: {session.difficultyName}</strong></p>
-                  </div>
-                </>
-              )}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                {lastFeedback.isCorrect ? <CheckCircle size={36} /> : <XCircle size={36} />}
+                <div>
+                  <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800 }}>
+                    {lastFeedback.isCorrect ? 'Correct Response! ✓' : 'Incorrect Response ✗'}
+                  </h3>
+                  <p style={{ margin: '4px 0 0 0', fontSize: 13, opacity: 0.95 }}>
+                    {lastFeedback.isCorrect
+                      ? `Adaptive System Escalation: Next question scaling up toward Peak Level (Level ${session?.currentDifficultyLevel}: ${session?.difficultyName})`
+                      : `Adaptive System Calibration: Next question calibrated to Level ${session?.currentDifficultyLevel}: ${session?.difficultyName}`}
+                  </p>
+                </div>
+              </div>
             </div>
 
+            {/* Performance Telemetry Strip (Scored, Time, Level, Theta) */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-around',
+              background: '#f8fafc',
+              borderBottom: '1px solid #e2e8f0',
+              padding: '10px 18px',
+              fontSize: 12.5,
+              fontWeight: 700,
+              color: '#475569'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span>Scored:</span>
+                <span style={{ 
+                  color: lastFeedback.isCorrect ? '#16a34a' : '#dc2626', 
+                  background: lastFeedback.isCorrect ? '#dcfce7' : '#fee2e2',
+                  padding: '2px 8px',
+                  borderRadius: 4
+                }}>
+                  {lastFeedback.isCorrect ? '1 / 1' : '0 / 1'}
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Clock size={14} color="#64748b" />
+                <span>Time Spent:</span>
+                <span style={{ color: '#0f172a' }}>{lastFeedback.timeTaken || 0}s</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Activity size={14} color="#6366f1" />
+                <span>Difficulty Tier:</span>
+                <span style={{ color: '#4338ca' }}>Level {lastFeedback.difficultyLevel || session?.currentDifficultyLevel}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <BrainCircuit size={14} color="#7c3aed" />
+                <span>Ability (θ):</span>
+                <span style={{ color: '#7c3aed' }}>{(session?.abilityTheta || 0).toFixed(2)}</span>
+              </div>
+            </div>
+
+            {/* Full UWorld / Archer Summary Body */}
             <div className="feedback-body">
-              <div className="feedback-correct-answer">
-                <strong>Correct Option:</strong> Option {String.fromCharCode(65 + lastFeedback.correctAnswer)}
-              </div>
-              <div className="feedback-explanation">
-                <strong>Clinical Rationale:</strong>
-                <p>{lastFeedback.explanation}</p>
-              </div>
+              {/* Question stem recap */}
+              {lastFeedback.questionText && (
+                <div style={{
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: 10,
+                  padding: '14px 16px',
+                  marginBottom: 16,
+                  fontSize: 14,
+                  lineHeight: 1.6,
+                  color: '#1e293b'
+                }}>
+                  <div style={{ fontSize: 11, fontWeight: 800, color: '#4f46e5', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>
+                    Question Scenario & Stem
+                  </div>
+                  <div style={{ whiteSpace: 'pre-line' }}>{lastFeedback.questionText}</div>
+                </div>
+              )}
+
+              {/* Formatted UWorld Explanation (Options Analysis + Concept Overview + Educational Objective) */}
+              <FormattedExplanation
+                explanation={lastFeedback.explanation}
+                correctAnswer={lastFeedback.correctAnswer}
+                selectedAnswer={lastFeedback.selectedAnswer}
+                optionsList={lastFeedback.options}
+                peerPercentages={lastFeedback.peerPercentages}
+              />
             </div>
 
+            {/* Modal Footer with Action */}
             <div className="feedback-footer">
-              <button className="cat-next-btn" onClick={handleNextAdaptiveQuestion}>
+              <button 
+                className="cat-next-btn" 
+                onClick={handleNextAdaptiveQuestion}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+                  color: '#ffffff',
+                  fontWeight: 700,
+                  fontSize: 15,
+                  padding: '12px 26px',
+                  borderRadius: 10,
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+              >
                 Next Adaptive Question <ChevronRight size={18} />
               </button>
             </div>

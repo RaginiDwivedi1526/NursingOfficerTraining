@@ -6,6 +6,7 @@ import {
   ChevronRight, Award, RotateCcw, Activity, BarChart2, Layers, HelpCircle
 } from 'lucide-react';
 import AskAIButton from '../components/tests/AskAIButton';
+import FormattedExplanation from '../components/tests/FormattedExplanation';
 import './TakeCATTest.css';
 
 export default function TakeCATTest() {
@@ -236,8 +237,13 @@ export default function TakeCATTest() {
                     </span>
                   </div>
                   <p className="q-text-body">{q.questionText}</p>
-                  <div className="q-rationale-box">
-                    <strong>Rationale:</strong> {q.explanation}
+                  <div style={{ marginTop: 12 }}>
+                    <FormattedExplanation 
+                      explanation={q.explanation} 
+                      correctAnswer={q.correctAnswer} 
+                      selectedAnswer={q.selectedAnswer} 
+                      optionsList={q.options} 
+                    />
                   </div>
                 </div>
               ))}
@@ -360,17 +366,51 @@ export default function TakeCATTest() {
             </div>
 
             <div className="feedback-body">
-              <div className="feedback-correct-answer">
-                <strong>Correct Option:</strong> Option {String.fromCharCode(65 + lastFeedback.correctAnswer)}
-              </div>
-              <div className="feedback-explanation">
-                <strong>Clinical Rationale:</strong>
-                <p>{lastFeedback.explanation}</p>
-              </div>
+              {lastFeedback.questionText && (
+                <div style={{
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: 10,
+                  padding: '14px 16px',
+                  marginBottom: 16,
+                  fontSize: 14,
+                  lineHeight: 1.6,
+                  color: '#1e293b'
+                }}>
+                  <div style={{ fontSize: 11, fontWeight: 800, color: '#4f46e5', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>
+                    Question Scenario & Stem
+                  </div>
+                  <div style={{ whiteSpace: 'pre-line' }}>{lastFeedback.questionText}</div>
+                </div>
+              )}
+
+              <FormattedExplanation
+                explanation={lastFeedback.explanation}
+                correctAnswer={lastFeedback.correctAnswer}
+                selectedAnswer={lastFeedback.selectedAnswer}
+                optionsList={lastFeedback.options}
+                peerPercentages={lastFeedback.peerPercentages}
+              />
             </div>
 
             <div className="feedback-footer">
-              <button className="cat-next-btn" onClick={handleNextAdaptiveQuestion}>
+              <button 
+                className="cat-next-btn" 
+                onClick={handleNextAdaptiveQuestion}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+                  color: '#ffffff',
+                  fontWeight: 700,
+                  fontSize: 15,
+                  padding: '12px 26px',
+                  borderRadius: 10,
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+              >
                 Next Adaptive Question <ChevronRight size={18} />
               </button>
             </div>

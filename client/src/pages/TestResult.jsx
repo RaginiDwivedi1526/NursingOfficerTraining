@@ -62,7 +62,12 @@ function TestResult() {
                       </div>
                     ))}
                     {correct?.explanation && (
-                      <FormattedExplanation explanation={correct.explanation} />
+                      <FormattedExplanation 
+                        explanation={correct.explanation} 
+                        correctAnswer={correct.correctAnswer} 
+                        selectedAnswer={userAnswer?.selectedAnswer} 
+                        optionsList={q.options} 
+                      />
                     )}
                   </div>
                 </div>

@@ -132,31 +132,45 @@ const evaluateStoppingCondition = (history, theta, passingStandard = 0.20, minQu
 const generateAdaptiveQuestion = async (subject, difficultyLevel, examType = 'nclex_rn') => {
   const diffInfo = DIFFICULTY_LEVELS[difficultyLevel] || DIFFICULTY_LEVELS[2];
   
-  const prompt = `You are a Computer Adaptive Testing (CAT) Item Writer for Next Generation NCLEX (NGN) and AIIMS NORCET.
+  const prompt = `You are an expert Chief Item Writer for UWorld, Archer Review, NCLEX-RN (NGN), and AIIMS NORCET.
 
-TASK: Generate ONE highly specific practice question for the subject: ${subject}.
+TASK: Generate ONE authentic Computer Adaptive Testing (CAT) question for: ${subject}.
 TARGET ADAPTIVE LEVEL: Level ${diffInfo.level} - ${diffInfo.name}.
 
 LEVEL-SPECIFIC INSTRUCTIONS:
-- Level 1 (Below Base): Foundational recall & core nursing assessment principles. Patient scenario (1-2 sentences).
-- Level 2 (Base): Standard NCLEX/NORCET passing level clinical decision making. Patient scenario (2-3 sentences).
-- Level 3 (Advanced Hard): High-order priority nursing action, complex pharmacological toxicity, or sudden clinical decompensation. Patient scenario (3-4 sentences with vitals/labs).
-- Level 4 (Peak Level): Extremely challenging multi-system complication, high-acuity ICU/Emergency trauma scenario, or subtle prioritization differential. Patient scenario (4-5 sentences with detailed vitals, labs, ABGs, and ongoing interventions).
+- Level 1 (Below Base): Foundational recall, core assessment principles, infection control, client safety rights.
+- Level 2 (Base): Standard NCLEX/NORCET passing level clinical judgment, medication verification, diagnostic prioritization.
+- Level 3 (Advanced Hard): High-order priority nursing action, complex pharmacological toxicity, sudden decompensation with vitals and labs.
+- Level 4 (Peak Level): High-acuity ICU/Emergency trauma scenario with multi-system failure, detailed ABGs, telemetry dysrhythmias, critical lab values.
+
+MANDATORY EXPLANATION SUMMARY FORMAT (STRICT UWORLD / ARCHER PATTERN):
+The 'explanation' field MUST strictly follow this exact 3-part layout:
+Explanation
+[2-3 detailed paragraphs providing pathophysiological background, clinical assessment findings (e.g. vital signs, lab cues), and why the correct intervention takes absolute clinical priority.]
+
+(Option 1) [Detailed rationale explaining why Option 1 is incorrect, contraindicated, or secondary.]
+(Option 2) [Detailed rationale explaining why Option 2 is correct or incorrect.]
+(Option 3) [Detailed rationale explaining why Option 3 is incorrect.]
+(Option 4) [Detailed rationale explaining why Option 4 is incorrect.]
+
+Educational objective:
+[1-2 sentences stating the high-yield clinical takeaway and memorization principle for nursing exam success.]
 
 MANDATORY JSON OUTPUT SCHEMA:
 {
-  "questionText": "string (the complete clinical scenario followed by the explicit question stem)",
+  "questionText": "string (the complete clinical case vignette with vitals/labs followed by explicit question stem)",
   "options": ["Option A text", "Option B text", "Option C text", "Option D text"],
   "correctAnswer": 0, // integer index (0, 1, 2, or 3)
-  "explanation": "string (detailed rationale explaining the correct answer and distractor analysis)",
+  "explanation": "string (strictly formatted as shown above)",
+  "peerPercentages": [14, 68, 11, 7], // 4 integers representing plausible peer percentage distribution totaling 100
   "topic": "${subject}"
 }`;
 
   try {
     const aiResponse = await chat([
       { role: 'system', content: prompt },
-      { role: 'user', content: 'Generate the adaptive CAT question as JSON now.' }
-    ], 2000);
+      { role: 'user', content: 'Generate the adaptive CAT question with full UWorld/Archer summary pattern as JSON now.' }
+    ], 2500);
 
     let jsonString = aiResponse ? aiResponse.trim() : '';
     if (jsonString.includes('```json')) {
@@ -177,6 +191,7 @@ MANDATORY JSON OUTPUT SCHEMA:
         options: parsed.options,
         correctAnswer: typeof parsed.correctAnswer === 'number' ? parsed.correctAnswer : 0,
         explanation: parsed.explanation || '',
+        peerPercentages: Array.isArray(parsed.peerPercentages) && parsed.peerPercentages.length === 4 ? parsed.peerPercentages : [10, 72, 12, 6],
         topic: subject,
         difficultyLevel: diffInfo.level,
         difficultyName: diffInfo.name
@@ -190,55 +205,109 @@ MANDATORY JSON OUTPUT SCHEMA:
   return getCuratedFallbackAdaptiveQuestion(subject, difficultyLevel);
 };
 
-// Fallback curated pool per adaptive level
+// Fallback curated pool per adaptive level (Authentic UWorld/Archer Pattern)
 const getCuratedFallbackAdaptiveQuestion = (subject, difficultyLevel) => {
   const pool = {
-    1: { // Below Base
-      questionText: `A patient admitted to the medical ward under ${subject} is scheduled for an invasive diagnostic procedure. Which fundamental nursing action must be confirmed prior to procedure initiation?`,
+    1: { // Below Base (Level 1)
+      questionText: `CLINICAL CASE SCENARIO: A 62-year-old client admitted to the medical unit under ${subject} is scheduled for an invasive diagnostic procedure. The client is awake, alert, and oriented to person, place, and time. Prior to the procedure team arriving, the nurse enters the room to initiate the pre-procedure checklist.\n\nWhich fundamental nursing action must the nurse complete FIRST prior to procedure initiation?`,
       options: [
-        'Verify signed informed consent and patient identity using two unique identifiers',
-        'Administer broad-spectrum IV antibiotics immediately',
-        'Place patient in strict Trendelenburg position',
-        'Discontinue all routine home oral medications'
+        'Verify signed informed consent and verify client identity using two unique identifiers',
+        'Administer broad-spectrum prophylactic IV antibiotics immediately',
+        'Place the client in a steep Trendelenburg position',
+        'Discontinue all routine home oral cardiac medications indefinitely'
       ],
       correctAnswer: 0,
-      explanation: 'Patient safety guidelines mandate verifying identity using two identifiers and confirming informed consent prior to invasive procedures.',
+      peerPercentages: [84, 7, 5, 4],
+      explanation: `Explanation
+The National Patient Safety Goals (NPSGs) and hospital accreditation guidelines emphasize the critical importance of patient identification and procedural verification. Prior to any invasive procedure, the nurse must verify the client's identity using at least two unique identifiers (eg, full name and date of birth or medical record number) and verify that voluntary, fully informed consent has been obtained and documented.
+
+Informed consent ensures that the client comprehends the procedure, intended benefits, potential risks, and available alternatives. Starting an invasive procedure without proper verification exposes the client to severe sentinel events (eg, wrong-patient or wrong-site surgery) and violates fundamental legal and ethical standards of nursing practice.
+
+(Option 1) This is the essential first priority. Verifying two patient identifiers against the medical chart and confirming signed consent prevents medical errors and verifies client autonomy.
+(Option 2) Prophylactic antibiotics require a licensed healthcare provider's order and specific timing (typically within 60 minutes prior to surgical incision), not routine unverified administration.
+(Option 3) The steep Trendelenburg position (head lower than feet) increases intracranial pressure and compromises respiratory excursion; it is contraindicated unless specifically indicated for line placement.
+(Option 4) Abruptly stopping essential chronic medications (such as beta-blockers) without provider direction can precipitate rebound hypertension or cardiac dysrhythmias.
+
+Educational objective:
+Prior to initiating any invasive procedure, the nurse must verify the client's identity using two unique identifiers and verify that signed informed consent is present in the medical record.`,
       topic: subject
     },
-    2: { // Base
-      questionText: `A nurse is caring for a patient in ${subject}. The patient's vital signs are: BP 118/76 mmHg, HR 84 bpm, RR 18/min, SpO2 97% on room air. The patient reports mild incisional discomfort rated 3/10. What is the most appropriate initial nursing intervention?`,
+    2: { // Base (Level 2)
+      questionText: `CLINICAL CASE SCENARIO: A 48-year-old client admitted under ${subject} underwent uncomplicated laparoscopic surgery 6 hours ago. Vital signs are: blood pressure 122/78 mmHg, pulse 80/min, respirations 16/min, and oxygen saturation 98% on room air. The client reports surgical site soreness rated 3/10 on the numeric pain scale and is able to converse comfortably.\n\nWhich intervention by the nurse is MOST appropriate at this time?`,
       options: [
-        'Reposition patient for comfort and offer non-pharmacological pain relief methods',
-        'Activate emergency rapid response team immediately',
-        'Administer IV bolus opioid analgesia without assessment',
-        'Prepare patient for emergency surgical re-exploration'
+        'Assist the client into a position of comfort and implement non-pharmacological relief strategies',
+        'Immediately activate the hospital emergency rapid response team',
+        'Administer an unscheduled IV push high-dose opioid bolus',
+        'Prepare the client for immediate emergency exploratory laparotomy'
       ],
       correctAnswer: 0,
-      explanation: 'Mild pain with stable vital signs calls for conservative non-pharmacological interventions and re-assessment.',
+      peerPercentages: [79, 4, 11, 6],
+      explanation: `Explanation
+Pain management requires a multimodal and stepwise approach based on comprehensive assessment. Clients reporting mild pain (rating 1 to 3 out of 10) who exhibit hemodynamic stability and eupneic respirations are optimal candidates for non-pharmacological interventions (eg, repositioning, guided imagery, splinting with a pillow during coughing, cool compresses) and mild non-opioid oral analgesics if ordered.
+
+Overly aggressive or unindicated pharmacological therapy introduces unnecessary risks of respiratory depression, sedation, and opioid-induced ileus, especially in post-surgical clients with stable baseline parameters.
+
+(Option 1) Repositioning, elevating the head of the bed, splinting the surgical incision, and providing quiet surroundings provide effective relief for mild discomfort without adverse systemic side effects.
+(Option 2) Rapid response teams are reserved for acute clinical deterioration (eg, acute hypoxemia, severe sustained hypotension, acute neurological deficits), none of which are present in this stable client.
+(Option 3) IV push opioids are indicated for acute severe pain (typically ratings 7–10) or breakthrough pain when milder modalities have failed; they carry significant sedation risks.
+(Option 4) Emergency surgical re-exploration is indicated only for surgical emergencies such as massive intra-abdominal hemorrhage, peritonitis, or wound evisceration.
+
+Educational objective:
+For stable post-surgical clients experiencing mild pain (ratings 1–3/10), initial management focuses on non-pharmacological comfort measures and conservative non-opioid strategies before escalating to high-potency opioids.`,
       topic: subject
     },
-    3: { // Advanced Hard
-      questionText: `CLINICAL CASE SCENARIO: A 54-year-old patient admitted under ${subject} develops sudden dyspnea, bilateral basalar crackles, and a blood pressure drop from 134/82 mmHg to 90/58 mmHg 2 hours after starting a rapid IV fluid bolus. Heart rate is 114 bpm.\n\nWhich intervention should the nurse perform FIRST?`,
+    3: { // Advanced Hard (Level 3)
+      questionText: `CLINICAL CASE SCENARIO: A 56-year-old client with acute decompensated heart failure admitted under ${subject} is receiving an IV infusion of 0.9% normal saline at 150 mL/hr. Two hours into the infusion, the client develops sudden severe dyspnea, orthopnea, and an audible cough productive of pink, frothy sputum. Vital signs: blood pressure 168/98 mmHg, pulse 118/min, respirations 32/min, and SpO2 86% on room air. Auscultation reveals diffuse bilateral coarse crackles throughout both lung fields.\n\nWhich nursing intervention should the nurse perform FIRST?`,
       options: [
-        'Stop IV fluid infusion, elevate head of bed to High-Fowler\'s, and administer supplemental oxygen',
-        'Increase IV fluid infusion rate to treat hypotension',
-        'Administer IV vasopressors without assessing lung sounds',
-        'Place patient in flat supine position and recheck vitals in 1 hour'
+        'Discontinue the IV fluid infusion, position the client upright in High-Fowler\'s, and apply high-flow oxygen',
+        'Increase the IV fluid rate to 200 mL/hr to maintain organ perfusion',
+        'Place the client in the supine position with legs elevated',
+        'Administer oral potassium supplements and encourage fluid intake'
       ],
       correctAnswer: 0,
-      explanation: 'These findings indicate fluid overload and acute pulmonary congestion. Stopping fluids, elevating HOB, and giving O2 are immediate priorities.',
+      peerPercentages: [88, 3, 5, 4],
+      explanation: `Explanation
+The client is exhibiting hallmark signs of acute pulmonary edema secondary to hypervolemia (fluid volume overload). In clients with compromised ventricular performance, rapid crystalloid administration causes rapid elevation of left ventricular end-diastolic pressure, resulting in fluid transudation into the pulmonary interstitium and alveoli. Characteristic clinical manifestations include severe dyspnea, tachypnea, orthopnea, diffuse crackles, and classic pink, frothy sputum.
+
+Priority nursing interventions follow the ABCs (Airway, Breathing, Circulation):
+1. Immediately stop the IV fluid infusion to prevent further pulmonary vascular engorgement.
+2. Elevate the head of the bed into high-Fowler's position (90 degrees) with the legs dependent. This reduces venous return (preload) to the right heart and maximizes diaphragmatic excursion.
+3. Apply high-flow supplemental oxygen (non-rebreather mask or positive airway pressure) to address severe arterial hypoxemia.
+
+(Option 1) This action directly addresses the underlying trigger (fluid overload), reduces cardiac preload via positional gravitational pooling, and corrects life-threatening hypoxemia.
+(Option 2) Increasing fluid infusion rate would rapidly worsen alveolar flooding, precipitating respiratory arrest and cardiogenic shock.
+(Option 3) Placing the client supine increases venous return to an already overloaded heart, exacerbating pulmonary capillary hydrostatic pressure and worsening dyspnea.
+(Option 4) Oral administration during acute respiratory distress poses an extreme aspiration risk and does nothing to alleviate acute respiratory compromise.
+
+Educational objective:
+Acute pulmonary edema is a medical emergency manifested by pink, frothy sputum, diffuse crackles, and severe hypoxemia. Immediate priority nursing interventions include stopping IV fluid infusions, placing the client in high-Fowler's position with legs dependent, and applying high-flow oxygen.`,
       topic: subject
     },
-    4: { // Peak Level
-      questionText: `CLINICAL CASE SCENARIO: A 66-year-old patient in the Intensive Care Unit undergoing aggressive management for severe ${subject} decompensation exhibits telemetry showing widening QRS complexes and peaked T waves. Arterial Blood Gas reveals pH 7.15, PaCO2 28 mmHg, HCO3 10 mEq/L, and serum potassium is 7.1 mEq/L.\n\nWhich emergency drug combination must the nurse prepare for IMMEDIATE administration to prevent fatal cardiac arrest?`,
+    4: { // Peak Level (Level 4)
+      questionText: `CLINICAL CASE SCENARIO: A 64-year-old client in the Intensive Care Unit being managed for severe septic shock and acute kidney injury under ${subject} exhibits new cardiac telemetry changes showing widening QRS complexes, prolonged PR intervals, and tall, peaked T waves. The client is lethargic with a heart rate of 46/min and blood pressure 82/48 mmHg. Stat arterial blood gas (ABG) reveals: pH 7.18, PaCO2 30 mmHg, HCO3 11 mEq/L. Stat serum potassium is 7.4 mEq/L.\n\nWhich emergency medication must the nurse prepare for IMMEDIATE administration to prevent fatal ventricular fibrillation or asystole?`,
       options: [
-        'IV Calcium Gluconate to stabilize cardiac membranes, followed by IV Regular Insulin with 50% Dextrose',
-        'Oral Sodium Polystyrene Sulfonate (Kayexalate) only',
-        'IV Furosemide bolus without continuous EKG monitoring',
-        'IV Sublingual Nitroglycerin with Subcutaneous Heparin'
+        'Intravenous Calcium Gluconate (10%) administered slowly over 2–5 minutes',
+        'Oral Sodium Polystyrene Sulfonate (Kayexalate) mixed in sorbitol',
+        'Subcutaneous Regular Insulin without IV dextrose co-administration',
+        'Intravenous push Epinephrine 1 mg rapid bolus as initial monotherapy'
       ],
       correctAnswer: 0,
-      explanation: 'Severe hyperkalemia with EKG changes is a cardiac emergency. Calcium Gluconate stabilizes the myocardium immediately while insulin/dextrose shifts potassium into cells.',
+      peerPercentages: [67, 18, 9, 6],
+      explanation: `Explanation
+Severe hyperkalemia (serum potassium > 6.5 mEq/L) accompanied by EKG alterations (peaked T waves, widening QRS complex, prolonged PR interval, loss of P waves) is a life-threatening medical emergency capable of rapidly deteriorating into ventricular fibrillation or asystole.
+
+In severe symptomatic hyperkalemia, therapeutic priorities proceed in strict clinical sequence:
+1. Membrane Stabilization (IMMEDIATE): IV Calcium Gluconate does NOT lower serum potassium levels; however, it immediately raises the cardiac threshold potential, stabilizing the cardiomyocyte resting membrane and protecting the myocardium against fatal dysrhythmias within 1 to 3 minutes.
+2. Intracellular Potassium Shifting (SECONDARY): Once cardiac membranes are stabilized with calcium, IV Regular Insulin (10 units) administered with 50% Dextrose (D50W 25–50g) shifts extracellular potassium into intracellular compartments by stimulating Na+/K+-ATPase pumps. Inhaled high-dose albuterol and IV sodium bicarbonate also facilitate cellular shifts.
+3. Potassium Elimination (DEFINITIVE): Loop diuretics (furosemide), gastrointestinal cation exchange resins (sodium zirconium cyclosilicate or sodium polystyrene sulfonate), or urgent hemodialysis permanently remove excess potassium from the body.
+
+(Option 1) IV Calcium Gluconate is the mandatory first-line emergency intervention to prevent cardiac arrest by antagonizing hyperkalemia-induced myocardial excitability.
+(Option 2) Sodium Polystyrene Sulfonate works in the gastrointestinal tract and requires hours to days to reduce total body potassium; it provides zero immediate protection against fatal conduction blocks.
+(Option 3) Administering insulin without dextrose will cause catastrophic hypoglycemia. Furthermore, insulin shifts potassium but does not stabilize cardiac membranes against immediate ventricular fibrillation.
+(Option 4) Epinephrine is indicated in pulseless cardiac arrest (ACLS protocol); administering it as monotherapy without membrane stabilization does not resolve the electrophysiological toxicity of 7.4 mEq/L potassium.
+
+Educational objective:
+In severe hyperkalemia with EKG abnormalities (peaked T waves, widening QRS), the immediate priority medication is IV Calcium Gluconate to stabilize the cardiac cell membrane and prevent fatal dysrhythmias, followed by interventions that shift and eliminate potassium.`,
       topic: subject
     }
   };

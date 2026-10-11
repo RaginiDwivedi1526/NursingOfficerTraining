@@ -178,6 +178,22 @@ router.post('/submit-answer', protect, async (req, res) => {
         isCompleted: true,
         result: session.result,
         stoppingReason: stopping.reason,
+        feedback: {
+          isCorrect,
+          correctAnswer: currentQ.correctAnswer,
+          explanation: currentQ.explanation,
+          questionText: currentQ.questionText,
+          options: currentQ.options,
+          selectedAnswer,
+          topic: currentQ.topic,
+          difficultyLevel: currentQ.difficultyLevel,
+          difficultyName: currentQ.difficultyName,
+          nextDifficultyLevel: session.currentDifficultyLevel,
+          nextDifficultyName: session.currentDifficultyName,
+          peerPercentages: currentQ.peerPercentages || [12, 72, 10, 6],
+          timeTaken,
+          abilityTheta: newTheta
+        },
         session
       });
     }
@@ -197,7 +213,18 @@ router.post('/submit-answer', protect, async (req, res) => {
       feedback: {
         isCorrect,
         correctAnswer: currentQ.correctAnswer,
-        explanation: currentQ.explanation
+        explanation: currentQ.explanation,
+        questionText: currentQ.questionText,
+        options: currentQ.options,
+        selectedAnswer,
+        topic: currentQ.topic,
+        difficultyLevel: currentQ.difficultyLevel,
+        difficultyName: currentQ.difficultyName,
+        nextDifficultyLevel,
+        nextDifficultyName: DIFFICULTY_LEVELS[nextDifficultyLevel].name,
+        peerPercentages: currentQ.peerPercentages || [12, 72, 10, 6],
+        timeTaken,
+        abilityTheta: newTheta
       },
       nextQuestion: {
         questionText: nextQ.questionText,
