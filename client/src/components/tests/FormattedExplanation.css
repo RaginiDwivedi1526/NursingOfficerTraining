@@ -1,0 +1,105 @@
+.explanation-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 14px;
+  font-family: var(--font-body);
+}
+
+.explanation-card {
+  background: var(--white);
+  border: 1px solid var(--light-gray);
+  border-radius: 12px;
+  padding: 18px 20px;
+  box-shadow: 0 2px 8px rgba(13, 43, 94, 0.04);
+}
+
+.explanation-card.overview {
+  border-left: 4px solid var(--navy);
+  background: linear-gradient(135deg, #f8fafd 0%, #ffffff 100%);
+}
+
+.explanation-card.options-analysis {
+  border-left: 4px solid var(--purple);
+  background: linear-gradient(135deg, #fcfaff 0%, #ffffff 100%);
+}
+
+.explanation-card.edu-objective {
+  border-left: 4px solid var(--success);
+  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+  border-color: rgba(39, 174, 96, 0.2);
+}
+
+.exp-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 10px;
+}
+
+.exp-header.edu {
+  color: var(--success);
+}
+
+.exp-header.opts {
+  color: var(--purple);
+}
+
+.exp-body {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: #2c3e50;
+  white-space: pre-line;
+}
+
+.option-rationale-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.option-rationale-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--off-white);
+  border: 1px solid rgba(124, 58, 237, 0.1);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.option-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  width: fit-content;
+}
+
+.option-tag.is-correct {
+  background: rgba(39, 174, 96, 0.15);
+  color: #1e7e44;
+  border: 1px solid rgba(39, 174, 96, 0.3);
+}
+
+.option-tag.is-incorrect {
+  background: rgba(192, 57, 43, 0.1);
+  color: var(--crimson);
+  border: 1px solid rgba(192, 57, 43, 0.2);
+}
+
+.edu-objective-text {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #14532d;
+  line-height: 1.6;
+}

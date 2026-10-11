@@ -40,16 +40,24 @@ const QUICK_PRACTICE = [
 export default function QuestionBank() {
   const [activeTab, setActiveTab] = useState('All Questions');
   const [activeView, setActiveView] = useState('list');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('hard');
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const handlePractice = async (topic) => {
+  const DIFFICULTY_OPTIONS = [
+    { id: 'hard', label: 'Level 1: Hard 🔥', desc: 'Peak Acuity' },
+    { id: 'moderate', label: 'Level 2: Moderate ⚡', desc: 'Clinical Benchmark' },
+    { id: 'easy', label: 'Level 3: Easy 🟢', desc: 'Foundational' }
+  ];
+
+  const handlePractice = async (topic, diffOverride) => {
     if (loading) return;
     setLoading(true);
+    const diffToUse = diffOverride || selectedDifficulty || 'hard';
     try {
       const res = await generateTest({
         topic: topic || 'General Nursing Practice',
-        difficulty: 'medium',
+        difficulty: diffToUse,
         numberOfQuestions: 10
       });
       navigate(`/test/${res.data._id}`);
@@ -78,6 +86,32 @@ export default function QuestionBank() {
               <div><div className="qb-ov-val">{o.val}</div><div className="qb-ov-lbl">{o.lbl}</div></div>
             </div>
           ))}
+        </div>
+
+        {/* Difficulty Level Bar */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#ffffff', padding: '12px 18px', borderRadius: 12, border: '1px solid #e2e8f0', marginBottom: 16 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: '#334155' }}>Practice Level:</span>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {DIFFICULTY_OPTIONS.map(d => (
+              <button
+                key={d.id}
+                type="button"
+                onClick={() => setSelectedDifficulty(d.id)}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: 20,
+                  fontSize: 12,
+                  fontWeight: 700,
+                  border: selectedDifficulty === d.id ? '2px solid #4f46e5' : '1px solid #cbd5e1',
+                  background: selectedDifficulty === d.id ? '#e0e7ff' : '#f8fafc',
+                  color: selectedDifficulty === d.id ? '#4338ca' : '#475569',
+                  cursor: 'pointer'
+                }}
+              >
+                {d.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Filter Row */}

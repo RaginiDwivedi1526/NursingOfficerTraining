@@ -2,6 +2,8 @@ import { useLocation, Link } from 'react-router-dom';
 import { Award, Trophy, Heart, BookOpen, CheckCircle2, XCircle, Lightbulb, BarChart3, ClipboardList } from 'lucide-react';
 import TestResultSummary from '../components/tests/TestResultSummary';
 
+import FormattedExplanation from '../components/tests/FormattedExplanation';
+
 function TestResult() {
   const { state } = useLocation();
 
@@ -60,9 +62,7 @@ function TestResult() {
                       </div>
                     ))}
                     {correct?.explanation && (
-                      <div style={{ background: 'var(--off-white)', padding: '10px 14px', borderRadius: '8px', marginTop: '8px', fontSize: '13px', color: 'var(--gray)', lineHeight: '1.5', display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
-                        <Lightbulb size={14} color="var(--gold)" style={{ marginTop: 2, flexShrink: 0 }} /> {correct.explanation}
-                      </div>
+                      <FormattedExplanation explanation={correct.explanation} />
                     )}
                   </div>
                 </div>

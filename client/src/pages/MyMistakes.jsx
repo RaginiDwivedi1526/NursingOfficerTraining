@@ -37,7 +37,7 @@ export default function MyMistakes() {
     try {
       const res = await generateTest({
         topic: topic || 'Weak Areas Practice',
-        difficulty: 'medium',
+        difficulty: 'hard',
         numberOfQuestions: 10
       });
       navigate(`/test/${res.data._id}`);

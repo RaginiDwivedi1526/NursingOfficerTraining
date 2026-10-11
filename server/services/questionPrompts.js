@@ -1,96 +1,113 @@
-const getNclexPrompt = (topic, number, difficulty) => `You are an expert NCLEX-RN item writer trained in the Next Generation NCLEX (NGN) 
-Clinical Judgment Measurement Model, writing questions in the style of UWorld's 
-NCLEX QBank.
+const DIFFICULTY_CONFIGS = {
+  1: {
+    level: 1,
+    key: 'hard',
+    name: 'Level 1: Hard',
+    focus: 'PEAK ACUITY / HIGH-ORDER CLINICAL JUDGMENT & PRIORITIZATION',
+    scenarioGuidelines: '3–5 sentences. High-acuity ICU, Emergency, or Trauma patient experiencing acute physiological decompensation, multi-system failure, or life-threatening drug toxicity. Must include full patient profile (age, gender, department), exact abnormal vital signs (BP, HR, RR, SpO2, Temp), critical lab values (ABGs, electrolytes, cardiac enzymes, lactate), and current medical infusions.',
+    questionType: 'Emergency priority intervention ("Which action is the ABSOLUTE FIRST priority?"), sudden decompensation cue recognition ("Which finding requires IMMEDIATE escalation?"), or contraindication check ("Which physician order is CONTRAINDICATED?"). Distractors must all be plausible nursing interventions that seem valid at first glance.'
+  },
+  2: {
+    level: 2,
+    key: 'moderate',
+    name: 'Level 2: Moderate',
+    focus: 'STANDARD CLINICAL PASSING BENCHMARK & CLINICAL DECISION MAKING',
+    scenarioGuidelines: '2–4 sentences. Inpatient Medical-Surgical, Pediatric, or Obstetric patient with active clinical management needs. Include patient status, relevant vital signs or lab values, diagnostic findings, and ongoing treatments.',
+    questionType: 'Clinical decision-making, priority nursing care, therapeutic drug monitoring, adverse reaction identification, or patient education. Distractors must challenge standard understanding of nursing priorities.'
+  },
+  3: {
+    level: 3,
+    key: 'easy',
+    name: 'Level 3: Easy',
+    focus: 'FOUNDATIONAL CORE NURSING ASSESSMENT & PATIENT SAFETY',
+    scenarioGuidelines: '1–3 sentences. Clinical setting scenario presenting a standard patient encounter, admission evaluation, routine pre/post-op care, or health promotion context.',
+    questionType: 'Foundational nursing assessments, core patient safety protocols (two patient identifiers, infection prevention, aseptic technique), standard vital signs thresholds, or essential medication administration rights.'
+  }
+};
 
-TASK: Generate ${number} NCLEX-style practice questions on the topic: ${topic}
-Difficulty: ${difficulty}
+const resolveDiffConfig = (diff) => {
+  const s = String(diff || '').toLowerCase();
+  if (s === '1' || s.includes('hard') || s.includes('peak')) return DIFFICULTY_CONFIGS[1];
+  if (s === '3' || s.includes('easy') || s.includes('foundat')) return DIFFICULTY_CONFIGS[3];
+  return DIFFICULTY_CONFIGS[2]; // Default to Moderate (Level 2)
+};
 
-RULES:
-1. EVERY question MUST be grounded in a realistic clinical scenario — include patient 
-   age, gender, setting (ICU, ER, med-surg ward, clinic, etc.), chief complaint, 
-   relevant vital signs, labs, or medication history. NEVER write a bare factual question 
-   without a patient scenario.
-2. The 'scenario' field must be 2–4 sentences describing the patient situation. 
-   The 'question_stem' then asks what the nurse should do/assess/prioritize based on that scenario.
-3. Rotate question types across the set: standard 4-option MCQ, select-all-that-apply (SATA), 
-   prioritization/ordering, and matrix/grid (multiple statements, each answered True/False 
-   or Consistent/Inconsistent).
-4. Map each question to ONE NCLEX Client Needs category: 
-   Safe and Effective Care Environment, Health Promotion and Maintenance, 
-   Psychosocial Integrity, or Physiological Integrity (specify subcategory).
-5. Tag each question with the Clinical Judgment step it tests: 
-   Recognize Cues, Analyze Cues, Prioritize Hypotheses, Generate Solutions, 
-   Take Action, or Evaluate Outcomes.
-6. Write a rationale for the CORRECT answer AND a separate short rationale for 
-   WHY EACH incorrect option is wrong — never leave a distractor unexplained.
-7. Do not reuse the same clinical scenario twice in one batch.
-8. Use only evidence-based, current US nursing practice standards.
-9. NEVER start the 'question_stem' with the topic name, unit name, subject name, or any label/prefix such as 'Q:', a number, 'MCQ:', etc. The question_stem MUST begin directly with the first word of the actual question sentence.
+const getNclexPrompt = (topic, number = 10, difficulty = 'hard') => {
+  const cfg = resolveDiffConfig(difficulty);
+  return `You are a senior expert NCLEX-RN and Next Generation NCLEX (NGN) Item Writer.
 
-OUTPUT FORMAT — return ONLY valid JSON, no preamble, matching this schema:
+TASK: Generate ${number} authentic Computer Adaptive Testing (CAT) quality questions on the topic: ${topic}
+TARGET DIFFICULTY LEVEL: ${cfg.name} (${cfg.focus})
+
+SCENARIO SPECIFICATIONS FOR ${cfg.name}:
+- Scenario Depth: ${cfg.scenarioGuidelines}
+- Clinical Judgment Focus: ${cfg.questionType}
+- Every question MUST feature a detailed clinical vignette in the 'scenario' field.
+- Provide a thorough clinical rationale for the correct answer AND explain why distractors are inappropriate.
+
+OUTPUT FORMAT — return ONLY valid JSON matching this schema:
 {
   "questions": [
     {
       "id": "string",
-      "question_type": "MCQ | SATA | Prioritization | Matrix",
-      "client_needs_category": "string",
-      "clinical_judgment_step": "string",
-      "difficulty": "Easy | Medium | Hard",
-      "scenario": "string (2-4 sentence patient clinical situation — REQUIRED, never empty)",
-      "question_stem": "string (the actual question asked, based on the scenario above)",
-      "options": [{"label": "A", "text": "string", "is_correct": true/false}],
+      "difficultyLevel": ${cfg.level},
+      "difficultyName": "${cfg.name}",
+      "clinical_judgment_step": "Recognize Cues | Analyze Cues | Prioritize Hypotheses | Generate Solutions | Take Action | Evaluate Outcomes",
+      "scenario": "string (detailed clinical case with vitals/labs)",
+      "question_stem": "string (the priority clinical question asked based on the scenario)",
+      "options": [
+        {"label": "A", "text": "string", "is_correct": true},
+        {"label": "B", "text": "string", "is_correct": false},
+        {"label": "C", "text": "string", "is_correct": false},
+        {"label": "D", "text": "string", "is_correct": false}
+      ],
       "correct_rationale": "string",
-      "distractor_rationales": {"A": "string", "B": "string", "C": "string", "D": "string"},
-      "topic_tags": ["string"]
+      "topic_tags": ["${topic}"]
     }
   ]
 }`;
+};
 
-const getIndianNursingPrompt = (subject, number, difficulty) => `You are an expert item writer for Indian Nursing Officer recruitment exams 
-(NORCET, AIIMS, ESIC, RRB Staff Nurse), writing questions that match the exact 
-pattern of these exams as set by AIIMS/NBE and Indian nursing boards.
+const getIndianNursingPrompt = (subject, number = 10, difficulty = 'hard') => {
+  const cfg = resolveDiffConfig(difficulty);
+  return `You are a Chief Item Writer for Indian Nursing Officer recruitment examinations (AIIMS NORCET, ESIC, RRB Staff Nurse, DSSSB, PGIMER, SGPGI).
 
-TASK: Generate ${number} MCQs on the subject: ${subject}
-Difficulty: ${difficulty}
+TASK: Generate ${number} authentic Computer Adaptive Testing (CAT) quality clinical questions on the subject/topic: ${subject}
+TARGET DIFFICULTY LEVEL: ${cfg.name} (${cfg.focus})
 
-RULES:
-1. EVERY question MUST be presented as a clinical scenario. Present a brief patient 
-   situation (1–3 sentences: patient age, gender, setting, presenting complaint or 
-   clinical finding) and then ask what the nurse should do, assess, or prioritize. 
-   NEVER write a bare definition or recall question without a patient context.
-2. Single best-answer format only: exactly 4 options (A-D), exactly one correct.
-3. Base content strictly on the Indian Nursing Council (INC) syllabus and 
-   standard Indian nursing textbooks (e.g., BT Basavanthappa, Sudha C Ghai) 
-   — not US-specific protocols.
-4. The 'scenario' field (1–3 sentences) describes the patient. 
-   The 'question_stem' then poses the clinical question. Both fields are REQUIRED.
-5. Include the source topic and sub-topic as tags for filtering.
-6. Provide ONE concise rationale (2-4 sentences) explaining why the correct 
-   answer is right and briefly why the closest distractor is wrong.
-7. Avoid ambiguous or opinion-based statements — every answer must be 
-   objectively verifiable against standard nursing references.
-8. Match the difficulty and phrasing style of real NORCET/AIIMS previous 
-   year papers — direct, exam-board tone, not conversational.
-9. NEVER start the 'question_stem' with the topic name, unit name, subject name, or any label/prefix such as 'Q:', a number, 'MCQ:', etc. The question_stem MUST begin directly with the first word of the actual question sentence.
+MANDATORY RULES:
+1. Scenario: ${cfg.scenarioGuidelines}
+2. Clinical Focus: ${cfg.questionType}
+3. 4 options (A-D) with exactly ONE correct answer.
+4. Comprehensive 3–5 sentence clinical rationale explaining the exact pathophysiology and why the priority intervention is essential.
+5. Do NOT include prefixes like 'Q1.' or '[Subject]' in the question stem.
 
-OUTPUT FORMAT — return ONLY valid JSON, no preamble, matching this schema:
+OUTPUT FORMAT — return ONLY valid JSON matching this schema:
 {
   "questions": [
     {
       "id": "string",
-      "subject": "string",
-      "sub_topic": "string",
-      "difficulty": "Easy | Medium | Hard",
-      "scenario": "string (1-3 sentence patient situation — REQUIRED, never empty)",
-      "question_stem": "string (the clinical question based on the scenario — REQUIRED)",
-      "options": [{"label": "A", "text": "string", "is_correct": true/false}],
+      "difficultyLevel": ${cfg.level},
+      "difficultyName": "${cfg.name}",
+      "subject": "${subject}",
+      "scenario": "string (detailed clinical case study with vitals/labs)",
+      "question_stem": "string (explicit clinical question asking for priority action/assessment)",
+      "options": [
+        {"label": "A", "text": "string", "is_correct": true},
+        {"label": "B", "text": "string", "is_correct": false},
+        {"label": "C", "text": "string", "is_correct": false},
+        {"label": "D", "text": "string", "is_correct": false}
+      ],
       "rationale": "string",
-      "reference": "string (textbook/topic reference)"
+      "reference": "AIIMS NORCET Standard Practice Guidelines"
     }
   ]
 }`;
+};
 
 module.exports = {
+  DIFFICULTY_CONFIGS,
+  resolveDiffConfig,
   getNclexPrompt,
   getIndianNursingPrompt
 };

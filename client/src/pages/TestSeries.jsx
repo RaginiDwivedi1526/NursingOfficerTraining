@@ -66,16 +66,24 @@ const RECOS = [
 
 export default function TestSeries() {
   const [activeTab, setActiveTab] = useState('All Tests');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('hard');
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const handleStartTest = async (topic) => {
+  const DIFFICULTY_OPTIONS = [
+    { id: 'hard', label: 'Level 1: Hard 🔥', desc: 'Peak Acuity' },
+    { id: 'moderate', label: 'Level 2: Moderate ⚡', desc: 'Clinical Benchmark' },
+    { id: 'easy', label: 'Level 3: Easy 🟢', desc: 'Foundational' }
+  ];
+
+  const handleStartTest = async (topic, diffOverride) => {
     if (loading) return;
     setLoading(true);
+    const diffToUse = diffOverride || selectedDifficulty || 'hard';
     try {
       const res = await generateTest({
         topic: topic || 'Mock Test',
-        difficulty: 'medium',
+        difficulty: diffToUse,
         numberOfQuestions: 10
       });
       navigate(`/test/${res.data._id}`);
@@ -94,6 +102,32 @@ export default function TestSeries() {
         <div className="sts-header">
           <h1>Test Series</h1>
           <p>Practice more, improve faster. Get exam ready with our structured test series.</p>
+        </div>
+
+        {/* Difficulty Level Bar */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#ffffff', padding: '12px 18px', borderRadius: 12, border: '1px solid #e2e8f0', marginBottom: 18 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: '#334155' }}>Test Difficulty:</span>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {DIFFICULTY_OPTIONS.map(d => (
+              <button
+                key={d.id}
+                type="button"
+                onClick={() => setSelectedDifficulty(d.id)}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: 20,
+                  fontSize: 12,
+                  fontWeight: 700,
+                  border: selectedDifficulty === d.id ? '2px solid #4f46e5' : '1px solid #cbd5e1',
+                  background: selectedDifficulty === d.id ? '#e0e7ff' : '#f8fafc',
+                  color: selectedDifficulty === d.id ? '#4338ca' : '#475569',
+                  cursor: 'pointer'
+                }}
+              >
+                {d.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Hero Banner */}
@@ -120,6 +154,49 @@ export default function TestSeries() {
             </div>
             <div className="sts-hero-tests" style={{color:'#c4b5fd', fontSize:12}}>7 / 20 Tests Completed</div>
           </div>
+        </div>
+
+        {/* Archer / UWorld Style Computer Adaptive Test Card */}
+        <div style={{
+          background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)',
+          borderRadius: 16,
+          padding: '22px 26px',
+          color: '#ffffff',
+          marginBottom: 24,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 16,
+          border: '1px solid #4338ca'
+        }}>
+          <div>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#4c1d95', color: '#e9d5ff', padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700, marginBottom: 8 }}>
+              ⚡ CAT Clinical Case Engine
+            </div>
+            <h3 style={{ fontSize: 18, fontWeight: 800, margin: '0 0 4px 0', color: '#ffffff' }}>
+              Full Length NCLEX & NORCET Practice Tests
+            </h3>
+            <p style={{ margin: 0, fontSize: 13, color: '#c7d2fe' }}>
+              Every test includes CAT qualities with vitals, labs, prioritization dilemmas, and choices for Level 1 (Hard), Level 2 (Moderate), and Level 3 (Easy).
+            </p>
+          </div>
+          <button 
+            onClick={() => navigate('/tests')}
+            style={{
+              background: '#7c3aed',
+              color: '#ffffff',
+              border: 'none',
+              padding: '12px 20px',
+              borderRadius: 8,
+              fontSize: 14,
+              fontWeight: 700,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            Start Practice Test →
+          </button>
         </div>
 
         {/* Quick Stats */}

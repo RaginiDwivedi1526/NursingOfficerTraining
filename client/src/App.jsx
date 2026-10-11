@@ -64,6 +64,9 @@ import AdminReports from './pages/admin/AdminReports';
 import AdminLayout from './components/admin/AdminLayout';
 import StudentLayout from './components/dashboard/StudentLayout';
 
+import CATDashboard from './pages/CATDashboard';
+import TakeCATTest from './pages/TakeCATTest';
+
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
   return user ? <StudentLayout>{children}</StudentLayout> : <Navigate to="/login" />;
@@ -82,7 +85,7 @@ function AppRoutes() {
   const { user } = useAuth();
   const location = useLocation();
   const hideNav = location.pathname.startsWith('/admin') || 
-                  ['/dashboard', '/tests', '/test/', '/result/', '/live-classes', '/recorded', '/ai-learning', '/study-material', '/notes', '/test-series', '/mock-tests', '/pyq-practice', '/question-bank', '/performance', '/mistakes', '/insights', '/my-plan', '/bookmarks', '/downloads', '/certificates', '/free-tests', '/skill-lab', '/clinical-cases', '/library'].some(p => location.pathname.startsWith(p));
+                  ['/dashboard', '/tests', '/test/', '/result/', '/live-classes', '/recorded', '/ai-learning', '/study-material', '/notes', '/test-series', '/mock-tests', '/pyq-practice', '/question-bank', '/performance', '/mistakes', '/insights', '/my-plan', '/bookmarks', '/downloads', '/certificates', '/free-tests', '/skill-lab', '/clinical-cases', '/library', '/cat-test'].some(p => location.pathname.startsWith(p));
   return (
     <>
       {!hideNav && <Navbar />}
@@ -96,6 +99,8 @@ function AppRoutes() {
         <Route path="/tests" element={<ProtectedRoute><TestList /></ProtectedRoute>} />
         <Route path="/test/:id" element={<ProtectedRoute><TakeTest /></ProtectedRoute>} />
         <Route path="/result/:id" element={<ProtectedRoute><TestResult /></ProtectedRoute>} />
+        <Route path="/cat-test" element={<ProtectedRoute><Navigate to="/mock-tests" replace /></ProtectedRoute>} />
+        <Route path="/cat-test/live" element={<ProtectedRoute><Navigate to="/tests" replace /></ProtectedRoute>} />
         <Route path="/live-classes" element={<ProtectedRoute><LiveClasses /></ProtectedRoute>} />
         <Route path="/recorded" element={<ProtectedRoute><RecordedClasses /></ProtectedRoute>} />
         <Route path="/ai-learning" element={<ProtectedRoute><AILearning /></ProtectedRoute>} />

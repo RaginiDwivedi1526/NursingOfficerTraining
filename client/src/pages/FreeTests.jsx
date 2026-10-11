@@ -1,10 +1,33 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, SlidersHorizontal, ChevronDown, MoreVertical, ArrowRight, CheckCircle2, Shield, Target, Clock, Activity, Play } from 'lucide-react';
 import './StudentFreeTests.css';
 
 export default function FreeTests() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('All Tests');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('moderate');
   const TABS = ['All Tests', 'Full Length Tests', 'Subject Wise Tests', 'Sectional Tests', 'Topic Tests'];
+
+  const DIFFICULTY_OPTIONS = [
+    { id: 'hard', label: 'Level 1: Hard 🔥', levelNum: 3 },
+    { id: 'moderate', label: 'Level 2: Moderate ⚡', levelNum: 2 },
+    { id: 'easy', label: 'Level 3: Easy 🟢', levelNum: 1 }
+  ];
+
+  const handleStartAdaptiveTest = (test) => {
+    const diffObj = DIFFICULTY_OPTIONS.find(d => d.id === selectedDifficulty) || DIFFICULTY_OPTIONS[1];
+    const topic = test.sub.includes('Subject') ? test.title.split(' - ')[0] : 'All Subjects';
+    navigate('/test/adaptive', {
+      state: {
+        title: test.title,
+        topic,
+        startingDifficulty: diffObj.levelNum,
+        difficultyLevel: diffObj.levelNum === 3 ? 1 : (diffObj.levelNum === 2 ? 2 : 3),
+        difficultyName: diffObj.label
+      }
+    });
+  };
 
   const TESTS = [
     { icon: '📋', iconBg: '#dcfce7', iconCol: '#16a34a', title: 'NORCET 2024 Free Full Length Test - 01', sub: 'Based on Latest Exam Pattern', q: 200, t: '3 Hours', a: '13,245' },
@@ -68,13 +91,39 @@ export default function FreeTests() {
           <button className="ft-filter-btn"><SlidersHorizontal size={14}/> Filters</button>
         </div>
 
+        {/* Difficulty Level Bar */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#ffffff', padding: '12px 18px', borderRadius: 12, border: '1px solid #e2e8f0', margin: '14px 0' }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: '#334155' }}>Starting Difficulty Level:</span>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {DIFFICULTY_OPTIONS.map(d => (
+              <button
+                key={d.id}
+                type="button"
+                onClick={() => setSelectedDifficulty(d.id)}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: 20,
+                  fontSize: 12,
+                  fontWeight: 700,
+                  border: selectedDifficulty === d.id ? '2px solid #4f46e5' : '1px solid #cbd5e1',
+                  background: selectedDifficulty === d.id ? '#e0e7ff' : '#f8fafc',
+                  color: selectedDifficulty === d.id ? '#4338ca' : '#475569',
+                  cursor: 'pointer'
+                }}
+              >
+                {d.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Test List */}
         <div className="ft-list">
           {TESTS.map((t, i) => (
             <div className="ft-item" key={i}>
               <div className="ft-item-icon" style={{background:t.iconBg, color:t.iconCol}}>{t.icon}</div>
               <div className="ft-item-info">
-                <div className="ft-item-title">{t.title} <span className="ft-badge-free">Free</span></div>
+                <div className="ft-item-title">{t.title} <span className="ft-badge-free">Computer Adaptive</span></div>
                 <div className="ft-item-sub">{t.sub}</div>
               </div>
               <div className="ft-item-stats">
@@ -83,7 +132,13 @@ export default function FreeTests() {
                 <div className="ft-istat"><div className="ft-istat-lbl">Attempts</div><div className="ft-istat-val">{t.a}</div></div>
               </div>
               <div className="ft-item-actions">
-                <button className="ft-btn-start">Start Test</button>
+                <button 
+                  className="ft-btn-start" 
+                  onClick={() => handleStartAdaptiveTest(t)}
+                  style={{ background: '#4f46e5', color: '#fff', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  Start CAT Test
+                </button>
                 <button className="ft-btn-more"><MoreVertical size={16}/></button>
               </div>
             </div>

@@ -28,6 +28,7 @@ connectDB().then(() => {
   app.use('/api/ai', require('./routes/ai'));
   app.use('/api/admin', require('./routes/admin'));
   app.use('/api/live-classes', require('./routes/liveClasses'));
+  app.use('/api/cat', require('./routes/cat'));
 
   // Health check
   app.get('/api/health', (req, res) => {

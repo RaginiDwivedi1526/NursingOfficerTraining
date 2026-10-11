@@ -205,6 +205,12 @@ const MOCK_EXAMS = [
   "PARAMILITARY FORCES (BSF, CRPF, ITBP, SSB, CISF)"
 ];
 
+const DIFFICULTY_LEVELS = [
+  { id: 'hard', level: 1, label: 'Level 1: Hard', short: 'Level 1 (Hard)', tag: '🔥 Peak Acuity', desc: 'Emergency / ICU Prioritization & Critical Decompensation', color: '#dc2626', bg: '#fee2e2', border: '#fca5a5' },
+  { id: 'moderate', level: 2, label: 'Level 2: Moderate', short: 'Level 2 (Moderate)', tag: '⚡ Clinical Benchmark', desc: 'Standard Passing Clinical Decision Making & Nursing Care', color: '#4f46e5', bg: '#e0e7ff', border: '#c7d2fe' },
+  { id: 'easy', level: 3, label: 'Level 3: Easy', short: 'Level 3 (Easy)', tag: '🟢 Foundational', desc: 'Core Clinical Assessments, Vital Signs & Patient Safety Rights', color: '#16a34a', bg: '#dcfce7', border: '#bbf7d0' },
+];
+
 function TestList({ defaultTab }) {
   const location = useLocation();
   const initialTab = defaultTab || (location.pathname === '/mock-tests' ? 'mock' : 'practice');
@@ -213,10 +219,29 @@ function TestList({ defaultTab }) {
   const [loading, setLoading] = useState(true);
   const [selectedSubject, setSelectedSubject] = useState('All Subjects');
   const [selectedMockExam, setSelectedMockExam] = useState('All Mock Exams');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('hard'); // 'hard' (Level 1), 'moderate' (Level 2), 'easy' (Level 3)
   const [searchQuery, setSearchQuery] = useState('');
   const [isAutoGenerating, setIsAutoGenerating] = useState(false);
+  const [startingTestId, setStartingTestId] = useState(null);
   const autoGenRef = useRef(new Set()); // track which topics have already been auto-generated
   const navigate = useNavigate();
+
+  const handleStartTestClick = (test, levelOverride) => {
+    const diffToUse = levelOverride || selectedDifficulty || 'hard';
+    const topicToUse = test?.topic || (activeTab === 'practice' && selectedSubject !== 'All Subjects' ? selectedSubject : 'All Subjects');
+    const examTypeToUse = activeTab === 'mock' ? 'nursing_officer' : 'nclex_rn';
+    const testId = test?._id || 'adaptive';
+
+    navigate(`/test/${testId}`, {
+      state: {
+        test,
+        title: test?.title || `${topicToUse} - Computer Adaptive Test`,
+        topic: topicToUse,
+        startingDifficulty: diffToUse,
+        examType: examTypeToUse
+      }
+    });
+  };
 
   useEffect(() => {
     if (location.pathname === '/mock-tests' || defaultTab === 'mock') {
@@ -269,7 +294,7 @@ function TestList({ defaultTab }) {
         try {
           await generateTest({
             topic: selectedSubject,
-            difficulty: 'medium',
+            difficulty: 'hard',
             numberOfQuestions: 10
           });
           await fetchTests(); // refresh list to show the new test
@@ -372,12 +397,66 @@ function TestList({ defaultTab }) {
             />
           </div>
 
+          {/* Difficulty Level Selector for Practice Tests */}
+          {activeTab === 'practice' && (
+            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '16px 20px', marginBottom: '24px', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', flexWrap: 'wrap', gap: 8 }}>
+                <div>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '11px', fontWeight: 800, color: '#4f46e5', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    <span>⚡ CAT Clinical Judgment Standards</span>
+                  </div>
+                  <h3 style={{ margin: '2px 0 0 0', fontSize: '16px', color: '#0f172a', fontWeight: 800 }}>
+                    Select Practice Test Difficulty Level
+                  </h3>
+                </div>
+                <span style={{ fontSize: '12px', background: '#f8fafc', border: '1px solid #e2e8f0', color: '#334155', padding: '4px 12px', borderRadius: '20px', fontWeight: 700 }}>
+                  Active: {DIFFICULTY_LEVELS.find(d => d.id === selectedDifficulty)?.label}
+                </span>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '10px' }}>
+                {DIFFICULTY_LEVELS.map(d => {
+                  const isSelected = selectedDifficulty === d.id;
+                  return (
+                    <button
+                      key={d.id}
+                      type="button"
+                      onClick={() => setSelectedDifficulty(d.id)}
+                      style={{
+                        textAlign: 'left',
+                        padding: '12px 14px',
+                        borderRadius: '10px',
+                        border: isSelected ? `2px solid ${d.color}` : '1px solid #e2e8f0',
+                        background: isSelected ? d.bg : '#ffffff',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 4
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span style={{ fontWeight: 800, fontSize: '13px', color: isSelected ? d.color : '#1e293b' }}>
+                          {d.label}
+                        </span>
+                        <span style={{ fontSize: '11px', fontWeight: 700, color: d.color }}>{d.tag}</span>
+                      </div>
+                      <span style={{ fontSize: '11px', color: '#64748b', lineHeight: 1.35 }}>
+                        {d.desc}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {activeTab === 'practice' && selectedSubject !== 'All Subjects' && isAutoGenerating && (
             <div style={{ backgroundColor: '#eef2ff', border: '1px solid #c7d2fe', padding: '20px', borderRadius: '12px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
               <Loader2 size={24} style={{ color: 'var(--navy)', animation: 'spin 1s linear infinite' }} />
               <div>
-                <h3 style={{ margin: '0 0 4px 0', color: 'var(--navy)' }}>Preparing your practice test…</h3>
-                <p style={{ margin: 0, color: 'var(--gray)', fontSize: '14px' }}>AI is generating questions for <strong>{selectedSubject}</strong>. This takes just a moment.</p>
+                <h3 style={{ margin: '0 0 4px 0', color: 'var(--navy)' }}>Preparing your CAT practice test…</h3>
+                <p style={{ margin: 0, color: 'var(--gray)', fontSize: '14px' }}>AI is generating authentic <strong>{DIFFICULTY_LEVELS.find(d => d.id === selectedDifficulty)?.label}</strong> clinical questions for <strong>{selectedSubject}</strong>.</p>
               </div>
             </div>
           )}
@@ -387,27 +466,75 @@ function TestList({ defaultTab }) {
               <div className="test-card-modern" key={test._id}>
                 <div className="test-card-header-modern">
                   <span className="test-topic-badge">{test.topic}</span>
-                  {test.isFree ? <span className="badge-free">Free</span> : <span className="badge-premium">Premium</span>}
+                  <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                    <span style={{ fontSize: '10px', fontWeight: 700, background: '#ede9fe', color: '#6b21a8', padding: '2px 8px', borderRadius: '12px' }}>
+                      ⚡ CAT Quality
+                    </span>
+                    {test.isFree ? <span className="badge-free">Free</span> : <span className="badge-premium">Premium</span>}
+                  </div>
                 </div>
                 <h3>{test.title}</h3>
                 <p>{test.description}</p>
                 <div className="test-meta-modern">
-                  <span>📚 {test.totalQuestions} Questions</span>
-                  <span>⏱ {test.duration} mins</span>
-                  <span>{difficultyEmoji[test.difficulty]} {test.difficulty.charAt(0).toUpperCase() + test.difficulty.slice(1)}</span>
+                  <span>📚 {test.totalQuestions || 10} Questions</span>
+                  <span>⏱ {test.duration || 30} mins</span>
+                  <span style={{ fontWeight: 700, color: DIFFICULTY_LEVELS.find(d => d.id === (activeTab === 'practice' ? selectedDifficulty : (test.difficulty || 'hard')))?.color }}>
+                    {activeTab === 'practice' ? DIFFICULTY_LEVELS.find(d => d.id === selectedDifficulty)?.label : (difficultyEmoji[test.difficulty] || '🔴') + ' ' + (test.difficulty ? test.difficulty.charAt(0).toUpperCase() + test.difficulty.slice(1) : 'Hard')}
+                  </span>
                 </div>
-                <button className="test-start-btn" onClick={() => navigate(`/test/${test._id}`)}>
-                  Start Now <ChevronRight size={18} />
+
+                {activeTab === 'practice' && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, margin: '8px 0 12px 0', padding: '6px 10px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #f1f5f9' }}>
+                    <span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b' }}>Choose Level:</span>
+                    <div style={{ display: 'flex', gap: 4 }}>
+                      {DIFFICULTY_LEVELS.map(d => (
+                        <button
+                          key={d.id}
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); setSelectedDifficulty(d.id); }}
+                          style={{
+                            fontSize: '11px',
+                            padding: '2px 8px',
+                            borderRadius: '6px',
+                            border: selectedDifficulty === d.id ? `1px solid ${d.color}` : '1px solid #cbd5e1',
+                            background: selectedDifficulty === d.id ? d.bg : '#ffffff',
+                            color: selectedDifficulty === d.id ? d.color : '#475569',
+                            fontWeight: selectedDifficulty === d.id ? 700 : 500,
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {d.short}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <button 
+                  className="test-start-btn" 
+                  onClick={() => handleStartTestClick(test)}
+                  disabled={startingTestId === test._id}
+                >
+                  {startingTestId === test._id ? 'Preparing Test...' : `Start ${activeTab === 'practice' ? (DIFFICULTY_LEVELS.find(d => d.id === selectedDifficulty)?.short || 'Practice') : 'Exam'}`} <ChevronRight size={18} />
                 </button>
               </div>
             ))}
           </div>
 
-          {filteredTests.length === 0 && !isAutoGenerating && (
-            <div className="empty-tests-state">
-              <div className="empty-icon"><Stethoscope size={48} /></div>
-              <h3>No tests available</h3>
-              <p>We are currently updating our question bank for this category. Check back soon!</p>
+          {filteredTests.length === 0 && (
+            <div className="empty-tests-state" style={{ background: '#ffffff', borderRadius: 16, padding: '36px 20px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
+              <div className="empty-icon"><BrainCircuit size={48} color="#7c3aed" /></div>
+              <h3 style={{ fontSize: 18, color: '#0f172a', margin: '12px 0 6px 0' }}>Launch Computer Adaptive Test for {selectedSubject}</h3>
+              <p style={{ color: '#64748b', fontSize: 14, maxWidth: 500, margin: '0 auto 18px auto' }}>
+                Experience real-time Computer Adaptive Testing: starts at your chosen benchmark ({DIFFICULTY_LEVELS.find(d => d.id === selectedDifficulty)?.label}), scales up on correct answers, and evaluates your passing threshold.
+              </p>
+              <button
+                className="test-start-btn"
+                onClick={() => handleStartTestClick({ title: `${selectedSubject} - Computer Adaptive Practice`, topic: selectedSubject })}
+                style={{ maxWidth: 300, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+              >
+                Launch Adaptive Test Now <ChevronRight size={18} />
+              </button>
             </div>
           )}
         </div>

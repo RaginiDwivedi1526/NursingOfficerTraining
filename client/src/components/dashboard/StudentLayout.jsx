@@ -30,8 +30,9 @@ const NAV = [
   { 
     section: 'Practice', 
     items: [
-      { icon: <CheckCircle2 size={16}/>, label: 'Test Series', path: '/test-series' },
+      { icon: <CheckCircle2 size={16}/>, label: 'Practice Tests', path: '/tests' },
       { icon: <Target size={16}/>, label: 'Mock Tests', path: '/mock-tests' },
+      { icon: <CheckCircle2 size={16}/>, label: 'Test Series', path: '/test-series' },
       { icon: <BookOpen size={16}/>, label: 'PYQ Practice', path: '/pyq-practice' },
       { icon: <FileText size={16}/>, label: 'Question Bank', path: '/question-bank' },
       { icon: <CheckCircle2 size={16}/>, label: 'Free Tests', path: '/free-tests' },

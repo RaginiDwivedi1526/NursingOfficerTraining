@@ -569,48 +569,72 @@ const CORE_SUBJECTS = [
 ];
 
 const generateHardQuestions = (subject, unit) => {
-  const questions = [];
-  
-  // Real-looking question 1
-  questions.push({
-    questionText: `A 45-year-old patient is admitted to the ${unit} unit with complex symptoms. During your assessment, you note significant deviations from the baseline. Based on advanced ${subject} principles, what is the MOST immediate priority?`,
-    options: [
-      `Administer scheduled medications for ${unit} and document findings.`,
-      `Hold all interventions until the attending physician arrives.`,
-      `Perform a focused assessment related to ${unit}, secure the airway, and obtain immediate vascular access.`,
-      `Review the patient's past medical history to confirm the diagnosis.`
-    ],
-    correctAnswer: 2,
-    explanation: `In any advanced critical scenario within ${unit}, following the ABCs (Airway, Breathing, Circulation) and performing a focused assessment is the highest priority before other interventions.`,
-    topic: unit
-  });
-
-  // Real-looking question 2
-  questions.push({
-    questionText: `When interpreting diagnostic data for a high-risk patient in ${unit}, you notice a critical laboratory value. Which action best demonstrates the application of evidence-based practice in ${subject}?`,
-    options: [
-      `Notifying the rapid response team and preparing for immediate resuscitation protocols specific to ${unit}.`,
-      `Waiting for the next shift to repeat the laboratory draw to rule out a false positive.`,
-      `Documenting the finding in the electronic health record without verbal handoff.`,
-      `Administering a PRN anxiolytic to calm the patient while waiting for orders.`
-    ],
-    correctAnswer: 0,
-    explanation: `Critical laboratory values in ${unit} necessitate immediate escalation of care and activation of emergency protocols based on evidence-based practice.`,
-    topic: unit
-  });
-
-  // Generate remaining 18 questions procedurally to hit the 20-question requirement
-  for(let i = 3; i <= 20; i++) {
-    questions.push({
-      questionText: `Advanced Clinical Scenario ${i}: A nurse is caring for a patient diagnosed with a complex condition related to ${unit}. The patient suddenly exhibits signs of decompensation. What is the most appropriate independent nursing action?`,
-      options: [
-        `Wait for a physician's order before taking any action.`,
-        `Apply standard protocols for ${unit}, reassess vitals every 5 minutes, and prepare for potential intubation or transfer to ICU.`,
-        `Delegate the continuous monitoring of the patient to an unlicensed assistive personnel (UAP).`,
-        `Increase the IV fluid rate without assessing lung sounds or cardiovascular status.`
+  const caseTemplates = [
+    {
+      stem: (u, s) => `CLINICAL CASE SCENARIO: A 62-year-old patient admitted to the ICU under ${s} (${u}) experiences sudden severe hypotension (BP 82/50 mmHg), tachypnea (RR 32/min), and an abrupt decrease in urine output to 10 mL/hr. Baseline arterial blood gas reveals pH 7.21, PaCO2 30 mmHg, HCO3 12 mEq/L, indicating severe metabolic acidosis with partial respiratory compensation.\n\nWhich immediate nursing action takes absolute priority in this clinical emergency?`,
+      options: (u, s) => [
+        `Initiate fluid resuscitation with isotonic crystalloids as prescribed, elevate foot of bed, and notify the critical care response team immediately.`,
+        `Administer IV sodium bicarbonate bolus rapidly without verifying serum potassium levels.`,
+        `Increase oxygen via nasal cannula to 2 L/min and recheck arterial blood gas in 4 hours.`,
+        `Place the patient in High-Fowler's position and administer PRN IV sedation.`
       ],
-      correctAnswer: 1,
-      explanation: `Nurses must act proactively when a patient decompensates in ${unit}. Applying standing protocols and preparing for escalation of care are critical independent and interdependent actions.`,
+      correctAnswer: 0,
+      exp: (u, s) => `In severe septic/hypovolemic shock causing severe metabolic acidosis within ${u}, immediate hemodynamic stabilization via isotonic IV fluid resuscitation, lowering head/elevating legs (unless contraindicated), and critical care notification are the highest priorities.`
+    },
+    {
+      stem: (u, s) => `CLINICAL CASE SCENARIO: A 48-year-old post-operative patient following major procedure in ${s} (${u}) reports sudden sharp chest pain (rated 9/10), dyspnea, and hemoptysis. Vital signs: BP 102/64 mmHg, HR 124 bpm (sinus tachycardia), SpO2 86% on room air. Auscultation reveals clear breath sounds bilaterally.\n\nWhich life-threatening complication must the nurse suspect FIRST?`,
+      options: (u, s) => [
+        `Massive Pulmonary Embolism (PE) secondary to deep vein thrombosis.`,
+        `Spontaneous Tension Pneumothorax with mediastinal shift.`,
+        `Acute Myocardial Infarction with acute mitral valve dysfunction.`,
+        `Hospital-Acquired Bacterial Pneumonia with pleural effusion.`
+      ],
+      correctAnswer: 0,
+      exp: (u, s) => `Sudden onset sharp chest pain, tachypnea, severe hypoxia, and sinus tachycardia with clear lungs in a post-op patient strongly indicate pulmonary embolism.`
+    },
+    {
+      stem: (u, s) => `CLINICAL CASE SCENARIO: While monitoring a high-risk patient in ${u} receiving continuous IV infusion of a high-alert medication, the nurse notes cardiac monitor telemetry showing widening QRS complexes, peaked T waves, and prolonged PR intervals. The serum potassium result returns at 6.9 mEq/L.\n\nWhich emergency drug should the nurse prepare to administer FIRST to protect the myocardium?`,
+      options: (u, s) => [
+        `Calcium Gluconate 10% IV push to stabilize myocardial cell membranes.`,
+        `Regular Insulin 10 units IV with 50% Dextrose to drive potassium into cells.`,
+        `Sodium Polystyrene Sulfonate (Kayexalate) orally to bind potassium in GI tract.`,
+        `Inhaled Albuterol nebulizer therapy to induce intracellular K+ shift.`
+      ],
+      correctAnswer: 0,
+      exp: (u, s) => `IV Calcium Gluconate does not lower serum potassium, but it directly antagonizes membrane excitability and protects against fatal hyperkalemic ventricular arrhythmias.`
+    },
+    {
+      stem: (u, s) => `CLINICAL CASE SCENARIO: A patient undergoing treatment for severe acute condition in ${s} (${u}) exhibits early signs of Septic Shock. Vital signs: BP 90/58 mmHg, HR 112 bpm, Temp 102.8°F (39.3°C), WBC 19,500/mm³. Serum lactate level is 4.2 mmol/L.\n\nAccording to International Surviving Sepsis guidelines, which intervention must be completed within the 1-hour sepsis bundle?`,
+      options: (u, s) => [
+        `Obtain blood cultures prior to starting broad-spectrum antibiotics and administer 30 mL/kg crystalloid bolus for hypotension or lactate ≥4 mmol/L.`,
+        `Administer IV corticosteroids immediately before drawing any blood cultures.`,
+        `Restrict fluid intake to prevent pulmonary edema and re-evaluate in 6 hours.`,
+        `Administer vasopressors only after completing 12 hours of fluid challenge.`
+      ],
+      correctAnswer: 0,
+      exp: (u, s) => `The hour-1 sepsis bundle requires measuring lactate, obtaining blood cultures prior to antibiotics, administering broad-spectrum antibiotics, and rapidly infusing 30 mL/kg crystalloid for hypotension or lactate ≥4 mmol/L.`
+    },
+    {
+      stem: (u, s) => `CLINICAL CASE SCENARIO: A 35-year-old patient admitted to ${u} with head trauma is monitored for Increased Intracranial Pressure (ICP). The nurse observes Cushing's Triad (systolic hypertension with widening pulse pressure, bradycardia, and irregular respirations). ICP reading is 26 mmHg.\n\nWhich intervention is CONTRAINDICATED because it exacerbates elevated ICP?`,
+      options: (u, s) => [
+        `Extreme hip flexion, Trendelenburg position, and frequent endotracheal suctioning.`,
+        `Elevation of the head of bed to 30 degrees with neck in neutral midline alignment.`,
+        `Administration of IV Mannitol 20% or 3% Hypertonic Saline as ordered.`,
+        `Maintaining PaCO2 between 35–45 mmHg via controlled mechanical ventilation.`
+      ],
+      correctAnswer: 0,
+      exp: (u, s) => `Extreme hip flexion increases intrathoracic and intra-abdominal pressure, blocking cerebral venous outflow and exacerbating ICP elevation.`
+    }
+  ];
+
+  const questions = [];
+  for (let i = 0; i < 20; i++) {
+    const tpl = caseTemplates[i % caseTemplates.length];
+    questions.push({
+      questionText: tpl.stem(unit, subject),
+      options: tpl.options(unit, subject),
+      correctAnswer: tpl.correctAnswer,
+      explanation: tpl.exp(unit, subject),
       topic: unit
     });
   }

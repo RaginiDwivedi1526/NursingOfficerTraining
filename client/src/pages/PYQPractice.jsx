@@ -30,16 +30,24 @@ const QUICK_ACTIONS = [
 
 export default function PYQPractice() {
   const [activeTab, setActiveTab] = useState('Year Wise');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('hard');
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const handleStartPractice = async (topic) => {
+  const DIFFICULTY_OPTIONS = [
+    { id: 'hard', label: 'Level 1: Hard 🔥', desc: 'Peak Prioritization' },
+    { id: 'moderate', label: 'Level 2: Moderate ⚡', desc: 'Standard Benchmark' },
+    { id: 'easy', label: 'Level 3: Easy 🟢', desc: 'Core Foundations' }
+  ];
+
+  const handleStartPractice = async (topic, diffOverride) => {
     if (loading) return;
     setLoading(true);
+    const diffToUse = diffOverride || selectedDifficulty || 'hard';
     try {
       const res = await generateTest({
         topic: topic || 'Previous Year Questions',
-        difficulty: 'medium',
+        difficulty: diffToUse,
         numberOfQuestions: 10
       });
       navigate(`/test/${res.data._id}`);
@@ -57,7 +65,33 @@ export default function PYQPractice() {
       <div className="pyq-left">
         <div className="pyq-header">
           <h1>PYQ Practice 📋</h1>
-          <p>Practice previous year questions to understand exam pattern and boost your score.</p>
+          <p>Practice previous year questions with authentic CAT clinical scenarios and selectable difficulty levels.</p>
+        </div>
+
+        {/* Difficulty Level Bar */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#ffffff', padding: '12px 18px', borderRadius: 12, border: '1px solid #e2e8f0', marginBottom: 18 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: '#334155' }}>Difficulty Level:</span>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {DIFFICULTY_OPTIONS.map(d => (
+              <button
+                key={d.id}
+                type="button"
+                onClick={() => setSelectedDifficulty(d.id)}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: 20,
+                  fontSize: 12,
+                  fontWeight: 700,
+                  border: selectedDifficulty === d.id ? '2px solid #4f46e5' : '1px solid #cbd5e1',
+                  background: selectedDifficulty === d.id ? '#e0e7ff' : '#f8fafc',
+                  color: selectedDifficulty === d.id ? '#4338ca' : '#475569',
+                  cursor: 'pointer'
+                }}
+              >
+                {d.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Hero Banner */}
@@ -65,13 +99,13 @@ export default function PYQPractice() {
           <div className="pyq-hero-left">
             <div className="pyq-hero-title">Previous Year Questions, Perfect Preparation!</div>
             <div className="pyq-hero-feats">
-              <div className="pyq-hero-feat"><span>✓</span> Chapter-wise & Year-wise PYQs</div>
-              <div className="pyq-hero-feat"><span>✓</span> Detailed Solutions & Explanations</div>
-              <div className="pyq-hero-feat"><span>✓</span> Track Your Progress & Accuracy</div>
-              <div className="pyq-hero-feat"><span>✓</span> Identify Weak Areas</div>
+              <div className="pyq-hero-feat"><span>✓</span> CAT-Style Case Studies & High-Yield Questions</div>
+              <div className="pyq-hero-feat"><span>✓</span> Detailed Solutions & Distractor Explanations</div>
+              <div className="pyq-hero-feat"><span>✓</span> Choose Level 1 (Hard), Level 2 (Moderate), or Level 3 (Easy)</div>
+              <div className="pyq-hero-feat"><span>✓</span> Track Your Accuracy in Real-Time</div>
             </div>
             <button className="pyq-hero-btn" onClick={() => handleStartPractice('NORCET Mixed PYQ')} disabled={loading}>
-              {loading ? 'Generating...' : 'Start Practicing Now →'}
+              {loading ? 'Preparing Test...' : `Start Practicing Now (${DIFFICULTY_OPTIONS.find(d => d.id === selectedDifficulty)?.label.split(' ')[0]} ${DIFFICULTY_OPTIONS.find(d => d.id === selectedDifficulty)?.label.split(' ')[1]}) →`}
             </button>
           </div>
           <div className="pyq-hero-right">

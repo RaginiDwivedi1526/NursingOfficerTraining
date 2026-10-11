@@ -1,0 +1,21 @@
+# Large document and archive files
+*.docx
+*.zip
+*.rar
+*.tar.gz
+fundamental of nursing.docx
+client.zip
+
+# Dependencies & build outputs
+node_modules/
+dist/
+build/
+.DS_Store
+
+# Environment files and secrets
+**/.env
+**/.env.*
+.env
+.env.*
+server/.env
+client/.env

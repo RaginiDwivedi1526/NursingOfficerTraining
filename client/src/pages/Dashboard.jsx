@@ -288,6 +288,72 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* 🚀 COMPUTER ADAPTIVE TEST (CAT) BANNER */}
+      <div style={{
+        background: 'linear-gradient(135deg, #0f172a 0%, #312e81 100%)',
+        borderRadius: 16,
+        padding: '24px 28px',
+        color: '#ffffff',
+        marginBottom: 24,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: 16,
+        boxShadow: '0 8px 24px rgba(15, 23, 42, 0.15)'
+      }}>
+        <div style={{ maxWidth: '650px' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(124, 58, 237, 0.3)', color: '#c084fc', padding: '4px 10px', borderRadius: 20, fontSize: 12, fontWeight: 700, marginBottom: 8 }}>
+            <BrainCircuit size={14} /> CAT Clinical Judgment Engine Applied Across All Tests
+          </div>
+          <h2 style={{ fontSize: 20, fontWeight: 800, margin: '0 0 6px 0', color: '#ffffff' }}>
+            Practice With Authentic CAT Clinical Case Scenarios
+          </h2>
+          <p style={{ margin: 0, fontSize: 13, color: '#cbd5e1', lineHeight: 1.5 }}>
+            Every question now integrates authentic CAT qualities — full clinical vignettes with vitals & labs, prioritization dilemmas, and in-depth rationales. Choose your level: <strong>Level 1 (Hard)</strong>, <strong>Level 2 (Moderate)</strong>, or <strong>Level 3 (Easy)</strong>.
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <button 
+            onClick={() => navigate('/tests')}
+            style={{
+              background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
+              color: '#ffffff',
+              border: 'none',
+              padding: '12px 20px',
+              borderRadius: 10,
+              fontSize: 13,
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              boxShadow: '0 4px 12px rgba(124, 58, 237, 0.4)'
+            }}
+          >
+            Practice Tests (Level 1-3) <ArrowRight size={16} />
+          </button>
+          <button 
+            onClick={() => navigate('/mock-tests')}
+            style={{
+              background: 'rgba(255, 255, 255, 0.1)',
+              color: '#ffffff',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
+              padding: '12px 18px',
+              borderRadius: 10,
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6
+            }}
+          >
+            Mock Exams <ArrowRight size={14} />
+          </button>
+        </div>
+      </div>
+
       {/* Middle Grid: Subject Mastery, Weekly Trend, Today's Interactive Plan */}
       <div className="sd-grid-mid">
         {/* Subject Mastery */}

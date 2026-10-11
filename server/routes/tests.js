@@ -27,87 +27,226 @@ const stripPrefix = (text) => {
   return s.trim();
 };
 
-const generateFallbackQuestions = (topic, count = 10) => {
-  const sampleBank = [
+const generateFallbackQuestions = (topic, count = 10, diffLevel = 1) => {
+  const level1Bank = [
     {
-      questionText: `A patient admitted with suspected myocardial infarction is prescribed sublingual nitroglycerin. Which vital sign must the nurse monitor most closely prior to administration?`,
-      options: ['Blood Pressure', 'Respiratory Rate', 'Body Temperature', 'Oxygen Saturation'],
+      scenario: `CLINICAL CASE SCENARIO: A 58-year-old male with a history of acute anterior wall myocardial infarction 3 days ago is admitted to the Cardiac Intensive Care Unit (CICU). During assessment, the nurse notes sudden dyspnea, bilateral pulmonary crackles in all lung fields, a new loud holosystolic murmur at the apex radiating to the axilla, and a blood pressure drop from 130/80 mmHg to 88/54 mmHg. Heart rate is 118 bpm (sinus tachycardia).`,
+      questionText: `Which life-threatening complication should the nurse suspect FIRST and prepare for immediate emergency management?`,
+      options: [
+        'Acute papillary muscle rupture causing severe mitral regurgitation and cardiogenic shock',
+        'Ventricular septal defect resulting in left-to-right shunt',
+        'Acute pericarditis with pericardial friction rub and cardiac tamponade',
+        'Pulmonary embolism secondary to deep vein thrombosis'
+      ],
       correctAnswer: 0,
-      explanation: 'Nitroglycerin is a potent vasodilator and can cause severe hypotension. Blood pressure must be checked before each dose.',
-      topic: topic
+      explanation: 'A sudden holosystolic murmur at the apex following anterior/inferior MI accompanied by pulmonary edema and acute severe hypotension indicates acute papillary muscle rupture leading to massive mitral regurgitation and cardiogenic shock, a surgical emergency.',
+      topic: topic,
+      difficultyLevel: 1,
+      difficultyName: 'Level 1: Hard'
     },
     {
-      questionText: `During blood transfusion, the patient complains of chills, lower back pain, and fever. What is the immediate nursing action?`,
-      options: ['Stop the blood transfusion immediately', 'Slow down the infusion rate', 'Administer paracetamol and continue', 'Notify the blood bank operator'],
+      scenario: `CLINICAL CASE SCENARIO: A 42-year-old female patient undergoing blood transfusion for severe anemia (Hb 6.2 g/dL) suddenly develops severe fever (102.4°F/39.1°C), rigors, severe flank pain, dyspnea, and reddish-brown urine in the Foley urinary bag 15 minutes after the start of packed red blood cell (PRBC) infusion. Her BP drops rapidly to 82/46 mmHg.`,
+      questionText: `What is the immediate priority action the nurse must take?`,
+      options: [
+        'Stop the blood transfusion immediately and disconnect the tubing at the IV hub',
+        'Slow the infusion rate to keep vein open and administer IV paracetamol',
+        'Notify the attending physician and blood bank while continuing transfusion',
+        'Administer IV diphenhydramine and hydrocortisone and flush line with D5W'
+      ],
       correctAnswer: 0,
-      explanation: 'These are classic signs of an acute hemolytic reaction. The immediate priority is to stop the blood transfusion to prevent further reaction.',
-      topic: topic
+      explanation: 'These findings signify an acute ABO hemolytic transfusion reaction (a life-threatening type II hypersensitivity reaction). The nurse must stop the infusion immediately to prevent further hemolysis, disconnect tubing at the hub, and maintain line with 0.9% normal saline.',
+      topic: topic,
+      difficultyLevel: 1,
+      difficultyName: 'Level 1: Hard'
     },
     {
-      questionText: `Which position is most appropriate for a patient immediately following a lumbar puncture?`,
-      options: ['Prone position', 'Flat supine position for 4 to 6 hours', 'High Fowler\'s position', 'Trendelenburg position'],
-      correctAnswer: 1,
-      explanation: 'Remaining flat supine for 4–6 hours prevents spinal headache caused by cerebrospinal fluid (CSF) leakage.',
-      topic: topic
+      scenario: `CLINICAL CASE SCENARIO: A 34-year-old male patient with severe traumatic brain injury (TBI) following a motor vehicle collision is monitored in the Trauma ICU. The baseline intracranial pressure (ICP) was 12 mmHg. The nurse observes the ICP monitor rising abruptly to 28 mmHg, with Cushing\'s triad: BP 184/60 mmHg (widening pulse pressure), HR 48 bpm (bradycardia), and irregular Cheyne-Stokes respirations.`,
+      questionText: `Which immediate nursing intervention is indicated to control elevated ICP?`,
+      options: [
+        'Administer IV hypertonic saline (3%) or Mannitol as prescribed and maintain head of bed at 30° in neutral alignment',
+        'Place the patient in Trendelenburg position to improve cerebral venous drainage',
+        'Perform vigorous endotracheal suctioning to clear secretions and improve oxygenation',
+        'Flex the patient\'s hips and knees to 90 degrees to relieve abdominal muscle tension'
+      ],
+      correctAnswer: 0,
+      explanation: 'Hyperosmolar therapy (Mannitol/Hypertonic Saline) decreases brain tissue edema. Elevating HOB to 30 degrees with neck in neutral alignment facilitates venous drainage from the brain. Hip flexion and suctioning elevate ICP further and must be avoided.',
+      topic: topic,
+      difficultyLevel: 1,
+      difficultyName: 'Level 1: Hard'
     },
     {
-      questionText: `A child with nephrotic syndrome presents with generalized edema. Which dietary modification should the nurse recommend?`,
-      options: ['Low sodium, adequate protein diet', 'High sodium, low protein diet', 'Fluid restriction only', 'High carbohydrate, high fat diet'],
+      scenario: `CLINICAL CASE SCENARIO: A primigravida at 38 weeks gestation with severe preeclampsia (BP 174/110 mmHg, 3+ proteinuria, hyperreflexia with clonus) is receiving continuous IV Magnesium Sulfate infusion at 2 g/hr. During hourly monitoring, the nurse notes: Deep tendon reflexes (DTRs) are absent (0), Respiratory rate is 9 breaths/min, and Urine output is 18 mL over the past hour.`,
+      questionText: `What is the immediate priority nursing action?`,
+      options: [
+        'Stop the Magnesium Sulfate infusion immediately and prepare to administer IV Calcium Gluconate',
+        'Increase the infusion rate to control maternal blood pressure',
+        'Document as expected therapeutic effect of magnesium sulfate',
+        'Administer IV hydralazine and continue magnesium sulfate at current rate'
+      ],
       correctAnswer: 0,
-      explanation: 'Nephrotic syndrome leads to sodium retention and edema. A low-sodium diet with adequate protein helps manage fluid overload and protein loss.',
-      topic: topic
+      explanation: 'Loss of DTRs, respiratory depression (<12/min), and oliguria (<30 mL/hr) are signs of severe Magnesium Toxicity. The infusion must be stopped immediately and the antidote Calcium Gluconate administered slow IV push.',
+      topic: topic,
+      difficultyLevel: 1,
+      difficultyName: 'Level 1: Hard'
     },
     {
-      questionText: `Which antidote should be readily available for a patient receiving continuous IV heparin therapy?`,
-      options: ['Protamine Sulfate', 'Vitamin K', 'Calcium Gluconate', 'Flumazenil'],
+      scenario: `CLINICAL CASE SCENARIO: A 28-year-old male patient with Type 1 Diabetes Mellitus is brought to the emergency department unconscious. Blood glucose level is 480 mg/dL, arterial blood gas shows pH 7.14, PaCO2 24 mmHg, HCO3 10 mEq/L (Severe Diabetic Ketoacidosis - DKA). The nurse initiates IV fluid resuscitation and regular insulin infusion. Serum potassium level returns from lab at 3.1 mEq/L.`,
+      questionText: `Which action must the nurse take regarding potassium and insulin management?`,
+      options: [
+        'Hold regular insulin infusion and administer IV potassium replacement until K+ is >3.3 mEq/L',
+        'Double the regular insulin bolus to clear ketoacids rapidly',
+        'Continue insulin infusion at current rate and withhold potassium until urinary output is >100 mL/hr',
+        'Administer sodium bicarbonate IV push before starting potassium'
+      ],
       correctAnswer: 0,
-      explanation: 'Protamine sulfate is the specific antidote for heparin overdose. Vitamin K is the antidote for Warfarin.',
-      topic: topic
-    },
-    {
-      questionText: `While assessing a newborn, the nurse notes blue hands and feet with a pink trunk. How should the nurse document this finding?`,
-      options: ['Acrocyanosis (Normal finding in newborns)', 'Central Cyanosis (Pathological)', 'Hypoxia requiring oxygen therapy', 'Raynaud Phenomenon'],
-      correctAnswer: 0,
-      explanation: 'Acrocyanosis (bluish hands/feet) is normal in the first 24–48 hours of life due to immature peripheral circulation.',
-      topic: topic
-    },
-    {
-      questionText: `A patient with type 1 diabetes presents with tremors, diaphoresis, and confusion. What is the priority nursing intervention?`,
-      options: ['Administer 15–20g of fast-acting carbohydrate', 'Administer regular insulin IV', 'Check serum potassium level', 'Encourage deep breathing exercises'],
-      correctAnswer: 0,
-      explanation: 'These are symptoms of hypoglycemia. Immediate oral fast-acting glucose or simple sugar is required for conscious patients.',
-      topic: topic
-    },
-    {
-      questionText: `Which landmark is used by the nurse to measure fundal height in a pregnant woman at 20 weeks of gestation?`,
-      options: ['At the level of the Umbilicus', 'Symphysis pubis', 'Xiphoid process', 'Midway between symphysis pubis and umbilicus'],
-      correctAnswer: 0,
-      explanation: 'At 20 weeks gestation, the uterine fundus is typically at the level of the umbilicus.',
-      topic: topic
-    },
-    {
-      questionText: `A patient receiving digoxin reports seeing yellowish-green halos around lights. What action should the nurse take first?`,
-      options: ['Withhold digoxin and check serum digoxin level', 'Reassure patient this is normal', 'Increase fluid intake', 'Administer atropine IV'],
-      correctAnswer: 0,
-      explanation: 'Visual disturbances (yellow-green halos) are classic signs of digoxin toxicity. Digoxin should be withheld and serum level checked.',
-      topic: topic
-    },
-    {
-      questionText: `What is the recommended chest compression depth for adult CPR according to AHA guidelines?`,
-      options: ['At least 2 inches (5 cm)', '1 inch (2.5 cm)', '3 inches (7.5 cm)', '1.5 inches (4 cm)'],
-      correctAnswer: 0,
-      explanation: 'High-quality CPR in adults requires chest compressions of at least 2 inches (5 cm) at a rate of 100–120 compressions/min.',
-      topic: topic
+      explanation: 'Insulin drives potassium into cells, aggravating hypokalemia. If potassium is <3.3 mEq/L, insulin must be withheld and potassium repleted to avoid fatal cardiac arrhythmias.',
+      topic: topic,
+      difficultyLevel: 1,
+      difficultyName: 'Level 1: Hard'
     }
   ];
 
+  const level2Bank = [
+    {
+      scenario: `CLINICAL CASE SCENARIO: A 48-year-old female is 24 hours post-laparoscopic cholecystectomy on the surgical ward. She reports severe right shoulder pain rating 6/10. Her vital signs are: BP 122/78 mmHg, HR 78 bpm, RR 16/min, Temp 98.6°F (37°C), SpO2 99% on ambient air. Surgical incisions are clean, dry, and intact with no bleeding or erythema.`,
+      questionText: `Which explanation and nursing intervention is most appropriate for this patient?`,
+      options: [
+        'Explain that pain is referred phrenic nerve irritation from residual CO2 gas; position in Sims\' left lateral recumbent position and encourage ambulation',
+        'Activate code blue for suspected acute myocardial infarction',
+        'Prepare the patient for emergency laparotomy for internal hemorrhage',
+        'Place an abdominal binder on the patient tightly to compress incisions'
+      ],
+      correctAnswer: 0,
+      explanation: 'Post-laparoscopic shoulder pain is caused by diaphragmatic phrenic nerve irritation from residual carbon dioxide. Early ambulation and positioning on the left side with knees flexed facilitate gas absorption.',
+      topic: topic,
+      difficultyLevel: 2,
+      difficultyName: 'Level 2: Moderate'
+    },
+    {
+      scenario: `CLINICAL CASE SCENARIO: A 62-year-old male with chronic heart failure is prescribed Enalapril 10 mg PO daily and Spironolactone 25 mg PO daily. During the outpatient clinic follow-up, the nurse reviews his latest laboratory findings: Serum Potassium is 5.6 mEq/L (normal: 3.5–5.0), Serum Creatinine 1.2 mg/dL, and Blood Pressure 124/80 mmHg.`,
+      questionText: `What is the most appropriate action by the nurse?`,
+      options: [
+        'Withhold the next dose of Spironolactone, notify the healthcare provider, and review dietary potassium intake',
+        'Administer the scheduled doses and encourage the client to eat more bananas and citrus fruits',
+        'Instruct the client to double the Enalapril dose to clear the excess potassium',
+        'Reassure the client that a potassium of 5.6 mEq/L is expected and safe on ACE inhibitors'
+      ],
+      correctAnswer: 0,
+      explanation: 'Both ACE inhibitors (Enalapril) and aldosterone antagonists (Spironolactone) cause potassium retention. A serum potassium of 5.6 mEq/L represents hyperkalemia requiring withholding spironolactone and notifying the provider to prevent arrhythmias.',
+      topic: topic,
+      difficultyLevel: 2,
+      difficultyName: 'Level 2: Moderate'
+    },
+    {
+      scenario: `CLINICAL CASE SCENARIO: A 30-year-old G2P1 pregnant client at 32 weeks gestation attends the antenatal clinic. She tests positive for Gestational Diabetes Mellitus (GDM) on a 100g oral glucose tolerance test. Fasting plasma glucose is 108 mg/dL and 2-hour postprandial glucose is 156 mg/dL.`,
+      questionText: `What is the first-line therapeutic management strategy the nurse should educate the client about?`,
+      options: [
+        'Individualized Medical Nutritional Therapy (MNT) with carbohydrate distribution and moderate daily physical activity',
+        'Immediate commencement of high-dose subcutaneous insulin glargine',
+        'Strict bed rest and restriction of all carbohydrate intake',
+        'Elective induction of labor at 34 weeks gestation'
+      ],
+      correctAnswer: 0,
+      explanation: 'Nutritional therapy and moderate exercise are the fundamental initial treatment for GDM. Pharmacotherapy (insulin or metformin) is only added if glycemic targets are not achieved by lifestyle modification alone.',
+      topic: topic,
+      difficultyLevel: 2,
+      difficultyName: 'Level 2: Moderate'
+    },
+    {
+      scenario: `CLINICAL CASE SCENARIO: A 5-year-old child admitted with acute bronchial asthma exacerbation is receiving nebulized Salbutamol (Albuterol) every 4 hours. Following the third treatment, the nurse assesses: Respiratory rate 24/min (down from 40/min), SpO2 96% on room air, Heart rate 116 bpm, and slight finger tremors.`,
+      questionText: `How should the nurse interpret these findings?`,
+      options: [
+        'Improvement in respiratory status with anticipated beta-2 adrenergic medication side effects (tachycardia and tremors)',
+        'Acute drug hypersensitivity reaction requiring immediate adrenaline injection',
+        'Worsening respiratory failure requiring emergency endotracheal intubation',
+        'Paradoxical bronchospasm requiring discontinuation of all bronchodilators'
+      ],
+      correctAnswer: 0,
+      explanation: 'Beta-2 agonists like Salbutamol commonly stimulate adrenergic receptors leading to transient tachycardia and fine peripheral skeletal muscle tremors, while respiratory improvement is demonstrated by normalized RR and SpO2.',
+      topic: topic,
+      difficultyLevel: 2,
+      difficultyName: 'Level 2: Moderate'
+    }
+  ];
+
+  const level3Bank = [
+    {
+      scenario: `CLINICAL CASE SCENARIO: The nurse is preparing to administer 09:00 morning oral medications to an alert, oriented adult client admitted to the medical unit. The client is wearing a hospital identification bracelet and verbalizes their name and date of birth.`,
+      questionText: `According to standard patient safety practice, what must the nurse perform to confirm patient identification before administering the medication?`,
+      options: [
+        'Compare the client’s stated name and birth date with the Medication Administration Record (MAR) and barcode ID band',
+        'Check the room number and bed number on the door',
+        'Ask the client’s roommate to confirm the client’s identity',
+        'Administer the medication based on the client acknowledging their first name alone'
+      ],
+      correctAnswer: 0,
+      explanation: 'Standard international patient safety goals mandate using at least two independent identifiers (name and date of birth or medical record number) cross-referenced against the MAR before medication administration. Room numbers are not acceptable identifiers.',
+      topic: topic,
+      difficultyLevel: 3,
+      difficultyName: 'Level 3: Easy'
+    },
+    {
+      scenario: `CLINICAL CASE SCENARIO: A nurse is measuring vital signs on an adult client admitted for elective knee arthroscopy. The nurse records: Oral temperature 98.4°F (36.9°C), Radial pulse 72 bpm regular, Blood pressure 118/76 mmHg, Respiratory rate 16 breaths/min regular and unlabored, SpO2 98% on ambient air.`,
+      questionText: `How should the nurse document and evaluate these vital signs?`,
+      options: [
+        'All vital signs fall within expected adult physiological reference limits; document and continue routine care',
+        'Hypotension present; notify physician immediately for fluid challenge',
+        'Tachypnea present; apply supplemental oxygen via non-rebreather mask',
+        'Bradypnea present; prepare intravenous naloxone'
+      ],
+      correctAnswer: 0,
+      explanation: 'Normal resting adult vital sign ranges are: Pulse 60-100 bpm, BP <120/<80 mmHg, RR 12-20/min, Temp 97.8-99.1°F, SpO2 95-100%. All findings are completely normal.',
+      topic: topic,
+      difficultyLevel: 3,
+      difficultyName: 'Level 3: Easy'
+    },
+    {
+      scenario: `CLINICAL CASE SCENARIO: A registered nurse is preparing to perform a simple dry sterile dressing change for a clean surgical wound on the abdomen of a patient 2 days post-appendectomy.`,
+      questionText: `Which fundamental principle of aseptic technique must the nurse adhere to?`,
+      options: [
+        'Perform thorough hand hygiene before and after touching the patient, and clean the wound from the center outward (least contaminated to most contaminated area)',
+        'Clean the wound from the outer periphery inward towards the center',
+        'Reuse the outer soiled dressing if the inner layer appears clean',
+        'Touch sterile supplies with clean unwashed hands before applying sterile gloves'
+      ],
+      correctAnswer: 0,
+      explanation: 'Surgical wound cleansing follows the principle of cleaning from cleanest (incision center) to dirtiest (periphery) to prevent reintroducing organisms into the surgical line, accompanied by hand hygiene.',
+      topic: topic,
+      difficultyLevel: 3,
+      difficultyName: 'Level 3: Easy'
+    },
+    {
+      scenario: `CLINICAL CASE SCENARIO: A nurse is collecting a routine midstream clean-catch urine specimen from an ambulatory female client to screen for suspected urinary tract infection.`,
+      questionText: `Which instruction should the nurse provide to the client to ensure an accurate specimen?`,
+      options: [
+        'Cleanse the labia from front to back, begin voiding into the toilet, and pass the collection container into the stream without stopping',
+        'Cleanse from back to front and collect the initial few milliliters of urine',
+        'Collect urine from the bedpan after emptying bowels',
+        'Fast from all liquids for 12 hours prior to collecting the specimen'
+      ],
+      correctAnswer: 0,
+      explanation: 'A clean-catch midstream collection requires front-to-back cleansing to prevent perineal flora contamination, followed by letting the initial stream flush the urethral meatus before capturing the midstream portion.',
+      topic: topic,
+      difficultyLevel: 3,
+      difficultyName: 'Level 3: Easy'
+    }
+  ];
+
+  let bank = level1Bank;
+  if (diffLevel === 3) bank = level3Bank;
+  else if (diffLevel === 2) bank = level2Bank;
+
   const result = [];
   for (let i = 0; i < count; i++) {
-    const template = sampleBank[i % sampleBank.length];
+    const template = bank[i % bank.length];
     result.push({
-      ...template,
-      questionText: `${template.questionText} (${topic} Practice Q${i + 1})`,
-      topic: topic
+      questionText: `${template.scenario}\n\n${template.questionText}`,
+      options: template.options,
+      correctAnswer: template.correctAnswer,
+      explanation: template.explanation,
+      topic: topic,
+      difficultyLevel: template.difficultyLevel,
+      difficultyName: template.difficultyName
     });
   }
   return result;
@@ -373,35 +512,53 @@ router.post('/:id/submit', protect, async (req, res) => {
   }
 });
 
-// POST /api/tests/generate - Generate custom AI test
+// POST /api/tests/generate - Generate custom AI test with CAT qualities
 router.post('/generate', protect, async (req, res) => {
   try {
-    const { topic, difficulty = 'medium', numberOfQuestions = 10 } = req.body;
-    console.log(`[GENERATE] Starting generation for topic: "${topic}", difficulty: ${difficulty}, count: ${numberOfQuestions}`);
+    const { topic, difficulty = 'hard', numberOfQuestions = 10, examType = 'general' } = req.body;
+    
+    // Resolve level 1-hard, 2-moderate, 3-easy
+    let diffKey = 'hard';
+    let diffLevel = 1;
+    let diffName = 'Level 1: Hard';
+
+    const diffStr = String(difficulty || '').toLowerCase();
+    if (diffStr === '3' || diffStr.includes('easy') || diffStr.includes('level-3') || diffStr.includes('level 3')) {
+      diffKey = 'easy';
+      diffLevel = 3;
+      diffName = 'Level 3: Easy';
+    } else if (diffStr === '2' || diffStr.includes('mod') || diffStr.includes('med') || diffStr.includes('level-2') || diffStr.includes('level 2')) {
+      diffKey = 'moderate';
+      diffLevel = 2;
+      diffName = 'Level 2: Moderate';
+    } else {
+      diffKey = 'hard';
+      diffLevel = 1;
+      diffName = 'Level 1: Hard';
+    }
+
+    console.log(`[GENERATE] Starting CAT generation for topic: "${topic}", difficulty: ${diffName} (${diffKey}), count: ${numberOfQuestions}`);
     
     if (!topic) {
       return res.status(400).json({ message: 'Topic is required' });
     }
 
-    const prompt = getIndianNursingPrompt(topic, numberOfQuestions, difficulty);
-    console.log(`[GENERATE] Prompt built, calling AI...`);
+    const prompt = getIndianNursingPrompt(topic, numberOfQuestions, diffKey);
+    console.log(`[GENERATE] CAT Prompt built for ${diffName}, calling AI...`);
 
     const aiResponse = await chat(
       [
         { role: 'system', content: prompt },
-        { role: 'user', content: 'Generate the questions as JSON now.' }
+        { role: 'user', content: `Generate authentic ${diffName} clinical case study questions as JSON now.` }
       ],
-      4000
+      6000
     );
-
-    console.log(`[GENERATE] AI responded. Length: ${aiResponse ? aiResponse.length : 0}`);
-    console.log(`[GENERATE] Raw response (first 500 chars): ${aiResponse ? aiResponse.substring(0, 500) : 'NULL'}`);
 
     let questions = [];
 
     if (!aiResponse || aiResponse.startsWith('ERROR:') || aiResponse.startsWith('AI analysis unavailable')) {
-      console.warn(`[GENERATE] AI service unavailable (${aiResponse}). Generating curated fallback test questions for "${topic}"...`);
-      questions = generateFallbackQuestions(topic, numberOfQuestions);
+      console.warn(`[GENERATE] AI service unavailable (${aiResponse}). Generating curated fallback test questions for "${topic}" at ${diffName}...`);
+      questions = generateFallbackQuestions(topic, numberOfQuestions, diffLevel);
     } else {
       // Robust JSON extraction
       let jsonString = aiResponse.trim();
@@ -416,14 +573,12 @@ router.post('/generate', protect, async (req, res) => {
         jsonString = jsonString.substring(firstBrace, lastBrace + 1);
       }
 
-      console.log(`[GENERATE] Cleaned JSON (first 300 chars): ${jsonString.substring(0, 300)}`);
-
       let parsed;
       try {
         parsed = JSON.parse(jsonString);
       } catch (parseErr) {
         console.error(`[GENERATE] JSON parse error: ${parseErr.message}, falling back to curated questions`);
-        questions = generateFallbackQuestions(topic, numberOfQuestions);
+        questions = generateFallbackQuestions(topic, numberOfQuestions, diffLevel);
       }
 
       if (parsed && parsed.questions && Array.isArray(parsed.questions) && parsed.questions.length > 0) {
@@ -445,34 +600,38 @@ router.post('/generate', protect, async (req, res) => {
             options: mappedOptions,
             correctAnswer: correctIndex !== -1 ? correctIndex : 0,
             explanation: q.rationale || q.correct_rationale || '',
-            topic: topic
+            topic: topic,
+            difficultyLevel: diffLevel,
+            difficultyName: diffName
           };
         }).filter(q => q.options.length >= 2);
       }
 
       if (questions.length === 0) {
-        console.warn(`[GENERATE] No valid questions parsed from AI. Using fallback questions for "${topic}"`);
-        questions = generateFallbackQuestions(topic, numberOfQuestions);
+        console.warn(`[GENERATE] No valid questions parsed from AI. Using fallback questions for "${topic}" at ${diffName}`);
+        questions = generateFallbackQuestions(topic, numberOfQuestions, diffLevel);
       }
     }
 
     if (questions.length === 0) {
-      questions = generateFallbackQuestions(topic, numberOfQuestions);
+      questions = generateFallbackQuestions(topic, numberOfQuestions, diffLevel);
     }
 
-    console.log(`[GENERATE] Creating test with ${questions.length} questions in DB...`);
+    console.log(`[GENERATE] Creating test with ${questions.length} questions in DB at ${diffName}...`);
 
     const newTest = await Test.create({
-      title: `${topic} - AI Practice Test`,
-      description: `Custom generated AI practice test for ${topic}.`,
+      title: `${topic} (${diffName}) - Practice Test`,
+      description: `CAT-quality practice test for ${topic} at ${diffName}.`,
       topic: topic,
-      difficulty: difficulty,
-      examType: 'general',
+      difficulty: diffKey,
+      difficultyLevel: diffLevel,
+      difficultyName: diffName,
+      examType: examType || 'general',
       questions: questions,
       isFree: true
     });
 
-    console.log(`[GENERATE] Test created: ${newTest._id}`);
+    console.log(`[GENERATE] Test created: ${newTest._id} (${diffName})`);
     res.status(201).json(newTest);
 
   } catch (error) {

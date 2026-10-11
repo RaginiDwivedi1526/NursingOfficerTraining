@@ -57,4 +57,10 @@ export const getMistakes = () => API.get('/analytics/mistakes');
 export const askAI = (data) => API.post('/ai/ask', data);
 export const chatAI = (data) => API.post('/ai/chat', data);
 
+// CAT (Computer Adaptive Testing)
+export const startCATSession = (data) => API.post('/cat/start', data);
+export const submitCATAnswer = (data) => API.post('/cat/submit-answer', data);
+export const getCATSession = (id) => API.get(`/cat/session/${id}`);
+export const getCATHistory = () => API.get('/cat/history');
+
 export default API;
