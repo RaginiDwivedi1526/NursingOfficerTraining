@@ -14,6 +14,7 @@ export default function TakeCATTest() {
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState(null);
   const [currentQ, setCurrentQ] = useState(null);
+  const [currentQuestionNumber, setCurrentQuestionNumber] = useState(1);
   const [selectedOption, setSelectedOption] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [lastFeedback, setLastFeedback] = useState(null);
@@ -32,6 +33,7 @@ export default function TakeCATTest() {
       const { data } = await startCATSession({ examType: 'nclex_rn' });
       setSession(data);
       setCurrentQ(data.currentQuestion);
+      setCurrentQuestionNumber(1);
       setStartTime(Date.now());
     } catch (err) {
       console.error('[CAT UI] Failed to start CAT session:', err);
@@ -63,7 +65,10 @@ export default function TakeCATTest() {
         setIsFinished(true);
         setSession(data.session);
       } else {
-        setLastFeedback(data.feedback);
+        setLastFeedback({
+          ...data.feedback,
+          questionNumber: currentQuestionNumber
+        });
         setShowFeedbackModal(true);
         setSession(prev => ({
           ...prev,
@@ -85,6 +90,7 @@ export default function TakeCATTest() {
   const handleNextAdaptiveQuestion = () => {
     setShowFeedbackModal(false);
     setSelectedOption(null);
+    setCurrentQuestionNumber(prev => prev + 1);
     setCurrentQ(session.nextQuestion);
     setStartTime(Date.now());
   };
@@ -293,7 +299,7 @@ export default function TakeCATTest() {
           </div>
 
           <div className="cat-counter-pill">
-            Adaptive Question #{session?.totalQuestionsAnswered ? session.totalQuestionsAnswered + 1 : 1}
+            Adaptive Question #{currentQuestionNumber}
           </div>
         </div>
       </div>
@@ -301,7 +307,7 @@ export default function TakeCATTest() {
       {/* Main Question Card */}
       <div className="cat-question-card">
         <div className="cat-q-header">
-          <span className="cat-q-badge">Question {session?.totalQuestionsAnswered ? session.totalQuestionsAnswered + 1 : 1}</span>
+          <span className="cat-q-badge">Question {currentQuestionNumber}</span>
           <span className="cat-q-level" style={{ color: diffBadge.text }}>
             Adaptive Difficulty: <strong>{currentQ?.difficultyName || 'Base'}</strong>
           </span>
@@ -350,16 +356,16 @@ export default function TakeCATTest() {
                 <>
                   <CheckCircle size={36} />
                   <div>
-                    <h3>Correct Answer!</h3>
-                    <p>Adaptive Engine is scaling up difficulty to <strong>Level {session.currentDifficultyLevel}: {session.difficultyName}</strong></p>
+                    <h3>Question #{lastFeedback.questionNumber || currentQuestionNumber}: Correct Answer! ✓</h3>
+                    <p>Adaptive Engine is scaling up next Question (#{(lastFeedback.questionNumber || currentQuestionNumber) + 1}) to <strong>Level {session.currentDifficultyLevel}: {session.difficultyName}</strong></p>
                   </div>
                 </>
               ) : (
                 <>
                   <XCircle size={36} />
                   <div>
-                    <h3>Incorrect Answer</h3>
-                    <p>Adaptive Engine adjusted level to <strong>Level {session.currentDifficultyLevel}: {session.difficultyName}</strong></p>
+                    <h3>Question #{lastFeedback.questionNumber || currentQuestionNumber}: Incorrect Answer ✗</h3>
+                    <p>Adaptive Engine calibrated next Question (#{(lastFeedback.questionNumber || currentQuestionNumber) + 1}) to <strong>Level {session.currentDifficultyLevel}: {session.difficultyName}</strong></p>
                   </div>
                 </>
               )}
@@ -378,7 +384,7 @@ export default function TakeCATTest() {
                   color: '#1e293b'
                 }}>
                   <div style={{ fontSize: 11, fontWeight: 800, color: '#4f46e5', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>
-                    Question Scenario & Stem
+                    Question #{lastFeedback.questionNumber || currentQuestionNumber} Scenario & Stem
                   </div>
                   <div style={{ whiteSpace: 'pre-line' }}>{lastFeedback.questionText}</div>
                 </div>
@@ -411,7 +417,7 @@ export default function TakeCATTest() {
                   cursor: 'pointer'
                 }}
               >
-                Next Adaptive Question <ChevronRight size={18} />
+                Continue to Question #{(lastFeedback.questionNumber || currentQuestionNumber) + 1} <ChevronRight size={18} />
               </button>
             </div>
           </div>

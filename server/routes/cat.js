@@ -108,8 +108,25 @@ router.post('/submit-answer', protect, async (req, res) => {
       return res.status(400).json({ message: 'This CAT session has already completed', session });
     }
 
-    const currentQ = session.currentQuestion;
+    // Deep copy the currently answered question so subsequent mutations to session.currentQuestion cannot overwrite it
+    const currentQ = JSON.parse(JSON.stringify(session.currentQuestion || {}));
     const isCorrect = selectedAnswer === currentQ.correctAnswer;
+
+    // Build the immutable feedback snapshot for the question that was just answered
+    const answeredFeedback = {
+      questionNumber: session.questionsAnswered.length + 1,
+      isCorrect,
+      correctAnswer: currentQ.correctAnswer,
+      explanation: currentQ.explanation,
+      questionText: currentQ.questionText,
+      options: currentQ.options || [],
+      selectedAnswer,
+      topic: currentQ.topic,
+      difficultyLevel: currentQ.difficultyLevel,
+      difficultyName: currentQ.difficultyName,
+      peerPercentages: currentQ.peerPercentages || [12, 72, 10, 6],
+      timeTaken
+    };
 
     // Update consecutive counters
     let newConsecutiveCorrect = isCorrect ? session.consecutiveCorrect + 1 : 0;
@@ -132,18 +149,8 @@ router.post('/submit-answer', protect, async (req, res) => {
 
     // Push answered question to history
     const answeredItem = {
-      questionNumber: session.questionsAnswered.length + 1,
-      questionText: currentQ.questionText,
-      options: currentQ.options,
-      correctAnswer: currentQ.correctAnswer,
-      selectedAnswer,
-      isCorrect,
-      explanation: currentQ.explanation,
-      difficultyLevel: currentQ.difficultyLevel,
-      difficultyName: currentQ.difficultyName,
-      topic: currentQ.topic,
-      thetaAfter: newTheta,
-      timeTaken
+      ...answeredFeedback,
+      thetaAfter: newTheta
     };
 
     session.questionsAnswered.push(answeredItem);
@@ -179,19 +186,9 @@ router.post('/submit-answer', protect, async (req, res) => {
         result: session.result,
         stoppingReason: stopping.reason,
         feedback: {
-          isCorrect,
-          correctAnswer: currentQ.correctAnswer,
-          explanation: currentQ.explanation,
-          questionText: currentQ.questionText,
-          options: currentQ.options,
-          selectedAnswer,
-          topic: currentQ.topic,
-          difficultyLevel: currentQ.difficultyLevel,
-          difficultyName: currentQ.difficultyName,
+          ...answeredFeedback,
           nextDifficultyLevel: session.currentDifficultyLevel,
           nextDifficultyName: session.currentDifficultyName,
-          peerPercentages: currentQ.peerPercentages || [12, 72, 10, 6],
-          timeTaken,
           abilityTheta: newTheta
         },
         session
@@ -211,19 +208,9 @@ router.post('/submit-answer', protect, async (req, res) => {
     res.json({
       isCompleted: false,
       feedback: {
-        isCorrect,
-        correctAnswer: currentQ.correctAnswer,
-        explanation: currentQ.explanation,
-        questionText: currentQ.questionText,
-        options: currentQ.options,
-        selectedAnswer,
-        topic: currentQ.topic,
-        difficultyLevel: currentQ.difficultyLevel,
-        difficultyName: currentQ.difficultyName,
+        ...answeredFeedback,
         nextDifficultyLevel,
         nextDifficultyName: DIFFICULTY_LEVELS[nextDifficultyLevel].name,
-        peerPercentages: currentQ.peerPercentages || [12, 72, 10, 6],
-        timeTaken,
         abilityTheta: newTheta
       },
       nextQuestion: {
