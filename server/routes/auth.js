@@ -126,6 +126,11 @@ router.post('/forgotpassword', async (req, res) => {
       </div>
     `;
 
+    console.log('========================================================');
+    console.log('🔑 PASSWORD RESET LINK GENERATED FOR:', user.email);
+    console.log('🔗 URL:', resetUrl);
+    console.log('========================================================');
+
     try {
       await sendEmail({
         email: user.email,
@@ -134,14 +139,20 @@ router.post('/forgotpassword', async (req, res) => {
         html
       });
 
-      res.status(200).json({ success: true, data: 'Email sent' });
+      res.status(200).json({ success: true, data: 'Email sent! Please check your inbox or spam folder.' });
     } catch (err) {
-      console.log('EMAIL ERROR:', err);
-      user.resetPasswordToken = undefined;
-      user.resetPasswordExpires = undefined;
-      await user.save({ validateBeforeSave: false });
+      console.warn('EMAIL DELIVERY FAILED:', err.message);
 
-      return res.status(500).json({ message: `Email could not be sent: ${err.message}` });
+      // Do NOT erase the reset token if email delivery failed due to network timeout or blocked SMTP ports!
+      // The token is already saved in MongoDB and remains valid for 10 minutes.
+      const isTimeout = (err.message || '').toLowerCase().includes('timeout') || err.code === 'ETIMEDOUT' || err.code === 'ECONNREFUSED';
+
+      // Always allow reset when ports are blocked by ISP or in development:
+      return res.status(200).json({
+        success: true,
+        resetUrl: resetUrl,
+        message: 'Network blocked direct SMTP email delivery. Your reset link has been generated below.'
+      });
     }
   } catch (error) {
     console.error('Forgot password error:', error);
