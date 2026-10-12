@@ -15,10 +15,13 @@ function ForgotPasswordPage() {
     setLoading(true);
 
     try {
-      await forgotPassword({ email });
-      setSuccess('Email sent! Please check your inbox for the reset link.');
+      const cleanEmail = email.trim().toLowerCase();
+      await forgotPassword({ email: cleanEmail });
+      setSuccess('Email sent! Please check your inbox (and Spam folder) for the reset link.');
     } catch (err) {
-      setError(err.response?.data?.message || 'Could not process request. Please try again.');
+      console.error('Forgot password error:', err);
+      const msg = err.response?.data?.message || err.message || 'Could not process request. Please try again.';
+      setError(msg);
     } finally {
       setLoading(false);
     }
