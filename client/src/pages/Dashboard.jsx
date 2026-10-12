@@ -310,7 +310,7 @@ export default function Dashboard() {
             Practice With Authentic CAT Clinical Case Scenarios
           </h2>
           <p style={{ margin: 0, fontSize: 13, color: '#cbd5e1', lineHeight: 1.5 }}>
-            Every question now integrates authentic CAT qualities — full clinical vignettes with vitals & labs, prioritization dilemmas, and in-depth rationales. Choose your level: <strong>Level 1 (Hard)</strong>, <strong>Level 2 (Moderate)</strong>, or <strong>Level 3 (Easy)</strong>.
+            Every question now integrates authentic CAT qualities — full clinical vignettes with vitals & labs, prioritization dilemmas, and in-depth rationales.
           </p>
         </div>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
@@ -331,7 +331,7 @@ export default function Dashboard() {
               boxShadow: '0 4px 12px rgba(124, 58, 237, 0.4)'
             }}
           >
-            Practice Tests (Level 1-3) <ArrowRight size={16} />
+            Practice Tests <ArrowRight size={16} />
           </button>
           <button 
             onClick={() => navigate('/mock-tests')}

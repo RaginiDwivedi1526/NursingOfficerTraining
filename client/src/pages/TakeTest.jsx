@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { startCATSession, submitCATAnswer, getTest } from '../services/api';
+import { startCATSession, submitCATAnswer, getTest, submitTest } from '../services/api';
 import { 
   BrainCircuit, ShieldCheck, AlertTriangle, CheckCircle, XCircle, 
-  ChevronRight, Award, RotateCcw, Activity, BarChart2, Layers, Clock, ArrowRight
+  ChevronRight, Award, RotateCcw, Activity, BarChart2, Layers, Clock, ArrowRight, X
 } from 'lucide-react';
 import AskAIButton from '../components/tests/AskAIButton';
 import FormattedExplanation from '../components/tests/FormattedExplanation';
 import './TakeCATTest.css';
+
+const TOTAL_TEST_QUESTIONS = 20;
+const TEST_DURATION_SECONDS = 30 * 60; // 30 minutes
 
 export default function TakeTest() {
   const { id } = useParams();
@@ -20,45 +23,108 @@ export default function TakeTest() {
   const [currentQuestionNumber, setCurrentQuestionNumber] = useState(1);
   const [selectedOption, setSelectedOption] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-  const [lastFeedback, setLastFeedback] = useState(null);
-  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [startTime, setStartTime] = useState(Date.now());
+  const [timeLeft, setTimeLeft] = useState(TEST_DURATION_SECONDS);
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const [testInfo, setTestInfo] = useState(null);
+
+  // Mode: 'static' (test has pre-defined questions in DB) or 'adaptive' (AI generated)
+  const [testMode, setTestMode] = useState('adaptive');
+  const [staticQuestions, setStaticQuestions] = useState([]);
+  const [userAnswers, setUserAnswers] = useState([]);
+  const [totalQuestionsCount, setTotalQuestionsCount] = useState(TOTAL_TEST_QUESTIONS);
+
+  // Strip embedded choices (A. ... B. ... C. ... D. ...) from question text or scenario
+  const stripEmbeddedOptions = (text) => {
+    if (!text) return '';
+    const lines = String(text).split('\n');
+    let optionStartIndex = -1;
+
+    for (let i = 0; i < lines.length; i++) {
+      const trimmed = lines[i].trim();
+      if (/^(?:[A-Da-d1-4][.)\]\-]|\([A-Da-d1-4]\))\s+/.test(trimmed)) {
+        const remainingLines = lines.slice(i).filter(l => l.trim().length > 0);
+        const optionLikeCount = remainingLines.filter(l => /^(?:[A-Da-d1-4][.)\]\-]|\([A-Da-d1-4]\))\s+/.test(l.trim())).length;
+        if (optionLikeCount >= 2) {
+          optionStartIndex = i;
+          break;
+        }
+      }
+    }
+
+    if (optionStartIndex !== -1) {
+      return lines.slice(0, optionStartIndex).join('\n').trim();
+    }
+    return text.trim();
+  };
+
+  // Strip option prefixes like "A. ", "B) ", "(C) ", "1. " from individual options
+  const stripOptionPrefix = (text) => {
+    if (!text) return '';
+    return String(text).replace(/^(?:[A-Da-d1-4][.)\]\-]|\([A-Da-d1-4]\))\s*/, '').trim();
+  };
 
   // Parse clinical scenario and question stem
   const parseQuestionContent = (rawText) => {
     if (!rawText) return { scenario: null, stem: '' };
-    if (rawText.includes('\n\n')) {
-      const parts = rawText.split('\n\n');
+    const cleaned = stripEmbeddedOptions(rawText);
+    if (cleaned.includes('\n\n')) {
+      const parts = cleaned.split('\n\n');
       const stem = parts.pop().trim();
       const scenario = parts.join('\n\n').trim();
       return { scenario, stem };
     }
-    return { scenario: null, stem: rawText };
+    return { scenario: null, stem: cleaned };
   };
 
   useEffect(() => {
     initTestSession();
   }, [id]);
 
+  // Live Timer Countdown Effect
+  useEffect(() => {
+    if (loading || isFinished) return;
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setIsFinished(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [loading, isFinished]);
+
+  const formatTimer = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  };
+
   const initTestSession = async () => {
     setLoading(true);
     try {
       const state = location.state || {};
-      let title = state.title || state.test?.title || 'Computer Adaptive Nursing Exam';
+      let title = state.title || state.test?.title || 'Practice Test';
       let topic = state.topic || state.test?.topic || 'All Subjects';
       let examType = state.examType || state.test?.examType || (title.includes('AIIMS') || title.includes('NORCET') ? 'nursing_officer' : 'nclex_rn');
       let startingDiff = state.startingDifficulty;
 
-      // If accessed directly by ID and state is missing, fetch test metadata
-      if (!state.test && id && id !== 'adaptive' && id.match(/^[0-9a-fA-F]{24}$/)) {
+      let fetchedQuestions = [];
+      // Fetch test details from backend if accessible
+      if (id && id !== 'adaptive' && id.match(/^[0-9a-fA-F]{24}$/)) {
         try {
           const { data } = await getTest(id);
           if (data) {
             title = data.title;
             topic = data.topic;
             examType = data.examType || (data.title.includes('AIIMS') ? 'nursing_officer' : 'nclex_rn');
+            if (Array.isArray(data.questions) && data.questions.length > 0) {
+              fetchedQuestions = data.questions;
+            }
             if (!startingDiff) {
               startingDiff = data.difficulty === 'hard' ? 3 : (data.difficulty === 'easy' ? 1 : 2);
             }
@@ -70,63 +136,172 @@ export default function TakeTest() {
 
       setTestInfo({ title, topic, examType });
 
-      // Start the Computer Adaptive Testing session
+      // If test already has authentic pre-created questions in database, run them directly!
+      const availableQuestions = fetchedQuestions.length > 0 ? fetchedQuestions : (state.test?.questions || []);
+      if (availableQuestions.length > 0) {
+        setTestMode('static');
+        setStaticQuestions(availableQuestions);
+        setTotalQuestionsCount(availableQuestions.length);
+        setCurrentQ(availableQuestions[0]);
+        setCurrentQuestionNumber(1);
+        setUserAnswers([]);
+        setSession({
+          result: 'IN_PROGRESS',
+          totalQuestions: availableQuestions.length,
+          correctCount: 0,
+          abilityTheta: 0.0,
+          currentDifficultyLevel: startingDiff || 2,
+          difficultyName: startingDiff === 3 ? 'Advanced Hard' : 'Base',
+          questionsAnswered: []
+        });
+        setStartTime(Date.now());
+        setTimeLeft(TEST_DURATION_SECONDS);
+        return;
+      }
+
+      // Otherwise, run adaptive session with anti-cliché engine
+      setTestMode('adaptive');
+      setTotalQuestionsCount(TOTAL_TEST_QUESTIONS);
       const { data } = await startCATSession({
         title,
         topic,
         examType,
         startingDifficulty: startingDiff || 2,
-        minQuestions: 15,
-        maxQuestions: 40
+        minQuestions: TOTAL_TEST_QUESTIONS,
+        maxQuestions: TOTAL_TEST_QUESTIONS
       });
 
       setSession(data);
       setCurrentQ(data.currentQuestion);
       setCurrentQuestionNumber(1);
       setStartTime(Date.now());
+      setTimeLeft(TEST_DURATION_SECONDS);
     } catch (err) {
-      console.error('[TakeTest] Failed to initialize Computer Adaptive Test:', err);
-      alert('Failed to initialize Computer Adaptive Test. Please check connection and try again.');
+      console.error('[TakeTest] Failed to initialize test session:', err);
+      alert('Failed to initialize test. Please check your connection and try again.');
     } finally {
       setLoading(false);
     }
   };
 
   const handleOptionSelect = (index) => {
-    if (submitting || showFeedbackModal) return;
+    if (submitting) return;
     setSelectedOption(index);
   };
 
   const handleSubmitAnswer = async () => {
-    if (selectedOption === null || submitting || !session) return;
+    if (selectedOption === null || submitting) return;
     setSubmitting(true);
     
     const elapsedSeconds = Math.round((Date.now() - startTime) / 1000);
 
+    // ── Static Test Mode Handler ──
+    if (testMode === 'static' && staticQuestions.length > 0) {
+      try {
+        const currentQuestionObj = staticQuestions[currentQuestionNumber - 1];
+        const newAnswers = [
+          ...userAnswers,
+          {
+            questionId: currentQuestionObj._id,
+            selectedAnswer: selectedOption,
+            timeTaken: elapsedSeconds
+          }
+        ];
+        setUserAnswers(newAnswers);
+
+        if (currentQuestionNumber >= staticQuestions.length) {
+          // Submit final static test to server
+          let serverReview = null;
+          try {
+            const { data } = await submitTest(id, {
+              answers: newAnswers,
+              timeTaken: Math.round((Date.now() - (startTime - (currentQuestionNumber * 30000))) / 1000)
+            });
+            serverReview = data;
+          } catch (submitErr) {
+            console.warn('[TakeTest] Submit test server fallback:', submitErr.message);
+          }
+
+          // Build question history review list with rationales
+          const correctMap = {};
+          if (serverReview && Array.isArray(serverReview.correctAnswers)) {
+            serverReview.correctAnswers.forEach(ca => {
+              correctMap[ca.questionId] = ca;
+            });
+          }
+
+          let correctCount = 0;
+          const questionsList = staticQuestions.map((sq, i) => {
+            const userAns = newAnswers[i];
+            const serverInfo = correctMap[sq._id] || {};
+            const correctAns = serverInfo.correctAnswer !== undefined ? serverInfo.correctAnswer : sq.correctAnswer;
+            const isCorrect = userAns ? userAns.selectedAnswer === correctAns : false;
+            if (isCorrect) correctCount++;
+
+            return {
+              questionNumber: i + 1,
+              questionText: sq.questionText,
+              options: sq.options,
+              selectedAnswer: userAns ? userAns.selectedAnswer : -1,
+              correctAnswer: correctAns !== undefined ? correctAns : 0,
+              isCorrect,
+              explanation: serverInfo.explanation || sq.explanation || '',
+              topic: sq.topic || testInfo?.topic || 'Core Nursing',
+              difficultyLevel: sq.difficultyLevel || 2,
+              difficultyName: sq.difficultyName || 'Base'
+            };
+          });
+
+          const isPass = (correctCount / staticQuestions.length) >= 0.50;
+          setSession({
+            result: isPass ? 'PASSED' : 'DID NOT MEET BENCHMARK',
+            totalQuestions: staticQuestions.length,
+            correctCount,
+            abilityTheta: Number(((correctCount / staticQuestions.length) * 2 - 0.5).toFixed(2)),
+            questionsAnswered: questionsList
+          });
+          setIsFinished(true);
+        } else {
+          setSelectedOption(null);
+          setCurrentQuestionNumber(prev => prev + 1);
+          setCurrentQ(staticQuestions[currentQuestionNumber]);
+          setStartTime(Date.now());
+        }
+      } catch (err) {
+        console.error('[TakeTest] Error processing static answer:', err);
+        alert('Error processing answer. Please try again.');
+      } finally {
+        setSubmitting(false);
+      }
+      return;
+    }
+
+    // ── Adaptive CAT Mode Handler ──
     try {
       const { data } = await submitCATAnswer({
-        sessionId: session.sessionId || session._id,
+        sessionId: session?.sessionId || session?._id,
         selectedAnswer: selectedOption,
         timeTaken: elapsedSeconds
       });
 
-      if (data.isCompleted) {
+      // Complete test after last question or when engine marks isCompleted
+      if (data.isCompleted || currentQuestionNumber >= totalQuestionsCount) {
         setIsFinished(true);
-        setSession(data.session);
+        if (data.session) {
+          setSession(data.session);
+        }
       } else {
-        setLastFeedback({
-          ...data.feedback,
-          questionNumber: currentQuestionNumber
-        });
-        setShowFeedbackModal(true);
+        setSelectedOption(null);
+        setCurrentQuestionNumber(prev => prev + 1);
+        setCurrentQ(data.nextQuestion);
         setSession(prev => ({
           ...prev,
           currentDifficultyLevel: data.currentDifficultyLevel,
           difficultyName: data.difficultyName,
           abilityTheta: data.abilityTheta,
-          totalQuestionsAnswered: data.totalQuestionsAnswered,
-          nextQuestion: data.nextQuestion
+          totalQuestionsAnswered: data.totalQuestionsAnswered
         }));
+        setStartTime(Date.now());
       }
     } catch (err) {
       console.error('[TakeTest] Error submitting adaptive answer:', err);
@@ -134,14 +309,6 @@ export default function TakeTest() {
     } finally {
       setSubmitting(false);
     }
-  };
-
-  const handleNextAdaptiveQuestion = () => {
-    setShowFeedbackModal(false);
-    setSelectedOption(null);
-    setCurrentQuestionNumber(prev => prev + 1);
-    setCurrentQ(session.nextQuestion);
-    setStartTime(Date.now());
   };
 
   const getDifficultyBadgeColor = (level) => {
@@ -276,26 +443,25 @@ export default function TakeTest() {
 
           {/* Full Question-by-Question Review with Rationales */}
           <div className="cat-review-section">
-            <h3>Question-by-Question Adaptive Review</h3>
+            <h3>Question-by-Question Test Summary & Rationales</h3>
             <div className="cat-q-history-list">
               {questionsList.map((q, idx) => (
                 <div key={idx} className="cat-history-item">
                   <div className="history-item-top">
                     <span className="history-num">Q{idx + 1}</span>
                     <span className="history-subject">{q.topic}</span>
-                    <span className="history-level">Level {q.difficultyLevel}: {q.difficultyName}</span>
                     <span className={`history-status-badge ${q.isCorrect ? 'correct' : 'incorrect'}`}>
                       {q.isCorrect ? '✓ Correct' : '✗ Incorrect'}
                     </span>
                   </div>
-                  <p className="history-q-text">{q.questionText}</p>
+                  <p className="history-q-text">{stripEmbeddedOptions(q.questionText)}</p>
 
                   <div style={{ marginTop: 14 }}>
                     <FormattedExplanation 
                       explanation={q.explanation} 
                       correctAnswer={q.correctAnswer} 
                       selectedAnswer={q.selectedAnswer} 
-                      optionsList={q.options} 
+                      optionsList={(q.options || []).map(stripOptionPrefix)} 
                     />
                   </div>
                 </div>
@@ -330,35 +496,38 @@ export default function TakeTest() {
         <div className="telemetry-left">
           <div className="cat-logo-tag">
             <BrainCircuit size={20} color="#7c3aed" />
-            <span>{testInfo?.title || 'Computer Adaptive Test'}</span>
+            <span>{testInfo?.title || 'Practice Test'}</span>
           </div>
           <span className="cat-subject-tag">{currentQ?.topic || testInfo?.topic || 'Core Nursing'}</span>
         </div>
 
         <div className="telemetry-right">
-          {/* Difficulty Tier */}
-          <div className="cat-difficulty-pill" style={{ background: diffBadge.bg, color: diffBadge.text, borderColor: diffBadge.border }}>
-            <Layers size={14} /> {diffBadge.label}
+          {/* Live Timer Pill */}
+          <div className={`cat-timer-pill ${timeLeft <= 60 ? 'danger' : (timeLeft <= 300 ? 'warning' : '')}`}>
+            <Clock size={15} color={timeLeft <= 60 ? '#dc2626' : (timeLeft <= 300 ? '#b45309' : '#475569')} />
+            <span>{formatTimer(timeLeft)}</span>
           </div>
 
-          {/* Passing Zone Meter */}
-          <div className="cat-theta-pill" style={{ background: thetaInfo.bg, color: thetaInfo.color }}>
-            {thetaInfo.icon} {thetaInfo.text}
-          </div>
-
+          {/* Question Counter */}
           <div className="cat-counter-pill">
-            Adaptive Question #{currentQuestionNumber}
+            Question {currentQuestionNumber} of {totalQuestionsCount}
           </div>
+
+          {/* Cancel Test Button */}
+          <button 
+            type="button" 
+            className="cat-cancel-btn"
+            onClick={() => setShowCancelModal(true)}
+          >
+            <X size={15} /> Cancel Test
+          </button>
         </div>
       </div>
 
       {/* Main Question Card */}
       <div className="cat-question-card">
         <div className="cat-q-header">
-          <span className="cat-q-badge">Question {currentQuestionNumber}</span>
-          <span className="cat-q-level" style={{ color: diffBadge.text }}>
-            Adaptive Difficulty: <strong>{currentQ?.difficultyName || 'Base'}</strong>
-          </span>
+          <span className="cat-q-badge">Question {currentQuestionNumber} of {totalQuestionsCount}</span>
         </div>
 
         {scenario && (
@@ -392,7 +561,7 @@ export default function TakeTest() {
               onClick={() => handleOptionSelect(idx)}
             >
               <span className="opt-letter">{String.fromCharCode(65 + idx)}</span>
-              <span className="opt-text">{optText}</span>
+              <span className="opt-text">{stripOptionPrefix(optText)}</span>
             </button>
           ))}
         </div>
@@ -409,123 +578,68 @@ export default function TakeTest() {
             onClick={handleSubmitAnswer}
             disabled={selectedOption === null || submitting}
           >
-            {submitting ? 'Evaluating Response...' : 'Submit & Continue Adaptive Test →'}
+            {submitting 
+              ? (currentQuestionNumber >= totalQuestionsCount ? 'Submitting Final Answer...' : 'Submitting Answer...') 
+              : (currentQuestionNumber >= totalQuestionsCount ? 'Submit & Finish Test ✓' : 'Submit & Next Question →')}
           </button>
         </div>
       </div>
 
-      {/* Immediate Adaptive Feedback Modal - UWorld & Archer Clinical Summary Pattern */}
-      {showFeedbackModal && lastFeedback && (
+      {/* Cancel Test Confirmation Modal */}
+      {showCancelModal && (
         <div className="cat-modal-overlay">
-          <div className="cat-feedback-modal">
-            {/* Adaptive Escalation / Calibration Header */}
-            <div className={`feedback-header ${lastFeedback.isCorrect ? 'correct' : 'incorrect'}`}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                {lastFeedback.isCorrect ? <CheckCircle size={36} /> : <XCircle size={36} />}
-                <div>
-                  <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800 }}>
-                    Question #{lastFeedback.questionNumber || currentQuestionNumber}: {lastFeedback.isCorrect ? 'Correct Response! ✓' : 'Incorrect Response ✗'}
-                  </h3>
-                  <p style={{ margin: '4px 0 0 0', fontSize: 13, opacity: 0.95 }}>
-                    {lastFeedback.isCorrect
-                      ? `Adaptive System Escalation: Next Question (#${(lastFeedback.questionNumber || currentQuestionNumber) + 1}) scaling up toward Peak Level (Level ${session?.currentDifficultyLevel}: ${session?.difficultyName})`
-                      : `Adaptive System Calibration: Next Question (#${(lastFeedback.questionNumber || currentQuestionNumber) + 1}) calibrated to Level ${session?.currentDifficultyLevel}: ${session?.difficultyName}`}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Performance Telemetry Strip (Scored, Time, Level, Theta) */}
+          <div className="cat-feedback-modal" style={{ maxWidth: 440, padding: '28px 24px', textAlign: 'center' }}>
             <div style={{
+              width: 54,
+              height: 54,
+              borderRadius: '50%',
+              background: '#fee2e2',
+              color: '#dc2626',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-around',
-              background: '#f8fafc',
-              borderBottom: '1px solid #e2e8f0',
-              padding: '10px 18px',
-              fontSize: 12.5,
-              fontWeight: 700,
-              color: '#475569'
+              justifyContent: 'center',
+              margin: '0 auto 16px auto'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span>Scored:</span>
-                <span style={{ 
-                  color: lastFeedback.isCorrect ? '#16a34a' : '#dc2626', 
-                  background: lastFeedback.isCorrect ? '#dcfce7' : '#fee2e2',
-                  padding: '2px 8px',
-                  borderRadius: 4
-                }}>
-                  {lastFeedback.isCorrect ? '1 / 1' : '0 / 1'}
-                </span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <Clock size={14} color="#64748b" />
-                <span>Time Spent:</span>
-                <span style={{ color: '#0f172a' }}>{lastFeedback.timeTaken || 0}s</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <Activity size={14} color="#6366f1" />
-                <span>Difficulty Tier:</span>
-                <span style={{ color: '#4338ca' }}>Level {lastFeedback.difficultyLevel || session?.currentDifficultyLevel}</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <BrainCircuit size={14} color="#7c3aed" />
-                <span>Ability (θ):</span>
-                <span style={{ color: '#7c3aed' }}>{(session?.abilityTheta || 0).toFixed(2)}</span>
-              </div>
+              <AlertTriangle size={28} />
             </div>
-
-            {/* Full UWorld / Archer Summary Body */}
-            <div className="feedback-body">
-              {/* Question stem recap */}
-              {lastFeedback.questionText && (
-                <div style={{
-                  background: '#f8fafc',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: 10,
-                  padding: '14px 16px',
-                  marginBottom: 16,
-                  fontSize: 14,
-                  lineHeight: 1.6,
-                  color: '#1e293b'
-                }}>
-                  <div style={{ fontSize: 11, fontWeight: 800, color: '#4f46e5', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>
-                    Question #{lastFeedback.questionNumber || currentQuestionNumber} Clinical Scenario & Stem
-                  </div>
-                  <div style={{ whiteSpace: 'pre-line' }}>{lastFeedback.questionText}</div>
-                </div>
-              )}
-
-              {/* Formatted UWorld Explanation (Options Analysis + Concept Overview + Educational Objective) */}
-              <FormattedExplanation
-                explanation={lastFeedback.explanation}
-                correctAnswer={lastFeedback.correctAnswer}
-                selectedAnswer={lastFeedback.selectedAnswer}
-                optionsList={lastFeedback.options}
-                peerPercentages={lastFeedback.peerPercentages}
-              />
-            </div>
-
-            {/* Modal Footer with Action */}
-            <div className="feedback-footer">
+            <h3 style={{ margin: '0 0 8px 0', fontSize: 19, fontWeight: 800, color: '#0f172a' }}>
+              Cancel Practice Test?
+            </h3>
+            <p style={{ margin: '0 0 24px 0', fontSize: 13.5, color: '#64748b', lineHeight: 1.5 }}>
+              Are you sure you want to cancel? Your test session will end and unsubmitted answers will not be recorded.
+            </p>
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
               <button 
-                className="cat-next-btn" 
-                onClick={handleNextAdaptiveQuestion}
+                type="button"
+                onClick={() => setShowCancelModal(false)}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
-                  color: '#ffffff',
+                  padding: '10px 20px',
+                  borderRadius: 8,
+                  border: '1px solid #cbd5e1',
+                  background: '#ffffff',
+                  color: '#475569',
                   fontWeight: 700,
-                  fontSize: 15,
-                  padding: '12px 26px',
-                  borderRadius: 10,
-                  border: 'none',
+                  fontSize: 13,
                   cursor: 'pointer'
                 }}
               >
-                Continue to Question #{(lastFeedback.questionNumber || currentQuestionNumber) + 1} <ChevronRight size={18} />
+                Resume Test
+              </button>
+              <button 
+                type="button"
+                onClick={() => navigate('/tests')}
+                style={{
+                  padding: '10px 20px',
+                  borderRadius: 8,
+                  border: 'none',
+                  background: '#dc2626',
+                  color: '#ffffff',
+                  fontWeight: 700,
+                  fontSize: 13,
+                  cursor: 'pointer'
+                }}
+              >
+                Yes, Cancel Test
               </button>
             </div>
           </div>

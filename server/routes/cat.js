@@ -19,8 +19,8 @@ router.post('/start', protect, async (req, res) => {
       topic = 'All Subjects', 
       title = 'Computer Adaptive Test',
       startingDifficulty = 2,
-      minQuestions = 15,
-      maxQuestions = 50
+      minQuestions = 20,
+      maxQuestions = 20
     } = req.body;
 
     // Resolve starting difficulty (Default Level 2: Base)
@@ -42,7 +42,7 @@ router.post('/start', protect, async (req, res) => {
     console.log(`[CAT Engine] Initializing CAT test for user ${req.user._id}. Title: "${title}", Topic: "${topic}", Starting at Level ${initialDifficulty} (${DIFFICULTY_LEVELS[initialDifficulty].name}) - Initial Subject: "${initialSubject}"`);
 
     // Generate Question 1
-    const firstQuestion = await generateAdaptiveQuestion(initialSubject, initialDifficulty, examType);
+    const firstQuestion = await generateAdaptiveQuestion(initialSubject, initialDifficulty, examType, []);
 
     const newSession = await CATSession.create({
       user: req.user._id,
@@ -52,8 +52,8 @@ router.post('/start', protect, async (req, res) => {
       status: 'in_progress',
       abilityTheta: 0.0,
       passingStandard: 0.20,
-      minQuestions: Number(minQuestions) || 15,
-      maxQuestions: Number(maxQuestions) || 50,
+      minQuestions: Number(minQuestions) || 20,
+      maxQuestions: Number(maxQuestions) || 20,
       currentDifficultyLevel: initialDifficulty,
       currentDifficultyName: DIFFICULTY_LEVELS[initialDifficulty].name,
       consecutiveCorrect: 0,
@@ -162,8 +162,8 @@ router.post('/submit-answer', protect, async (req, res) => {
     session.consecutiveIncorrect = newConsecutiveIncorrect;
 
     // Evaluate stopping condition (dynamic min and max questions configured for session)
-    const minQ = session.minQuestions || 10;
-    const maxQ = session.maxQuestions || 35;
+    const minQ = session.minQuestions || 20;
+    const maxQ = session.maxQuestions || 20;
     const stopping = evaluateStoppingCondition(
       session.questionsAnswered,
       newTheta,
@@ -200,7 +200,8 @@ router.post('/submit-answer', protect, async (req, res) => {
     session.currentDifficultyLevel = nextDifficultyLevel;
     session.currentDifficultyName = DIFFICULTY_LEVELS[nextDifficultyLevel].name;
 
-    const nextQ = await generateAdaptiveQuestion(nextSubject, nextDifficultyLevel, session.examType);
+    const alreadyAsked = session.questionsAnswered.map(q => q.questionText);
+    const nextQ = await generateAdaptiveQuestion(nextSubject, nextDifficultyLevel, session.examType, alreadyAsked);
     session.currentQuestion = nextQ;
 
     await session.save();

@@ -1,5 +1,6 @@
 const { chat } = require('./openaiService');
 const { getNclexPrompt, getIndianNursingPrompt } = require('./questionPrompts');
+const { getTopicQuestion, resolveTopicKey } = require('./topicQuestions');
 
 // Core Subject Weightings (Percentage Distribution)
 const SUBJECT_WEIGHTS = [
@@ -11,6 +12,88 @@ const SUBJECT_WEIGHTS = [
   { name: 'Nursing Foundations (Fundamentals of Nursing)', weight: 0.10 },
   { name: 'Community Health Nursing', weight: 0.05 }
 ];
+
+const CLINICAL_DOMAINS = {
+  medsurg: [
+    'Acute Coronary Syndrome & STEMI Emergency Intervention',
+    'Pulmonary Embolism & Anticoagulant Escalation',
+    'Acute Ischemic Stroke & Thrombolytic Safety Window',
+    'Diabetic Ketoacidosis vs Hyperosmolar Hyperglycemic State',
+    'Acute Kidney Injury & Life-Threatening Hyperkalemia',
+    'Acute Pancreatitis & Intra-abdominal Sepsis',
+    'Tension Pneumothorax & Immediate Needle Thoracostomy',
+    'Cirrhosis Portal Hypertension & Ruptured Esophageal Varices',
+    'Myasthenia Gravis Myasthenic Crisis vs Cholinergic Crisis',
+    'Acute Compartment Syndrome & Neurovascular Deterioration',
+    'Syndrome of Inappropriate Antidiuretic Hormone (SIADH)',
+    'Addisonian Adrenal Crisis & Glucocorticoid Resuscitation',
+    'Sepsis Bundle & High-Lactate Crystalloid Resuscitation',
+    'Subdural Hematoma & Cushing Triad Decompensation',
+    'Mechanical Bowel Obstruction & Peritonitis Signs'
+  ],
+  pharmacology: [
+    'Digoxin Toxicity & Hypokalemia Potentiation',
+    'Lithium Carbonate Severe Dehydration Toxicity',
+    'Heparin-Induced Thrombocytopenia (HIT Type 2) & Argatroban',
+    'Vancomycin Peak/Trough Monitoring & Red Man Syndrome',
+    'ACE-Inhibitor Severe Angioedema Airway Threat',
+    'Warfarin Coagulopathy Reversal with Phytonadione',
+    'Potassium Chloride IV Infusion Rate Protocol & Cardiac Risk',
+    'Beta-Blocker Toxicity & Emergency Glucagon Reversal',
+    'Phenytoin Sodium Toxicity & Therapeutic Range Control',
+    'Basal vs Prandial Insulin Administration & Hypoglycemia Management'
+  ],
+  pediatrics: [
+    'Tetralogy of Fallot Hypercyanotic Tet Spell Positioning',
+    'Acute Epiglottitis Airway Compromise & Immediate Tracheostomy Prep',
+    'Pyloric Stenosis Hypochloremic Metabolic Alkalosis Correction',
+    'Intussusception Currant Jelly Stools & Air Enema Reduction',
+    'Kawasaki Disease Coronary Aneurysm Prevention & High-Dose IVIG',
+    'Hirschsprung Disease Toxic Enterocolitis & Hirschsprung Stools',
+    'Croup (Laryngotracheobronchitis) Inspiratory Stridor & Racemic Epinephrine',
+    'Wilms Tumor (Nephroblastoma) Abdominal Palpation Precaution',
+    'Pediatric Sickle Cell Vaso-occlusive Crisis & Hydration Priority',
+    'Toddler Developmental Milestones & Autonomy vs Shame'
+  ],
+  psychiatry: [
+    'Paranoid Schizophrenia Command Hallucinations & Milieu Safety',
+    'Clozapine Severe Agranulocytosis & Absolute Neutrophil Count Monitoring',
+    'Neuroleptic Malignant Syndrome Severe Hyperthermia & Dantrolene',
+    'Bipolar I Acute Manic Phase & High-Calorie Finger Foods',
+    'Major Depressive Disorder Sudden Euphoria & Suicide Energy Surge',
+    'MAOI Dietary Tyramine Restrictions & Hypertensive Crisis Emergency',
+    'Anorexia Nervosa Severe Malnutrition & Refeeding Syndrome',
+    'Extrapyramidal Symptoms: Acute Dystonic Reaction & Anticholinergics'
+  ],
+  obstetrics: [
+    'Severe Preeclampsia Magnesium Sulfate Toxicity & Calcium Gluconate',
+    'Postpartum Hemorrhage Uterine Atony & Fundal Massage Protocol',
+    'Placental Abruption Concealed Hemorrhage vs Placenta Previa',
+    'Shoulder Dystocia Emergency & McRoberts Maneuver with Suprapubic Pressure',
+    'Umbilical Cord Prolapse Manual Head Elevation & Trendelenburg',
+    'Ectopic Pregnancy Tubal Rupture & Hemoperitoneum Signs',
+    'Hyperemesis Gravidarum Severe Wernicke Encephalopathy Prevention',
+    'Rh Incompatibility & RhoGAM Immunoglobulin Prophylaxis'
+  ],
+  foundations: [
+    'Surgical Asepsis Principles & Sterile Field Boundary Violations',
+    'Pressure Injury Staging 1-4, Deep Tissue Injury & Unstageable Wounds',
+    'ABO Incompatible Acute Hemolytic Blood Transfusion Reaction Emergency',
+    'Enteral Tube Feeding Gastric Residual Volume & Aspiration Prevention',
+    'Clean-Catch Midstream Urine Specimen Collection Protocol',
+    'Transmission-Based Precautions: Airborne vs Droplet vs Contact Isolation',
+    'Postoperative Atelectasis Prevention & Sustained Maximal Inspiration',
+    'Medical Restraints Documentation & Neurovascular Checks'
+  ],
+  community: [
+    'Vaccine Cold Chain Temperature Standards & Shake Test Protocol',
+    'Disease Outbreak Attack Rate Calculation & Epidemic Curve',
+    'Tuberculosis Directly Observed Therapy Short-Course (DOTS) Compliance',
+    'Epidemiological Triad & Primary vs Secondary Prevention',
+    'Community Water Purification Breakpoint Chlorination',
+    'START Disaster Triage Color Tagging Protocol'
+  ]
+};
 
 const DIFFICULTY_LEVELS = {
   1: { level: 1, name: 'Below Base', label: 'Level 1: Below Base (Foundational)' },
@@ -24,19 +107,29 @@ const selectNextSubject = (subjectQuotas = {}, fixedSubject = null) => {
   if (fixedSubject && fixedSubject !== 'All Subjects' && !fixedSubject.toLowerCase().includes('all mock') && !fixedSubject.toLowerCase().includes('full length')) {
     return fixedSubject;
   }
-  let minFulfilledSubject = SUBJECT_WEIGHTS[0].name;
+
+  // At the start of a test with no quotas yet, randomly pick a starting subject to avoid always starting on Med-Surg
+  const totalCount = Object.values(subjectQuotas).reduce((a, b) => a + b, 0);
+  if (totalCount === 0) {
+    const randomInitial = SUBJECT_WEIGHTS[Math.floor(Math.random() * SUBJECT_WEIGHTS.length)];
+    return randomInitial.name;
+  }
+
   let minRatio = Infinity;
+  let candidates = [];
 
   for (const item of SUBJECT_WEIGHTS) {
     const currentCount = subjectQuotas[item.name] || 0;
     const currentRatio = currentCount / item.weight;
     if (currentRatio < minRatio) {
       minRatio = currentRatio;
-      minFulfilledSubject = item.name;
+      candidates = [item.name];
+    } else if (Math.abs(currentRatio - minRatio) < 0.0001) {
+      candidates.push(item.name);
     }
   }
 
-  return minFulfilledSubject;
+  return candidates[Math.floor(Math.random() * candidates.length)] || SUBJECT_WEIGHTS[0].name;
 };
 
 // Calculate next adaptive difficulty level based on candidate answer performance
@@ -128,14 +221,78 @@ const evaluateStoppingCondition = (history, theta, passingStandard = 0.20, minQu
   return { shouldStop: false, result: null, reason: null };
 };
 
-// Generate adaptive question dynamically via AI or curated pool
-const generateAdaptiveQuestion = async (subject, difficultyLevel, examType = 'nclex_rn') => {
+// Clean trailing embedded options from questionText
+const stripEmbeddedOptions = (text) => {
+  if (!text) return '';
+  const lines = String(text).split('\n');
+  let optionStartIndex = -1;
+
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i].trim();
+    if (/^(?:[A-Da-d1-4][.)\]\-]|\([A-Da-d1-4]\))\s+/.test(trimmed)) {
+      const remainingLines = lines.slice(i).filter(l => l.trim().length > 0);
+      const optionLikeCount = remainingLines.filter(l => /^(?:[A-Da-d1-4][.)\]\-]|\([A-Da-d1-4]\))\s+/.test(l.trim())).length;
+      if (optionLikeCount >= 2) {
+        optionStartIndex = i;
+        break;
+      }
+    }
+  }
+
+  if (optionStartIndex !== -1) {
+    return lines.slice(0, optionStartIndex).join('\n').trim();
+  }
+  return text.trim();
+};
+
+// Clean letter prefixes like "A. ", "B) " from individual options
+const stripOptionPrefix = (text) => {
+  if (!text) return '';
+  return String(text).replace(/^(?:[A-Da-d1-4][.)\]\-]|\([A-Da-d1-4]\))\s*/, '').trim();
+};
+
+// Generate adaptive question dynamically via AI or topic-specific bank with strict deduplication
+const generateAdaptiveQuestion = async (subject, difficultyLevel, examType = 'nclex_rn', alreadyAsked = []) => {
   const diffInfo = DIFFICULTY_LEVELS[difficultyLevel] || DIFFICULTY_LEVELS[2];
   
+  // Clean already asked stems for prompt avoidance
+  const avoidList = Array.isArray(alreadyAsked)
+    ? alreadyAsked.slice(-5).map(s => String(s || '').substring(0, 70).replace(/\n/g, ' ')).filter(Boolean)
+    : [];
+
+  // Pick a dynamic, unique clinical domain tailored specifically to this subject
+  const topicKey = resolveTopicKey(subject);
+  const domainList = CLINICAL_DOMAINS[topicKey] || CLINICAL_DOMAINS.medsurg;
+  const availableDomains = domainList.filter(d => !alreadyAsked.some(prev => prev && prev.toLowerCase().includes(d.toLowerCase().split(' ')[0])));
+  const chosenDomain = availableDomains.length > 0 
+    ? availableDomains[Math.floor(Math.random() * availableDomains.length)] 
+    : domainList[Math.floor(Math.random() * domainList.length)];
+
+  const randomAge = topicKey === 'pediatrics' 
+    ? `${Math.floor(Math.random() * 12) + 1}-year-old` 
+    : `${Math.floor(Math.random() * 55) + 20}-year-old`;
+  const randomGender = Math.random() > 0.5 ? 'female' : 'male';
+  const randomSeed = Math.random().toString(36).substring(7);
+
   const prompt = `You are an expert Chief Item Writer for UWorld, Archer Review, NCLEX-RN (NGN), and AIIMS NORCET.
 
-TASK: Generate ONE authentic Computer Adaptive Testing (CAT) question for: ${subject}.
+TASK: Generate ONE authentic, fresh Computer Adaptive Testing (CAT) question for: ${subject}.
 TARGET ADAPTIVE LEVEL: Level ${diffInfo.level} - ${diffInfo.name}.
+${avoidList.length > 0 ? `CRITICAL ANTI-DUPLICATION RULE: You MUST NOT generate questions similar to these already-tested scenarios: [${avoidList.join('; ')}]. Provide a COMPLETELY DIFFERENT clinical situation with a new patient age and condition.` : ''}
+
+MANDATORY CLINICAL SCENARIO FOCUS:
+- You MUST construct this scenario specifically around: "${chosenDomain}".
+- Patient Demographic: A ${randomAge} ${randomGender} patient in an acute care setting.
+- Randomization seed: ${randomSeed}.
+
+STRICT PROHIBITION (BANNED CLICHÉ):
+- DO NOT generate scenarios involving alcohol withdrawal, alcohol use disorder, blood glucose of 45 mg/dL, or tremors/sweating in a 45-year-old male. This specific scenario is STRICTLY FORBIDDEN.
+- You MUST focus strictly on "${chosenDomain}".
+
+CRITICAL FORMATTING INSTRUCTIONS:
+- DO NOT list or append the answer choices (A, B, C, D) inside 'questionText'. 'questionText' MUST contain ONLY the clinical scenario and the explicit question stem.
+- The 4 answer choices MUST be placed ONLY inside the 'options' array.
+- DO NOT include letter prefixes in the options (e.g. write "The significance of play in developing social skills", NOT "B. The significance of play...").
 
 LEVEL-SPECIFIC INSTRUCTIONS:
 - Level 1 (Below Base): Foundational recall, core assessment principles, infection control, client safety rights.
@@ -158,7 +315,7 @@ Educational objective:
 
 MANDATORY JSON OUTPUT SCHEMA:
 {
-  "questionText": "string (the complete clinical case vignette with vitals/labs followed by explicit question stem)",
+  "questionText": "string (clinical scenario and question sentence only - NEVER include option choices here)",
   "options": ["Option A text", "Option B text", "Option C text", "Option D text"],
   "correctAnswer": 0, // integer index (0, 1, 2, or 3)
   "explanation": "string (strictly formatted as shown above)",
@@ -169,7 +326,7 @@ MANDATORY JSON OUTPUT SCHEMA:
   try {
     const aiResponse = await chat([
       { role: 'system', content: prompt },
-      { role: 'user', content: 'Generate the adaptive CAT question with full UWorld/Archer summary pattern as JSON now.' }
+      { role: 'user', content: `Generate a fresh, unique ${subject} clinical case on ${chosenDomain} as valid JSON now.` }
     ], 2500);
 
     let jsonString = aiResponse ? aiResponse.trim() : '';
@@ -186,137 +343,42 @@ MANDATORY JSON OUTPUT SCHEMA:
 
     const parsed = JSON.parse(jsonString);
     if (parsed && parsed.questionText && Array.isArray(parsed.options) && parsed.options.length === 4) {
-      return {
-        questionText: parsed.questionText,
-        options: parsed.options,
-        correctAnswer: typeof parsed.correctAnswer === 'number' ? parsed.correctAnswer : 0,
-        explanation: parsed.explanation || '',
-        peerPercentages: Array.isArray(parsed.peerPercentages) && parsed.peerPercentages.length === 4 ? parsed.peerPercentages : [10, 72, 12, 6],
-        topic: subject,
-        difficultyLevel: diffInfo.level,
-        difficultyName: diffInfo.name
-      };
+      const cleanStem = stripEmbeddedOptions(parsed.questionText);
+      const cleanOptions = parsed.options.map(opt => stripOptionPrefix(typeof opt === 'string' ? opt : (opt.text || String(opt))));
+
+      const isDuplicate = alreadyAsked.some(prev => 
+        prev && (prev.includes(cleanStem.substring(0, 40)) || cleanStem.includes(prev.substring(0, 40)))
+      );
+
+      // Programmatic guard against the overused alcohol withdrawal cliché
+      const isBannedCliché = cleanStem.toLowerCase().includes('alcohol use disorder') ||
+                             cleanStem.toLowerCase().includes('alcohol withdrawal') ||
+                             (cleanStem.toLowerCase().includes('blood glucose') && cleanStem.toLowerCase().includes('45 mg/dl')) ||
+                             (cleanStem.toLowerCase().includes('45-year-old') && cleanStem.toLowerCase().includes('tremors'));
+
+      if (!isDuplicate && !isBannedCliché) {
+        return {
+          questionText: cleanStem,
+          options: cleanOptions,
+          correctAnswer: typeof parsed.correctAnswer === 'number' ? parsed.correctAnswer : 0,
+          explanation: parsed.explanation || '',
+          peerPercentages: Array.isArray(parsed.peerPercentages) && parsed.peerPercentages.length === 4 ? parsed.peerPercentages : [14, 68, 11, 7],
+          topic: subject,
+          difficultyLevel: diffInfo.level,
+          difficultyName: diffInfo.name
+        };
+      } else if (isBannedCliché) {
+        console.warn(`[CAT Engine] Programmatic filter rejected banned alcohol withdrawal cliché for topic "${subject}".`);
+      }
     }
   } catch (err) {
     console.warn('[CAT Engine] AI generation fallback triggered:', err.message);
   }
 
-  // Fallback curated questions per level if AI service is slow
-  return getCuratedFallbackAdaptiveQuestion(subject, difficultyLevel);
-};
-
-// Fallback curated pool per adaptive level (Authentic UWorld/Archer Pattern)
-const getCuratedFallbackAdaptiveQuestion = (subject, difficultyLevel) => {
-  const pool = {
-    1: { // Below Base (Level 1)
-      questionText: `CLINICAL CASE SCENARIO: A 62-year-old client admitted to the medical unit under ${subject} is scheduled for an invasive diagnostic procedure. The client is awake, alert, and oriented to person, place, and time. Prior to the procedure team arriving, the nurse enters the room to initiate the pre-procedure checklist.\n\nWhich fundamental nursing action must the nurse complete FIRST prior to procedure initiation?`,
-      options: [
-        'Verify signed informed consent and verify client identity using two unique identifiers',
-        'Administer broad-spectrum prophylactic IV antibiotics immediately',
-        'Place the client in a steep Trendelenburg position',
-        'Discontinue all routine home oral cardiac medications indefinitely'
-      ],
-      correctAnswer: 0,
-      peerPercentages: [84, 7, 5, 4],
-      explanation: `Explanation
-The National Patient Safety Goals (NPSGs) and hospital accreditation guidelines emphasize the critical importance of patient identification and procedural verification. Prior to any invasive procedure, the nurse must verify the client's identity using at least two unique identifiers (eg, full name and date of birth or medical record number) and verify that voluntary, fully informed consent has been obtained and documented.
-
-Informed consent ensures that the client comprehends the procedure, intended benefits, potential risks, and available alternatives. Starting an invasive procedure without proper verification exposes the client to severe sentinel events (eg, wrong-patient or wrong-site surgery) and violates fundamental legal and ethical standards of nursing practice.
-
-(Option 1) This is the essential first priority. Verifying two patient identifiers against the medical chart and confirming signed consent prevents medical errors and verifies client autonomy.
-(Option 2) Prophylactic antibiotics require a licensed healthcare provider's order and specific timing (typically within 60 minutes prior to surgical incision), not routine unverified administration.
-(Option 3) The steep Trendelenburg position (head lower than feet) increases intracranial pressure and compromises respiratory excursion; it is contraindicated unless specifically indicated for line placement.
-(Option 4) Abruptly stopping essential chronic medications (such as beta-blockers) without provider direction can precipitate rebound hypertension or cardiac dysrhythmias.
-
-Educational objective:
-Prior to initiating any invasive procedure, the nurse must verify the client's identity using two unique identifiers and verify that signed informed consent is present in the medical record.`,
-      topic: subject
-    },
-    2: { // Base (Level 2)
-      questionText: `CLINICAL CASE SCENARIO: A 48-year-old client admitted under ${subject} underwent uncomplicated laparoscopic surgery 6 hours ago. Vital signs are: blood pressure 122/78 mmHg, pulse 80/min, respirations 16/min, and oxygen saturation 98% on room air. The client reports surgical site soreness rated 3/10 on the numeric pain scale and is able to converse comfortably.\n\nWhich intervention by the nurse is MOST appropriate at this time?`,
-      options: [
-        'Assist the client into a position of comfort and implement non-pharmacological relief strategies',
-        'Immediately activate the hospital emergency rapid response team',
-        'Administer an unscheduled IV push high-dose opioid bolus',
-        'Prepare the client for immediate emergency exploratory laparotomy'
-      ],
-      correctAnswer: 0,
-      peerPercentages: [79, 4, 11, 6],
-      explanation: `Explanation
-Pain management requires a multimodal and stepwise approach based on comprehensive assessment. Clients reporting mild pain (rating 1 to 3 out of 10) who exhibit hemodynamic stability and eupneic respirations are optimal candidates for non-pharmacological interventions (eg, repositioning, guided imagery, splinting with a pillow during coughing, cool compresses) and mild non-opioid oral analgesics if ordered.
-
-Overly aggressive or unindicated pharmacological therapy introduces unnecessary risks of respiratory depression, sedation, and opioid-induced ileus, especially in post-surgical clients with stable baseline parameters.
-
-(Option 1) Repositioning, elevating the head of the bed, splinting the surgical incision, and providing quiet surroundings provide effective relief for mild discomfort without adverse systemic side effects.
-(Option 2) Rapid response teams are reserved for acute clinical deterioration (eg, acute hypoxemia, severe sustained hypotension, acute neurological deficits), none of which are present in this stable client.
-(Option 3) IV push opioids are indicated for acute severe pain (typically ratings 7–10) or breakthrough pain when milder modalities have failed; they carry significant sedation risks.
-(Option 4) Emergency surgical re-exploration is indicated only for surgical emergencies such as massive intra-abdominal hemorrhage, peritonitis, or wound evisceration.
-
-Educational objective:
-For stable post-surgical clients experiencing mild pain (ratings 1–3/10), initial management focuses on non-pharmacological comfort measures and conservative non-opioid strategies before escalating to high-potency opioids.`,
-      topic: subject
-    },
-    3: { // Advanced Hard (Level 3)
-      questionText: `CLINICAL CASE SCENARIO: A 56-year-old client with acute decompensated heart failure admitted under ${subject} is receiving an IV infusion of 0.9% normal saline at 150 mL/hr. Two hours into the infusion, the client develops sudden severe dyspnea, orthopnea, and an audible cough productive of pink, frothy sputum. Vital signs: blood pressure 168/98 mmHg, pulse 118/min, respirations 32/min, and SpO2 86% on room air. Auscultation reveals diffuse bilateral coarse crackles throughout both lung fields.\n\nWhich nursing intervention should the nurse perform FIRST?`,
-      options: [
-        'Discontinue the IV fluid infusion, position the client upright in High-Fowler\'s, and apply high-flow oxygen',
-        'Increase the IV fluid rate to 200 mL/hr to maintain organ perfusion',
-        'Place the client in the supine position with legs elevated',
-        'Administer oral potassium supplements and encourage fluid intake'
-      ],
-      correctAnswer: 0,
-      peerPercentages: [88, 3, 5, 4],
-      explanation: `Explanation
-The client is exhibiting hallmark signs of acute pulmonary edema secondary to hypervolemia (fluid volume overload). In clients with compromised ventricular performance, rapid crystalloid administration causes rapid elevation of left ventricular end-diastolic pressure, resulting in fluid transudation into the pulmonary interstitium and alveoli. Characteristic clinical manifestations include severe dyspnea, tachypnea, orthopnea, diffuse crackles, and classic pink, frothy sputum.
-
-Priority nursing interventions follow the ABCs (Airway, Breathing, Circulation):
-1. Immediately stop the IV fluid infusion to prevent further pulmonary vascular engorgement.
-2. Elevate the head of the bed into high-Fowler's position (90 degrees) with the legs dependent. This reduces venous return (preload) to the right heart and maximizes diaphragmatic excursion.
-3. Apply high-flow supplemental oxygen (non-rebreather mask or positive airway pressure) to address severe arterial hypoxemia.
-
-(Option 1) This action directly addresses the underlying trigger (fluid overload), reduces cardiac preload via positional gravitational pooling, and corrects life-threatening hypoxemia.
-(Option 2) Increasing fluid infusion rate would rapidly worsen alveolar flooding, precipitating respiratory arrest and cardiogenic shock.
-(Option 3) Placing the client supine increases venous return to an already overloaded heart, exacerbating pulmonary capillary hydrostatic pressure and worsening dyspnea.
-(Option 4) Oral administration during acute respiratory distress poses an extreme aspiration risk and does nothing to alleviate acute respiratory compromise.
-
-Educational objective:
-Acute pulmonary edema is a medical emergency manifested by pink, frothy sputum, diffuse crackles, and severe hypoxemia. Immediate priority nursing interventions include stopping IV fluid infusions, placing the client in high-Fowler's position with legs dependent, and applying high-flow oxygen.`,
-      topic: subject
-    },
-    4: { // Peak Level (Level 4)
-      questionText: `CLINICAL CASE SCENARIO: A 64-year-old client in the Intensive Care Unit being managed for severe septic shock and acute kidney injury under ${subject} exhibits new cardiac telemetry changes showing widening QRS complexes, prolonged PR intervals, and tall, peaked T waves. The client is lethargic with a heart rate of 46/min and blood pressure 82/48 mmHg. Stat arterial blood gas (ABG) reveals: pH 7.18, PaCO2 30 mmHg, HCO3 11 mEq/L. Stat serum potassium is 7.4 mEq/L.\n\nWhich emergency medication must the nurse prepare for IMMEDIATE administration to prevent fatal ventricular fibrillation or asystole?`,
-      options: [
-        'Intravenous Calcium Gluconate (10%) administered slowly over 2–5 minutes',
-        'Oral Sodium Polystyrene Sulfonate (Kayexalate) mixed in sorbitol',
-        'Subcutaneous Regular Insulin without IV dextrose co-administration',
-        'Intravenous push Epinephrine 1 mg rapid bolus as initial monotherapy'
-      ],
-      correctAnswer: 0,
-      peerPercentages: [67, 18, 9, 6],
-      explanation: `Explanation
-Severe hyperkalemia (serum potassium > 6.5 mEq/L) accompanied by EKG alterations (peaked T waves, widening QRS complex, prolonged PR interval, loss of P waves) is a life-threatening medical emergency capable of rapidly deteriorating into ventricular fibrillation or asystole.
-
-In severe symptomatic hyperkalemia, therapeutic priorities proceed in strict clinical sequence:
-1. Membrane Stabilization (IMMEDIATE): IV Calcium Gluconate does NOT lower serum potassium levels; however, it immediately raises the cardiac threshold potential, stabilizing the cardiomyocyte resting membrane and protecting the myocardium against fatal dysrhythmias within 1 to 3 minutes.
-2. Intracellular Potassium Shifting (SECONDARY): Once cardiac membranes are stabilized with calcium, IV Regular Insulin (10 units) administered with 50% Dextrose (D50W 25–50g) shifts extracellular potassium into intracellular compartments by stimulating Na+/K+-ATPase pumps. Inhaled high-dose albuterol and IV sodium bicarbonate also facilitate cellular shifts.
-3. Potassium Elimination (DEFINITIVE): Loop diuretics (furosemide), gastrointestinal cation exchange resins (sodium zirconium cyclosilicate or sodium polystyrene sulfonate), or urgent hemodialysis permanently remove excess potassium from the body.
-
-(Option 1) IV Calcium Gluconate is the mandatory first-line emergency intervention to prevent cardiac arrest by antagonizing hyperkalemia-induced myocardial excitability.
-(Option 2) Sodium Polystyrene Sulfonate works in the gastrointestinal tract and requires hours to days to reduce total body potassium; it provides zero immediate protection against fatal conduction blocks.
-(Option 3) Administering insulin without dextrose will cause catastrophic hypoglycemia. Furthermore, insulin shifts potassium but does not stabilize cardiac membranes against immediate ventricular fibrillation.
-(Option 4) Epinephrine is indicated in pulseless cardiac arrest (ACLS protocol); administering it as monotherapy without membrane stabilization does not resolve the electrophysiological toxicity of 7.4 mEq/L potassium.
-
-Educational objective:
-In severe hyperkalemia with EKG abnormalities (peaked T waves, widening QRS), the immediate priority medication is IV Calcium Gluconate to stabilize the cardiac cell membrane and prevent fatal dysrhythmias, followed by interventions that shift and eliminate potassium.`,
-      topic: subject
-    }
-  };
-
-  const selected = pool[difficultyLevel] || pool[2];
-  const diffInfo = DIFFICULTY_LEVELS[difficultyLevel] || DIFFICULTY_LEVELS[2];
-
+  // Draw from diverse, topic-tailored question bank with guaranteed anti-duplication
+  const topicQuestion = getTopicQuestion(subject, difficultyLevel, alreadyAsked);
   return {
-    ...selected,
+    ...topicQuestion,
     difficultyLevel: diffInfo.level,
     difficultyName: diffInfo.name
   };

@@ -6,25 +6,17 @@ import './StudentFreeTests.css';
 export default function FreeTests() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('All Tests');
-  const [selectedDifficulty, setSelectedDifficulty] = useState('moderate');
   const TABS = ['All Tests', 'Full Length Tests', 'Subject Wise Tests', 'Sectional Tests', 'Topic Tests'];
 
-  const DIFFICULTY_OPTIONS = [
-    { id: 'hard', label: 'Level 1: Hard 🔥', levelNum: 3 },
-    { id: 'moderate', label: 'Level 2: Moderate ⚡', levelNum: 2 },
-    { id: 'easy', label: 'Level 3: Easy 🟢', levelNum: 1 }
-  ];
-
   const handleStartAdaptiveTest = (test) => {
-    const diffObj = DIFFICULTY_OPTIONS.find(d => d.id === selectedDifficulty) || DIFFICULTY_OPTIONS[1];
     const topic = test.sub.includes('Subject') ? test.title.split(' - ')[0] : 'All Subjects';
     navigate('/test/adaptive', {
       state: {
         title: test.title,
         topic,
-        startingDifficulty: diffObj.levelNum,
-        difficultyLevel: diffObj.levelNum === 3 ? 1 : (diffObj.levelNum === 2 ? 2 : 3),
-        difficultyName: diffObj.label
+        startingDifficulty: 2,
+        difficultyLevel: 2,
+        difficultyName: 'Standard'
       }
     });
   };
@@ -91,31 +83,6 @@ export default function FreeTests() {
           <button className="ft-filter-btn"><SlidersHorizontal size={14}/> Filters</button>
         </div>
 
-        {/* Difficulty Level Bar */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#ffffff', padding: '12px 18px', borderRadius: 12, border: '1px solid #e2e8f0', margin: '14px 0' }}>
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#334155' }}>Starting Difficulty Level:</span>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            {DIFFICULTY_OPTIONS.map(d => (
-              <button
-                key={d.id}
-                type="button"
-                onClick={() => setSelectedDifficulty(d.id)}
-                style={{
-                  padding: '6px 14px',
-                  borderRadius: 20,
-                  fontSize: 12,
-                  fontWeight: 700,
-                  border: selectedDifficulty === d.id ? '2px solid #4f46e5' : '1px solid #cbd5e1',
-                  background: selectedDifficulty === d.id ? '#e0e7ff' : '#f8fafc',
-                  color: selectedDifficulty === d.id ? '#4338ca' : '#475569',
-                  cursor: 'pointer'
-                }}
-              >
-                {d.label}
-              </button>
-            ))}
-          </div>
-        </div>
 
         {/* Test List */}
         <div className="ft-list">

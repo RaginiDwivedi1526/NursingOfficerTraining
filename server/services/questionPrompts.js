@@ -34,15 +34,19 @@ const resolveDiffConfig = (diff) => {
 
 const getNclexPrompt = (topic, number = 10, difficulty = 'hard') => {
   const cfg = resolveDiffConfig(difficulty);
+  const randomSeed = Math.random().toString(36).substring(7);
   return `You are a senior expert NCLEX-RN and Next Generation NCLEX (NGN) Item Writer.
 
-TASK: Generate ${number} authentic Computer Adaptive Testing (CAT) quality questions on the topic: ${topic}
+TASK: Generate ${number} authentic Computer Adaptive Testing (CAT) quality questions specifically on the topic: ${topic}
 TARGET DIFFICULTY LEVEL: ${cfg.name} (${cfg.focus})
+VARIATION SEED: ${randomSeed}
 
 SCENARIO SPECIFICATIONS FOR ${cfg.name}:
 - Scenario Depth: ${cfg.scenarioGuidelines}
 - Clinical Judgment Focus: ${cfg.questionType}
-- Every question MUST feature a detailed clinical vignette in the 'scenario' field.
+- Every question MUST feature a unique clinical vignette in the 'scenario' field specifically related to ${topic}.
+- DIVERSITY REQUIREMENT: Ensure each of the ${number} questions covers a COMPLETELY DIFFERENT clinical pathology, drug, age group, or nursing intervention within ${topic}. DO NOT REPEAT scenarios.
+- CRITICAL: DO NOT include or append option choices (A, B, C, D) inside the 'scenario' or 'question_stem'. Choices MUST ONLY appear in the 'options' array without letter prefixes.
 - Provide a thorough clinical rationale for the correct answer AND explain why distractors are inappropriate.
 
 OUTPUT FORMAT — return ONLY valid JSON matching this schema:
@@ -53,10 +57,10 @@ OUTPUT FORMAT — return ONLY valid JSON matching this schema:
       "difficultyLevel": ${cfg.level},
       "difficultyName": "${cfg.name}",
       "clinical_judgment_step": "Recognize Cues | Analyze Cues | Prioritize Hypotheses | Generate Solutions | Take Action | Evaluate Outcomes",
-      "scenario": "string (detailed clinical case with vitals/labs)",
-      "question_stem": "string (the priority clinical question asked based on the scenario)",
+      "scenario": "string (detailed clinical case with vitals/labs - NEVER include options here)",
+      "question_stem": "string (the priority clinical question asked - NEVER include options here)",
       "options": [
-        {"label": "A", "text": "string", "is_correct": true},
+        {"label": "A", "text": "string (option text only, no 'A.' prefix)", "is_correct": true},
         {"label": "B", "text": "string", "is_correct": false},
         {"label": "C", "text": "string", "is_correct": false},
         {"label": "D", "text": "string", "is_correct": false}
@@ -70,17 +74,21 @@ OUTPUT FORMAT — return ONLY valid JSON matching this schema:
 
 const getIndianNursingPrompt = (subject, number = 10, difficulty = 'hard') => {
   const cfg = resolveDiffConfig(difficulty);
+  const randomSeed = Math.random().toString(36).substring(7);
   return `You are a Chief Item Writer for Indian Nursing Officer recruitment examinations (AIIMS NORCET, ESIC, RRB Staff Nurse, DSSSB, PGIMER, SGPGI).
 
-TASK: Generate ${number} authentic Computer Adaptive Testing (CAT) quality clinical questions on the subject/topic: ${subject}
+TASK: Generate ${number} authentic Computer Adaptive Testing (CAT) quality clinical questions specifically on the subject/topic: ${subject}
 TARGET DIFFICULTY LEVEL: ${cfg.name} (${cfg.focus})
+VARIATION SEED: ${randomSeed}
 
 MANDATORY RULES:
 1. Scenario: ${cfg.scenarioGuidelines}
 2. Clinical Focus: ${cfg.questionType}
-3. 4 options (A-D) with exactly ONE correct answer.
-4. Comprehensive 3–5 sentence clinical rationale explaining the exact pathophysiology and why the priority intervention is essential.
-5. Do NOT include prefixes like 'Q1.' or '[Subject]' in the question stem.
+3. DIVERSITY & NON-REPETITION: Every question MUST cover a DISTINCT, unique clinical condition, nursing situation, or pharmacology entity strictly belonging to ${subject}. Do NOT repeat similar patient vignettes or clinical dilemmas within this test or across generations.
+4. DO NOT APPEND OPTIONS TO SCENARIO OR QUESTION STEM: Option choices (A, B, C, D) MUST NEVER be typed inside 'scenario' or 'question_stem'. They must ONLY appear in the 'options' array.
+5. 4 options (A-D) with exactly ONE correct answer. Do NOT include option letter prefixes inside option text.
+6. Comprehensive 3–5 sentence clinical rationale explaining the exact pathophysiology and why the priority intervention is essential.
+7. Do NOT include prefixes like 'Q1.' or '[Subject]' in the question stem.
 
 OUTPUT FORMAT — return ONLY valid JSON matching this schema:
 {

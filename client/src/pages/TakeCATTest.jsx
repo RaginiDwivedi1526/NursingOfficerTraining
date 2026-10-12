@@ -3,11 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { startCATSession, submitCATAnswer } from '../services/api';
 import { 
   BrainCircuit, ShieldCheck, AlertTriangle, CheckCircle, XCircle, 
-  ChevronRight, Award, RotateCcw, Activity, BarChart2, Layers, HelpCircle
+  ChevronRight, Award, RotateCcw, Activity, BarChart2, Layers, HelpCircle, Clock, X
 } from 'lucide-react';
 import AskAIButton from '../components/tests/AskAIButton';
 import FormattedExplanation from '../components/tests/FormattedExplanation';
 import './TakeCATTest.css';
+
+const TOTAL_TEST_QUESTIONS = 20;
+const TEST_DURATION_SECONDS = 30 * 60; // 30 minutes
 
 export default function TakeCATTest() {
   const navigate = useNavigate();
@@ -17,24 +20,81 @@ export default function TakeCATTest() {
   const [currentQuestionNumber, setCurrentQuestionNumber] = useState(1);
   const [selectedOption, setSelectedOption] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-  const [lastFeedback, setLastFeedback] = useState(null);
-  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [startTime, setStartTime] = useState(Date.now());
+  const [timeLeft, setTimeLeft] = useState(TEST_DURATION_SECONDS);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+
+  // Strip embedded choices (A. ... B. ... C. ... D. ...) from question text or scenario
+  const stripEmbeddedOptions = (text) => {
+    if (!text) return '';
+    const lines = String(text).split('\n');
+    let optionStartIndex = -1;
+
+    for (let i = 0; i < lines.length; i++) {
+      const trimmed = lines[i].trim();
+      if (/^(?:[A-Da-d1-4][.)\]\-]|\([A-Da-d1-4]\))\s+/.test(trimmed)) {
+        const remainingLines = lines.slice(i).filter(l => l.trim().length > 0);
+        const optionLikeCount = remainingLines.filter(l => /^(?:[A-Da-d1-4][.)\]\-]|\([A-Da-d1-4]\))\s+/.test(l.trim())).length;
+        if (optionLikeCount >= 2) {
+          optionStartIndex = i;
+          break;
+        }
+      }
+    }
+
+    if (optionStartIndex !== -1) {
+      return lines.slice(0, optionStartIndex).join('\n').trim();
+    }
+    return text.trim();
+  };
+
+  // Strip option prefixes like "A. ", "B) ", "(C) ", "1. " from individual options
+  const stripOptionPrefix = (text) => {
+    if (!text) return '';
+    return String(text).replace(/^(?:[A-Da-d1-4][.)\]\-]|\([A-Da-d1-4]\))\s*/, '').trim();
+  };
 
   // Initialize CAT session on component mount
   useEffect(() => {
     initCAT();
   }, []);
 
+  // Live Timer Countdown Effect
+  useEffect(() => {
+    if (loading || isFinished) return;
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setIsFinished(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [loading, isFinished]);
+
+  const formatTimer = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  };
+
   const initCAT = async () => {
     setLoading(true);
     try {
-      const { data } = await startCATSession({ examType: 'nclex_rn' });
+      const { data } = await startCATSession({ 
+        examType: 'nclex_rn',
+        minQuestions: TOTAL_TEST_QUESTIONS,
+        maxQuestions: TOTAL_TEST_QUESTIONS
+      });
       setSession(data);
       setCurrentQ(data.currentQuestion);
       setCurrentQuestionNumber(1);
       setStartTime(Date.now());
+      setTimeLeft(TEST_DURATION_SECONDS);
     } catch (err) {
       console.error('[CAT UI] Failed to start CAT session:', err);
       alert('Failed to initialize Computer Adaptive Test. Please try again.');
@@ -44,7 +104,7 @@ export default function TakeCATTest() {
   };
 
   const handleOptionSelect = (index) => {
-    if (submitting || showFeedbackModal) return;
+    if (submitting) return;
     setSelectedOption(index);
   };
 
@@ -56,28 +116,28 @@ export default function TakeCATTest() {
 
     try {
       const { data } = await submitCATAnswer({
-        sessionId: session.sessionId,
+        sessionId: session.sessionId || session._id,
         selectedAnswer: selectedOption,
         timeTaken: elapsedSeconds
       });
 
-      if (data.isCompleted) {
+      if (data.isCompleted || currentQuestionNumber >= TOTAL_TEST_QUESTIONS) {
         setIsFinished(true);
-        setSession(data.session);
+        if (data.session) {
+          setSession(data.session);
+        }
       } else {
-        setLastFeedback({
-          ...data.feedback,
-          questionNumber: currentQuestionNumber
-        });
-        setShowFeedbackModal(true);
+        setSelectedOption(null);
+        setCurrentQuestionNumber(prev => prev + 1);
+        setCurrentQ(data.nextQuestion);
         setSession(prev => ({
           ...prev,
           currentDifficultyLevel: data.currentDifficultyLevel,
           difficultyName: data.difficultyName,
           abilityTheta: data.abilityTheta,
-          totalQuestionsAnswered: data.totalQuestionsAnswered,
-          nextQuestion: data.nextQuestion
+          totalQuestionsAnswered: data.totalQuestionsAnswered
         }));
+        setStartTime(Date.now());
       }
     } catch (err) {
       console.error('[CAT UI] Error submitting answer:', err);
@@ -85,14 +145,6 @@ export default function TakeCATTest() {
     } finally {
       setSubmitting(false);
     }
-  };
-
-  const handleNextAdaptiveQuestion = () => {
-    setShowFeedbackModal(false);
-    setSelectedOption(null);
-    setCurrentQuestionNumber(prev => prev + 1);
-    setCurrentQ(session.nextQuestion);
-    setStartTime(Date.now());
   };
 
   const getDifficultyBadgeColor = (level) => {
@@ -242,13 +294,13 @@ export default function TakeCATTest() {
                       {q.isCorrect ? '✓ Correct' : '✕ Incorrect'}
                     </span>
                   </div>
-                  <p className="q-text-body">{q.questionText}</p>
+                  <p className="q-text-body">{stripEmbeddedOptions(q.questionText)}</p>
                   <div style={{ marginTop: 12 }}>
                     <FormattedExplanation 
                       explanation={q.explanation} 
                       correctAnswer={q.correctAnswer} 
                       selectedAnswer={q.selectedAnswer} 
-                      optionsList={q.options} 
+                      optionsList={(q.options || []).map(stripOptionPrefix)} 
                     />
                   </div>
                 </div>
@@ -288,33 +340,35 @@ export default function TakeCATTest() {
         </div>
 
         <div className="telemetry-right">
-          {/* Difficulty Tier */}
-          <div className="cat-difficulty-pill" style={{ background: diffBadge.bg, color: diffBadge.text, borderColor: diffBadge.border }}>
-            <Layers size={14} /> {diffBadge.label}
-          </div>
-
-          {/* Passing Zone Meter */}
-          <div className="cat-theta-pill" style={{ background: thetaInfo.bg, color: thetaInfo.color }}>
-            {thetaInfo.icon} {thetaInfo.text}
+          {/* Live Timer Pill */}
+          <div className={`cat-timer-pill ${timeLeft <= 60 ? 'danger' : (timeLeft <= 300 ? 'warning' : '')}`}>
+            <Clock size={15} color={timeLeft <= 60 ? '#dc2626' : (timeLeft <= 300 ? '#b45309' : '#475569')} />
+            <span>{formatTimer(timeLeft)}</span>
           </div>
 
           <div className="cat-counter-pill">
-            Adaptive Question #{currentQuestionNumber}
+            Question {currentQuestionNumber} of {TOTAL_TEST_QUESTIONS}
           </div>
+
+          {/* Cancel Test Button */}
+          <button 
+            type="button" 
+            className="cat-cancel-btn"
+            onClick={() => setShowCancelModal(true)}
+          >
+            <X size={15} /> Cancel Test
+          </button>
         </div>
       </div>
 
       {/* Main Question Card */}
       <div className="cat-question-card">
         <div className="cat-q-header">
-          <span className="cat-q-badge">Question {currentQuestionNumber}</span>
-          <span className="cat-q-level" style={{ color: diffBadge.text }}>
-            Adaptive Difficulty: <strong>{currentQ?.difficultyName || 'Base'}</strong>
-          </span>
+          <span className="cat-q-badge">Question {currentQuestionNumber} of {TOTAL_TEST_QUESTIONS}</span>
         </div>
 
         <div className="cat-q-text">
-          {currentQ?.questionText}
+          {stripEmbeddedOptions(currentQ?.questionText)}
         </div>
 
         <div className="cat-options-list">
@@ -325,7 +379,7 @@ export default function TakeCATTest() {
               onClick={() => handleOptionSelect(idx)}
             >
               <span className="opt-letter">{String.fromCharCode(65 + idx)}</span>
-              <span className="opt-text">{optText}</span>
+              <span className="opt-text">{stripOptionPrefix(optText)}</span>
             </button>
           ))}
         </div>
@@ -342,82 +396,68 @@ export default function TakeCATTest() {
             onClick={handleSubmitAnswer}
             disabled={selectedOption === null || submitting}
           >
-            {submitting ? 'Evaluating Adaptive Response...' : 'Submit & Continue Adaptive Test →'}
+            {submitting 
+              ? (currentQuestionNumber >= TOTAL_TEST_QUESTIONS ? 'Submitting Final Answer...' : 'Submitting Answer...') 
+              : (currentQuestionNumber >= TOTAL_TEST_QUESTIONS ? 'Submit & Finish Test ✓' : 'Submit & Next Question →')}
           </button>
         </div>
       </div>
 
-      {/* Immediate Adaptive Feedback Modal */}
-      {showFeedbackModal && lastFeedback && (
+      {/* Cancel Test Confirmation Modal */}
+      {showCancelModal && (
         <div className="cat-modal-overlay">
-          <div className="cat-feedback-modal">
-            <div className={`feedback-header ${lastFeedback.isCorrect ? 'correct' : 'incorrect'}`}>
-              {lastFeedback.isCorrect ? (
-                <>
-                  <CheckCircle size={36} />
-                  <div>
-                    <h3>Question #{lastFeedback.questionNumber || currentQuestionNumber}: Correct Answer! ✓</h3>
-                    <p>Adaptive Engine is scaling up next Question (#{(lastFeedback.questionNumber || currentQuestionNumber) + 1}) to <strong>Level {session.currentDifficultyLevel}: {session.difficultyName}</strong></p>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <XCircle size={36} />
-                  <div>
-                    <h3>Question #{lastFeedback.questionNumber || currentQuestionNumber}: Incorrect Answer ✗</h3>
-                    <p>Adaptive Engine calibrated next Question (#{(lastFeedback.questionNumber || currentQuestionNumber) + 1}) to <strong>Level {session.currentDifficultyLevel}: {session.difficultyName}</strong></p>
-                  </div>
-                </>
-              )}
+          <div className="cat-feedback-modal" style={{ maxWidth: 440, padding: '28px 24px', textAlign: 'center' }}>
+            <div style={{
+              width: 54,
+              height: 54,
+              borderRadius: '50%',
+              background: '#fee2e2',
+              color: '#dc2626',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 16px auto'
+            }}>
+              <AlertTriangle size={28} />
             </div>
-
-            <div className="feedback-body">
-              {lastFeedback.questionText && (
-                <div style={{
-                  background: '#f8fafc',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: 10,
-                  padding: '14px 16px',
-                  marginBottom: 16,
-                  fontSize: 14,
-                  lineHeight: 1.6,
-                  color: '#1e293b'
-                }}>
-                  <div style={{ fontSize: 11, fontWeight: 800, color: '#4f46e5', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>
-                    Question #{lastFeedback.questionNumber || currentQuestionNumber} Scenario & Stem
-                  </div>
-                  <div style={{ whiteSpace: 'pre-line' }}>{lastFeedback.questionText}</div>
-                </div>
-              )}
-
-              <FormattedExplanation
-                explanation={lastFeedback.explanation}
-                correctAnswer={lastFeedback.correctAnswer}
-                selectedAnswer={lastFeedback.selectedAnswer}
-                optionsList={lastFeedback.options}
-                peerPercentages={lastFeedback.peerPercentages}
-              />
-            </div>
-
-            <div className="feedback-footer">
+            <h3 style={{ margin: '0 0 8px 0', fontSize: 19, fontWeight: 800, color: '#0f172a' }}>
+              Cancel Practice Test?
+            </h3>
+            <p style={{ margin: '0 0 24px 0', fontSize: 13.5, color: '#64748b', lineHeight: 1.5 }}>
+              Are you sure you want to cancel? Your test session will end and unsubmitted answers will not be recorded.
+            </p>
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
               <button 
-                className="cat-next-btn" 
-                onClick={handleNextAdaptiveQuestion}
+                type="button"
+                onClick={() => setShowCancelModal(false)}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
-                  color: '#ffffff',
+                  padding: '10px 20px',
+                  borderRadius: 8,
+                  border: '1px solid #cbd5e1',
+                  background: '#ffffff',
+                  color: '#475569',
                   fontWeight: 700,
-                  fontSize: 15,
-                  padding: '12px 26px',
-                  borderRadius: 10,
-                  border: 'none',
+                  fontSize: 13,
                   cursor: 'pointer'
                 }}
               >
-                Continue to Question #{(lastFeedback.questionNumber || currentQuestionNumber) + 1} <ChevronRight size={18} />
+                Resume Test
+              </button>
+              <button 
+                type="button"
+                onClick={() => navigate('/tests')}
+                style={{
+                  padding: '10px 20px',
+                  borderRadius: 8,
+                  border: 'none',
+                  background: '#dc2626',
+                  color: '#ffffff',
+                  fontWeight: 700,
+                  fontSize: 13,
+                  cursor: 'pointer'
+                }}
+              >
+                Yes, Cancel Test
               </button>
             </div>
           </div>
