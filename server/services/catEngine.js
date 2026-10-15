@@ -260,13 +260,20 @@ const generateAdaptiveQuestion = async (subject, difficultyLevel, examType = 'nc
     ? alreadyAsked.slice(-5).map(s => String(s || '').substring(0, 70).replace(/\n/g, ' ')).filter(Boolean)
     : [];
 
-  // Pick a dynamic, unique clinical domain tailored specifically to this subject
+  // Pick clinical domain: if specific topic/unit is passed, honor it; otherwise balance domains
+  const isGenericSubject = !subject || 
+                           subject === 'All Subjects' || 
+                           subject.toLowerCase().includes('all mock') || 
+                           subject.toLowerCase().includes('full length');
+
   const topicKey = resolveTopicKey(subject);
   const domainList = CLINICAL_DOMAINS[topicKey] || CLINICAL_DOMAINS.medsurg;
   const availableDomains = domainList.filter(d => !alreadyAsked.some(prev => prev && prev.toLowerCase().includes(d.toLowerCase().split(' ')[0])));
   const chosenDomain = availableDomains.length > 0 
     ? availableDomains[Math.floor(Math.random() * availableDomains.length)] 
     : domainList[Math.floor(Math.random() * domainList.length)];
+
+  const targetTopicName = isGenericSubject ? chosenDomain : subject;
 
   const randomAge = topicKey === 'pediatrics' 
     ? `${Math.floor(Math.random() * 12) + 1}-year-old` 
@@ -276,29 +283,47 @@ const generateAdaptiveQuestion = async (subject, difficultyLevel, examType = 'nc
 
   const prompt = `You are an expert Chief Item Writer for UWorld, Archer Review, NCLEX-RN (NGN), and AIIMS NORCET.
 
-TASK: Generate ONE authentic, fresh Computer Adaptive Testing (CAT) question for: ${subject}.
+TASK: Generate ONE authentic, fresh Computer Adaptive Testing (CAT) question STRICTLY for: ${targetTopicName}.
 TARGET ADAPTIVE LEVEL: Level ${diffInfo.level} - ${diffInfo.name}.
 ${avoidList.length > 0 ? `CRITICAL ANTI-DUPLICATION RULE: You MUST NOT generate questions similar to these already-tested scenarios: [${avoidList.join('; ')}]. Provide a COMPLETELY DIFFERENT clinical situation with a new patient age and condition.` : ''}
 
 MANDATORY CLINICAL SCENARIO FOCUS:
-- You MUST construct this scenario specifically around: "${chosenDomain}".
-- Patient Demographic: A ${randomAge} ${randomGender} patient in an acute care setting.
+- You MUST construct this scenario specifically around the topic: "${targetTopicName}".
+- Patient Demographic: A ${randomAge} ${randomGender} patient in an appropriate clinical setting.
 - Randomization seed: ${randomSeed}.
 
 STRICT PROHIBITION (BANNED CLICHÉ):
 - DO NOT generate scenarios involving alcohol withdrawal, alcohol use disorder, blood glucose of 45 mg/dL, or tremors/sweating in a 45-year-old male. This specific scenario is STRICTLY FORBIDDEN.
-- You MUST focus strictly on "${chosenDomain}".
+- You MUST focus strictly on "${targetTopicName}".
 
 CRITICAL FORMATTING INSTRUCTIONS:
 - DO NOT list or append the answer choices (A, B, C, D) inside 'questionText'. 'questionText' MUST contain ONLY the clinical scenario and the explicit question stem.
 - The 4 answer choices MUST be placed ONLY inside the 'options' array.
 - DO NOT include letter prefixes in the options (e.g. write "The significance of play in developing social skills", NOT "B. The significance of play...").
 
-LEVEL-SPECIFIC INSTRUCTIONS:
-- Level 1 (Below Base): Foundational recall, core assessment principles, infection control, client safety rights.
-- Level 2 (Base): Standard NCLEX/NORCET passing level clinical judgment, medication verification, diagnostic prioritization.
-- Level 3 (Advanced Hard): High-order priority nursing action, complex pharmacological toxicity, sudden decompensation with vitals and labs.
-- Level 4 (Peak Level): High-acuity ICU/Emergency trauma scenario with multi-system failure, detailed ABGs, telemetry dysrhythmias, critical lab values.
+LEVEL-SPECIFIC DIFFICULTY RULES (MANDATORY TO DIFFERENTIATE):
+${diffInfo.level === 1 ? `
+- LEVEL 1 (BELOW BASE / FOUNDATIONAL RECALL):
+  * Keep the scenario SHORT, DIRECT, and SIMPLE (1-2 sentences).
+  * Focus on FOUNDATIONAL RECALL: normal physiological values/ranges, core terminology and definitions, basic patient rights, infection control standards (hand hygiene, standard precautions, PPE order), or basic nursing safety principles.
+  * DO NOT include complex multi-system ICU vitals, severe trauma, or decompensation.
+  * Questions should test: "What is the normal...", "Which principle requires...", "Which action demonstrates proper technique for...".
+` : diffInfo.level === 2 ? `
+- LEVEL 2 (BASE / STANDARD PASSING BENCHMARK):
+  * Moderate clinical scenario (2-3 sentences) in a standard med-surg or general inpatient/outpatient unit.
+  * Focus on ROUTINE CLINICAL JUDGMENT: evaluating expected medication side effects, routine pre/post-op care, basic patient discharge education, or standard diagnostic verification.
+  * Patient is relatively stable with expected physiological responses.
+` : diffInfo.level === 3 ? `
+- LEVEL 3 (ADVANCED HARD / CLINICAL PRIORITIZATION):
+  * Challenging clinical vignette with abnormal vital signs, unexpected lab values, or adverse drug interactions.
+  * Focus on CLINICAL PRIORITIZATION ("Which client should the nurse assess FIRST?", "Which prescription should the nurse clarify with the healthcare provider?"), acute deterioration detection, or nuanced clinical decision-making.
+  * Distractors must be plausible nursing interventions that seem valid at first glance but are secondary or unsafe.
+` : `
+- LEVEL 4 (PEAK LEVEL / HIGH ACUITY EMERGENCY):
+  * High-acuity ICU, Emergency Department, or Trauma resuscitation scenario.
+  * Patient experiencing acute physiological decompensation, shock, multi-system organ failure, critical ABG abnormalities, or life-threatening dysrhythmias.
+  * Focus on IMMEDIATE, life-saving emergency escalation, advanced hemodynamics, vasopressor titration, or rapid sequence airway rescue.
+`}
 
 MANDATORY EXPLANATION SUMMARY FORMAT (STRICT UWORLD / ARCHER PATTERN):
 The 'explanation' field MUST strictly follow this exact 3-part layout:
@@ -320,13 +345,13 @@ MANDATORY JSON OUTPUT SCHEMA:
   "correctAnswer": 0, // integer index (0, 1, 2, or 3)
   "explanation": "string (strictly formatted as shown above)",
   "peerPercentages": [14, 68, 11, 7], // 4 integers representing plausible peer percentage distribution totaling 100
-  "topic": "${subject}"
+  "topic": "${targetTopicName}"
 }`;
 
   try {
     const aiResponse = await chat([
       { role: 'system', content: prompt },
-      { role: 'user', content: `Generate a fresh, unique ${subject} clinical case on ${chosenDomain} as valid JSON now.` }
+      { role: 'user', content: `Generate a fresh, unique ${targetTopicName} clinical case for Level ${diffInfo.level} (${diffInfo.name}) as valid JSON now.` }
     ], 2500);
 
     let jsonString = aiResponse ? aiResponse.trim() : '';

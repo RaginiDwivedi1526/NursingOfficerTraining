@@ -1,34 +1,43 @@
 const DIFFICULTY_CONFIGS = {
   1: {
     level: 1,
-    key: 'hard',
-    name: 'Level 1: Hard',
-    focus: 'PEAK ACUITY / HIGH-ORDER CLINICAL JUDGMENT & PRIORITIZATION',
-    scenarioGuidelines: '3–5 sentences. High-acuity ICU, Emergency, or Trauma patient experiencing acute physiological decompensation, multi-system failure, or life-threatening drug toxicity. Must include full patient profile (age, gender, department), exact abnormal vital signs (BP, HR, RR, SpO2, Temp), critical lab values (ABGs, electrolytes, cardiac enzymes, lactate), and current medical infusions.',
-    questionType: 'Emergency priority intervention ("Which action is the ABSOLUTE FIRST priority?"), sudden decompensation cue recognition ("Which finding requires IMMEDIATE escalation?"), or contraindication check ("Which physician order is CONTRAINDICATED?"). Distractors must all be plausible nursing interventions that seem valid at first glance.'
+    key: 'easy',
+    name: 'Level 1: Foundational Recall',
+    focus: 'CORE NURSING ASSESSMENT, DIRECT RECALL & PATIENT SAFETY',
+    scenarioGuidelines: '1–2 sentences. Clinical setting scenario presenting a standard patient encounter, admission evaluation, routine pre/post-op care, or health promotion context. Keep scenario short and straightforward.',
+    questionType: 'Foundational nursing assessments, normal vital signs thresholds, standard laboratory reference values, core patient safety protocols (two patient identifiers, infection prevention, aseptic technique), or essential medication administration rights.'
   },
   2: {
     level: 2,
     key: 'moderate',
-    name: 'Level 2: Moderate',
+    name: 'Level 2: Base Clinical',
     focus: 'STANDARD CLINICAL PASSING BENCHMARK & CLINICAL DECISION MAKING',
-    scenarioGuidelines: '2–4 sentences. Inpatient Medical-Surgical, Pediatric, or Obstetric patient with active clinical management needs. Include patient status, relevant vital signs or lab values, diagnostic findings, and ongoing treatments.',
-    questionType: 'Clinical decision-making, priority nursing care, therapeutic drug monitoring, adverse reaction identification, or patient education. Distractors must challenge standard understanding of nursing priorities.'
+    scenarioGuidelines: '2–3 sentences. Inpatient Medical-Surgical, Pediatric, or Obstetric patient with active clinical management needs. Include patient status, relevant vital signs or lab values, diagnostic findings, and ongoing treatments.',
+    questionType: 'Clinical decision-making, priority nursing care, therapeutic drug monitoring, expected vs adverse reaction identification, or patient education. Distractors must challenge standard understanding of nursing priorities.'
   },
   3: {
     level: 3,
-    key: 'easy',
-    name: 'Level 3: Easy',
-    focus: 'FOUNDATIONAL CORE NURSING ASSESSMENT & PATIENT SAFETY',
-    scenarioGuidelines: '1–3 sentences. Clinical setting scenario presenting a standard patient encounter, admission evaluation, routine pre/post-op care, or health promotion context.',
-    questionType: 'Foundational nursing assessments, core patient safety protocols (two patient identifiers, infection prevention, aseptic technique), standard vital signs thresholds, or essential medication administration rights.'
+    key: 'hard',
+    name: 'Level 3: Advanced Hard',
+    focus: 'HIGH-ORDER CLINICAL JUDGMENT, PRIORITIZATION & ADVERSE DECOMPENSATION',
+    scenarioGuidelines: '3–4 sentences. Complex clinical vignette with abnormal vital signs, unexpected lab values, decompensation cues, or adverse drug interactions. Must include detailed patient profile with vitals/labs.',
+    questionType: 'Clinical prioritization ("Which client should the nurse assess FIRST?", "Which prescription should the nurse clarify?"), acute physiological deterioration recognition, or multi-faceted nursing intervention choice.'
+  },
+  4: {
+    level: 4,
+    key: 'expert',
+    name: 'Level 4: Peak Acuity',
+    focus: 'ICU RESUSCITATION, HEMODYNAMICS, MULTI-SYSTEM COLLAPSE & TITRATION',
+    scenarioGuidelines: '3–5 sentences. High-acuity ICU, Emergency, or Trauma resuscitation patient experiencing acute shock, multi-system organ failure, severe dysrhythmias, or life-threatening drug toxicity with full vital signs, labs (ABGs, lactate), and vasoactive infusions.',
+    questionType: 'Immediate life-saving emergency intervention ("Which action takes ABSOLUTE FIRST priority?"), sudden lethal decompensation cue recognition, vasopressor titration, or contraindication check in unstable patient.'
   }
 };
 
 const resolveDiffConfig = (diff) => {
   const s = String(diff || '').toLowerCase();
-  if (s === '1' || s.includes('hard') || s.includes('peak')) return DIFFICULTY_CONFIGS[1];
-  if (s === '3' || s.includes('easy') || s.includes('foundat')) return DIFFICULTY_CONFIGS[3];
+  if (s === '4' || s.includes('peak') || s.includes('expert') || s.includes('icu')) return DIFFICULTY_CONFIGS[4];
+  if (s === '3' || s.includes('hard') || s.includes('advanc')) return DIFFICULTY_CONFIGS[3];
+  if (s === '1' || s.includes('easy') || s.includes('foundat') || s.includes('low')) return DIFFICULTY_CONFIGS[1];
   return DIFFICULTY_CONFIGS[2]; // Default to Moderate (Level 2)
 };
 

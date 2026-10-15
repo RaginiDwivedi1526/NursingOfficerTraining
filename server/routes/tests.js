@@ -86,6 +86,25 @@ router.get('/', async (req, res) => {
   }
 });
 
+// GET /api/tests/reseed - Trigger full database reseed of authentic topic tests with 4 difficulty levels
+router.get('/reseed', async (req, res) => {
+  try {
+    console.log('[RESEED] Starting full authentic reseed via endpoint...');
+    const { seedDatabase } = require('../seedAllUnits');
+    const result = await seedDatabase();
+    const count = await Test.countDocuments({ title: { $regex: /Practice Test/i } });
+    res.json({
+      success: true,
+      message: `Successfully re-seeded ${count} authentic topic-wise tests with 4 distinct difficulty levels!`,
+      testsCount: count,
+      result
+    });
+  } catch (err) {
+    console.error('[RESEED] Error during reseed:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // GET /api/tests/debug-long
 router.get('/debug-long', async (req, res) => {
   try {
@@ -107,19 +126,12 @@ router.get('/debug-long', async (req, res) => {
 // GET /api/tests/debug-mock
 router.get('/debug-mock', async (req, res) => {
   try {
-    const tests = await Test.find({ title: /AIIMS NORCET - Psychiatry Mock Test/ });
-    if (tests.length === 0) return res.json({ message: "No tests found" });
-    
-    // Just return the first 3 questions of the first test
-    const debugData = tests[0].questions.slice(0, 3).map(q => ({
-      questionText: q.questionText,
-      options: q.options,
-      correctAnswer: q.correctAnswer,
-      explanation: q.explanation
-    }));
-    res.json(debugData);
+    console.log('[DEBUG-MOCK] Running authentic database reseed...');
+    const { seedDatabase } = require('../seedAllUnits');
+    const result = await seedDatabase();
+    res.json({ message: "Reseed completed successfully", result });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: err.message, stack: err.stack });
   }
 });
 
@@ -335,24 +347,28 @@ router.post('/generate', protect, async (req, res) => {
   try {
     const { topic, difficulty = 'hard', numberOfQuestions = 10, examType = 'general' } = req.body;
     
-    // Resolve level 1-hard, 2-moderate, 3-easy
-    let diffKey = 'hard';
-    let diffLevel = 1;
-    let diffName = 'Level 1: Hard';
+    // Resolve difficulty strictly: 1-Easy/Foundational, 2-Moderate/Base, 3-Hard/Advanced, 4-Expert/Peak
+    let diffKey = 'moderate';
+    let diffLevel = 2;
+    let diffName = 'Level 2: Base Clinical';
 
     const diffStr = String(difficulty || '').toLowerCase();
-    if (diffStr === '3' || diffStr.includes('easy') || diffStr.includes('level-3') || diffStr.includes('level 3')) {
-      diffKey = 'easy';
+    if (diffStr === '4' || diffStr.includes('peak') || diffStr.includes('expert') || diffStr.includes('icu') || diffStr.includes('level-4') || diffStr.includes('level 4')) {
+      diffKey = 'expert';
+      diffLevel = 4;
+      diffName = 'Level 4: Peak Acuity';
+    } else if (diffStr === '3' || diffStr.includes('hard') || diffStr.includes('advanc') || diffStr.includes('level-3') || diffStr.includes('level 3')) {
+      diffKey = 'hard';
       diffLevel = 3;
-      diffName = 'Level 3: Easy';
-    } else if (diffStr === '2' || diffStr.includes('mod') || diffStr.includes('med') || diffStr.includes('level-2') || diffStr.includes('level 2')) {
+      diffName = 'Level 3: Advanced Hard';
+    } else if (diffStr === '1' || diffStr.includes('easy') || diffStr.includes('foundat') || diffStr.includes('level-1') || diffStr.includes('level 1') || diffStr.includes('basic')) {
+      diffKey = 'easy';
+      diffLevel = 1;
+      diffName = 'Level 1: Foundational Recall';
+    } else {
       diffKey = 'moderate';
       diffLevel = 2;
-      diffName = 'Level 2: Moderate';
-    } else {
-      diffKey = 'hard';
-      diffLevel = 1;
-      diffName = 'Level 1: Hard';
+      diffName = 'Level 2: Base Clinical';
     }
 
     console.log(`[GENERATE] Starting CAT generation for topic: "${topic}", difficulty: ${diffName} (${diffKey}), count: ${numberOfQuestions}`);

@@ -162,53 +162,14 @@ const generateRandomizedQuestions = (subject, unit) => {
   return questions;
 };
 
+const { seedDatabase } = require('./seedAllUnits');
+
 const seedTests = async () => {
   try {
-    console.log('\n[DEBUG] Starting Local Randomized Seeding check...');
-
-    // Force delete all previous generated unit tests (we identify them because their examType is 'nursing_officer' and title includes 'Practice Test')
-    await Test.deleteMany({
-      examType: 'nursing_officer',
-      title: { $regex: /Practice Test/ }
-    });
-
-    let generatedCount = 0;
-    let testsToInsert = [];
-
-    for (const subject of CORE_SUBJECTS) {
-      if (subject.name === "All Subjects") continue;
-
-      const unitsToProcess = (!subject.units || subject.units.length === 0) 
-        ? [subject.name] 
-        : subject.units;
-
-      for (const unit of unitsToProcess) {
-        testsToInsert.push({
-          title: `${subject.name}${unit !== subject.name ? ' - ' + unit : ''} Practice Test`,
-          description: `Comprehensive 20-question hard-level practice test covering ${unit}.`,
-          topic: unit, 
-          difficulty: 'hard',
-          duration: 30, // 30 mins
-          examType: 'nursing_officer',
-          isFree: true,
-          questions: generateRandomizedQuestions(subject.name, unit), 
-          totalQuestions: 20
-        });
-        generatedCount++;
-      }
-    }
-
-    // Insert in chunks
-    const chunkSize = 50;
-    for (let i = 0; i < testsToInsert.length; i += chunkSize) {
-      const chunk = testsToInsert.slice(i, i + chunkSize);
-      await Test.insertMany(chunk);
-    }
-
-    console.log(`✅ [SEEDING SUCCESS] Successfully generated ${generatedCount} totally unique tests with varied questions!`);
-
+    console.log('\n[SEED] Launching authentic topic-wise test seeding...');
+    await seedDatabase();
   } catch (error) {
-    console.error('Error in database seeding:', error);
+    console.error('[SEED] Error in database seeding:', error);
   }
 };
 

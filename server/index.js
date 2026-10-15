@@ -35,7 +35,20 @@ connectDB().then(() => {
     res.json({ status: 'ok', message: 'NursingOfficerTraining API is running 🏥' });
   });
 
-  // Seed data on first run
+  // Direct Reseed endpoint
+  app.get('/api/reseed', async (req, res) => {
+    try {
+      console.log('[RESEED] Triggering authentic topic seeding via /api/reseed...');
+      const { seedDatabase } = require('./seedAllUnits');
+      const result = await seedDatabase();
+      res.json({ success: true, message: 'Seeding completed', result });
+    } catch (err) {
+      console.error('[RESEED] Error:', err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Seed data on boot
   seedTests();
   parseAndSeed();
   require('./seedDashboard')();

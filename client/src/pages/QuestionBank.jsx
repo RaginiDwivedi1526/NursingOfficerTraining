@@ -44,13 +44,18 @@ export default function QuestionBank() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const handlePractice = async (topic) => {
+  const handlePractice = async (topic, difficulty = 'medium') => {
     if (loading) return;
     setLoading(true);
     try {
+      const diffMapped = String(difficulty || '').toLowerCase().includes('hard') 
+        ? 'hard' 
+        : String(difficulty || '').toLowerCase().includes('easy') 
+          ? 'easy' 
+          : 'medium';
       const res = await generateTest({
         topic: topic || 'General Nursing Practice',
-        difficulty: 'medium',
+        difficulty: diffMapped,
         numberOfQuestions: 10
       });
       navigate(`/test/${res.data._id}`);
@@ -61,6 +66,23 @@ export default function QuestionBank() {
       setLoading(false);
     }
   };
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedSubjectFilter, setSelectedSubjectFilter] = useState('All Subjects');
+  const [selectedDiffFilter, setSelectedDiffFilter] = useState('All Difficulty Levels');
+
+  const filteredQuestions = QUESTIONS.filter(q => {
+    if (searchQuery && !q.title.toLowerCase().includes(searchQuery.toLowerCase()) && !q.sub.toLowerCase().includes(searchQuery.toLowerCase()) && !q.subject.toLowerCase().includes(searchQuery.toLowerCase())) {
+      return false;
+    }
+    if (selectedSubjectFilter !== 'All Subjects' && q.subject !== selectedSubjectFilter) {
+      return false;
+    }
+    if (selectedDiffFilter !== 'All Difficulty Levels' && q.diff.toLowerCase() !== selectedDiffFilter.toLowerCase()) {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <div className="qb-container">
@@ -81,35 +103,55 @@ export default function QuestionBank() {
           ))}
         </div>
 
-
         {/* Filter Row */}
         <div className="qb-filter-row">
           <div className="qb-search">
             <Search size={16} color="#94a3b8"/>
-            <input type="text" placeholder="Search questions, topics or keywords..."/>
+            <input 
+              type="text" 
+              placeholder="Search questions, topics or keywords..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
-          <select className="qb-select"><option>All Subjects</option></select>
-          <select className="qb-select"><option>All Topics</option></select>
-          <select className="qb-select"><option>All Difficulty Levels</option></select>
-          <button className="qb-filter-btn"><SlidersHorizontal size={14}/> Filters</button>
+          <select 
+            className="qb-select"
+            value={selectedSubjectFilter}
+            onChange={(e) => setSelectedSubjectFilter(e.target.value)}
+          >
+            <option>All Subjects</option>
+            {SUBJECTS.map(s => <option key={s.name}>{s.name}</option>)}
+          </select>
+          <select 
+            className="qb-select"
+            value={selectedDiffFilter}
+            onChange={(e) => setSelectedDiffFilter(e.target.value)}
+          >
+            <option>All Difficulty Levels</option>
+            <option value="easy">Easy (Level 1)</option>
+            <option value="medium">Medium (Level 2)</option>
+            <option value="hard">Hard (Level 3/4)</option>
+          </select>
         </div>
 
         {/* Browse by Subject */}
         <div className="qb-section-head">
           <div className="qb-section-title">Browse by Subject</div>
-          <span className="qb-view-all">View All Subjects <ArrowRight size={13}/></span>
+          <span className="qb-view-all" onClick={() => setSelectedSubjectFilter('All Subjects')} style={{ cursor: 'pointer' }}>View All Subjects <ArrowRight size={13}/></span>
         </div>
         <div className="qb-subjects">
           {SUBJECTS.map((s, i) => (
-            <div className="qb-sub-card" key={i}>
+            <div 
+              className={`qb-sub-card ${selectedSubjectFilter === s.name ? 'active' : ''}`} 
+              key={i} 
+              onClick={() => setSelectedSubjectFilter(selectedSubjectFilter === s.name ? 'All Subjects' : s.name)}
+              style={{ cursor: 'pointer', border: selectedSubjectFilter === s.name ? '2px solid #6366f1' : '1px solid #e2e8f0' }}
+            >
               <div className="qb-sub-icon" style={{background: s.bg}}>{s.icon}</div>
               <div className="qb-sub-name">{s.name}</div>
               <div className="qb-sub-count">{s.count}</div>
             </div>
           ))}
-          <div style={{display:'flex',alignItems:'center',flexShrink:0}}>
-            <button style={{width:32,height:32,borderRadius:16,border:'1px solid #e2e8f0',background:'white',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}><ArrowRight size={14}/></button>
-          </div>
         </div>
 
         {/* Tabs + Sort/View */}
@@ -138,7 +180,7 @@ export default function QuestionBank() {
             <span>LAST PRACTICED</span>
             <span>ACTION</span>
           </div>
-          {QUESTIONS.map((q, i) => (
+          {filteredQuestions.map((q, i) => (
             <div className="qb-table-row" key={i}>
               <div className="qb-q-cell">
                 <div className="qb-q-icon" style={{background: q.iconBg}}>{q.icon}</div>
@@ -155,14 +197,18 @@ export default function QuestionBank() {
               <div><span className={`qb-diff-tag ${q.diffClass}`}>{q.diff}</span></div>
               <div className="qb-practiced">{q.practiced}</div>
               <div className="qb-action-cell">
-                <button className="qb-practice-btn" onClick={() => handlePractice(q.title)} disabled={loading}>
+                <button className="qb-practice-btn" onClick={() => handlePractice(q.title, q.diff)} disabled={loading}>
                   {loading ? '...' : 'Practice Now'}
                 </button>
                 <button className="qb-more-btn"><MoreVertical size={16}/></button>
               </div>
             </div>
           ))}
-          <button className="qb-load-more">Load More <ChevronDown size={14}/></button>
+          {filteredQuestions.length === 0 && (
+            <div style={{ padding: '30px', textAlign: 'center', color: '#64748b' }}>
+              No practice question sets match your selected filter criteria.
+            </div>
+          )}
         </div>
       </div>
 

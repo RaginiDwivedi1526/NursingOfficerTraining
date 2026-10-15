@@ -5,636 +5,692 @@ const Test = require('./models/Test');
 dotenv.config();
 
 // ============================================================
-//  UNIQUE HARD QUESTION BANKS — specific per unit/subject
+//  AUTHENTIC NURSING QUESTION BANKS ACROSS ALL SUBJECTS & UNITS
+//  Organized by 4 genuine difficulty tiers:
+//  - Questions 0-4:   Level 1 (Foundational recall, normal values, standard safety)
+//  - Questions 5-9:   Level 2 (Base clinical decision-making, standard med-surg care)
+//  - Questions 10-14: Level 3 (Advanced hard, prioritization, adverse decompensation)
+//  - Questions 15-19: Level 4 (Peak acuity, emergency escalation, ICU resuscitation)
 // ============================================================
 const BANKS = {
 
-  // ── NURSING FOUNDATIONS ──────────────────────────────────
+  // ─────────────────────────────────────────────────────────────
+  // 1. NURSING FOUNDATIONS & INTRODUCTION
+  // ─────────────────────────────────────────────────────────────
   "Introduction to Nursing": [
-    { text:"Florence Nightingale established her first nursing school at:", options:["Johns Hopkins Hospital","St. Thomas' Hospital, London","Massachusetts General Hospital","Vienna General Hospital"], answer:1, exp:"Nightingale founded her training school at St. Thomas' Hospital, London in 1860, launching modern nursing education." },
-    { text:"The ICN Code of Ethics for Nurses was first adopted in:", options:["1953","1965","1973","1989"], answer:0, exp:"The International Council of Nurses (ICN) first adopted its Code of Ethics for Nurses in 1953." },
-    { text:"Which act in India regulates nursing education and practice?", options:["Indian Medical Council Act 1956","Indian Nursing Council Act 1947","Pharmacy Act 1948","Clinical Establishments Act 2010"], answer:1, exp:"The Indian Nursing Council Act 1947 established the INC to maintain uniform standards of nursing education and practice." },
-    { text:"Which nursing theorist defined nursing as 'helping individuals perform activities contributing to health or recovery'?", options:["Jean Watson","Virginia Henderson","Dorothea Orem","Betty Neuman"], answer:1, exp:"Virginia Henderson's classic 1966 definition emphasizes assisting patients with 14 fundamental needs." },
-    { text:"The GNM course duration in India is:", options:["2 years","2.5 years","3.5 years including 6-month internship","4 years"], answer:2, exp:"GNM is a 3-year diploma program followed by 6 months of internship, totaling 3.5 years." },
-    { text:"Which professional organization represents nurses globally?", options:["WHO","ICN (International Council of Nurses)","AIIMS","IMA"], answer:1, exp:"The ICN, founded in 1899, is the world federation of national nurses' associations." },
-    { text:"Nurse advocacy means:", options:["Speaking on behalf of the patient to ensure their rights are met","Administering medications as prescribed","Completing nursing documentation accurately","Performing physical assessments"], answer:0, exp:"Nurse advocacy involves protecting the patient's rights and speaking for them when they cannot." },
-    { text:"Primary health care as defined by Alma Ata Declaration (1978) emphasizes:", options:["Hospital-based specialist care","Community-based, accessible, and affordable health care","Emergency care only","Pharmacological interventions"], answer:1, exp:"The Alma Ata Declaration defined PHC as essential, universally accessible health care." },
-    { text:"Minimum qualification for B.Sc Nursing admission in India:", options:["10th standard with Biology","12th standard with Physics, Chemistry, and Biology","Diploma in Nursing (GNM)","10+2 with any stream"], answer:1, exp:"INC mandates 10+2 (PCB) with minimum 45% marks for admission to B.Sc Nursing programs." },
-    { text:"Evidence-based nursing BEST describes a nurse who:", options:["Follows traditional routines","Uses research findings integrated with clinical expertise and patient values","Relies solely on physician orders","Applies textbook protocols without modification"], answer:1, exp:"EBP integrates best research evidence with clinical expertise and patient preferences." },
-    { text:"A nurse practicing without discrimination based on race or religion demonstrates:", options:["Autonomy","Beneficence","Justice","Non-maleficence"], answer:2, exp:"Justice requires fair and equal treatment of all patients regardless of personal characteristics." },
-    { text:"Scope of practice is BEST defined as:", options:["Tasks performed on a given shift","Legal and professional boundaries within which a nurse may practice","Number of patients a nurse can care for","Specialties available in a hospital"], answer:1, exp:"Scope of practice is defined by legislation and regulatory bodies outlining what nurses are permitted to do." },
-    { text:"Confidentiality in nursing is:", options:["Accountability for actions","The ethical and legal obligation to protect private patient information","Fidelity to professional values","Veracity in communication"], answer:1, exp:"Confidentiality is the ethical and legal obligation to protect private patient information from unauthorized disclosure." },
-    { text:"Continuing nursing education (CNE) primarily serves to:", options:["Increase salary","Ensure licensure renewal only","Maintain and update competency","Replace basic training"], answer:2, exp:"CNE is aimed at maintaining, improving, and broadening the nurse's competence throughout professional life." },
-    { text:"Which type of nursing focuses on restoring health through rehabilitation?", options:["Promotive","Preventive","Curative","Restorative"], answer:3, exp:"Restorative nursing aims to restore optimum function following illness or injury through rehabilitation." },
-    { text:"Holistic nursing means:", options:["Treating only the physical illness","Caring for the body, mind, and spirit of the patient","Focusing on laboratory results","Delegating care to family members"], answer:1, exp:"Holistic nursing addresses all dimensions — physical, emotional, social, and spiritual." },
-    { text:"Which body grants recognition to nursing colleges in India?", options:["Medical Council of India","Indian Nursing Council","State Nursing Councils","National Accreditation Board"], answer:1, exp:"The Indian Nursing Council (INC) grants recognition to nursing colleges and sets curriculum standards." },
-    { text:"An Advanced Practice Registered Nurse (APRN) is distinguished by:", options:["More years of experience","Graduate-level education and expanded practice authority","Higher pay grade","Specialty certification only"], answer:1, exp:"APRNs hold graduate-level education and may practice independently depending on jurisdiction laws." },
-    { text:"The nurse's primary accountability is to:", options:["The hospital administration","The physician team","The patient and the public","The nursing supervisor"], answer:2, exp:"Nurses are primarily accountable to the patient and the public they serve, per ICN Code of Ethics." },
-    { text:"Which term describes a nurse who uses their expertise to testify in legal cases?", options:["Clinical nurse specialist","Expert witness nurse","Legal nurse consultant","Forensic nurse"], answer:3, exp:"Forensic nurses apply nursing science to legal investigations; expert witness nurses provide testimony in court proceedings." }
+    // L1: Foundational Recall
+    { text: "Florence Nightingale established her first formal nursing training school at:", options: ["Johns Hopkins Hospital", "St. Thomas' Hospital, London", "Massachusetts General Hospital", "Vienna General Hospital"], answer: 1, exp: "Nightingale founded modern nursing education at St. Thomas' Hospital, London in 1860." },
+    { text: "The primary purpose of the International Council of Nurses (ICN) Code of Ethics is to:", options: ["Establish legal salary scales", "Provide an ethical standard for nursing practice globally", "Regulate hospital accreditation", "Determine medical treatment protocols"], answer: 1, exp: "The ICN Code of Ethics provides an international standard for ethical nursing decision-making." },
+    { text: "Which statutory body regulates nursing education and practice standards in India?", options: ["Indian Medical Council", "Indian Nursing Council (INC)", "Pharmacy Council of India", "National Board of Examinations"], answer: 1, exp: "The Indian Nursing Council Act of 1947 established the INC to regulate uniform nursing standards." },
+    { text: "Which nursing theorist defined nursing as 'assisting individuals with 14 fundamental human needs'?", options: ["Jean Watson", "Virginia Henderson", "Dorothea Orem", "Sister Callista Roy"], answer: 1, exp: "Virginia Henderson proposed the 14 basic human needs framework defining independent nursing practice." },
+    { text: "Confidentiality of patient medical records is rooted in which ethical principle?", options: ["Autonomy and Fidelity", "Beneficence and Veracity", "Justice and Maleficence", "Paternalism"], answer: 0, exp: "Confidentiality protects patient autonomy and fulfills the nurse's fidelity (loyalty and promise-keeping)." },
+    // L2: Base Clinical Practice
+    { text: "Nurse advocacy for an unconscious patient without a designated surrogate is best demonstrated by:", options: ["Following the attending physician's personal recommendations", "Acting as the patient's voice to protect their best interests and fundamental rights", "Discharging the patient to extended care immediately", "Requesting the court to appoint hospital administration as guardian"], answer: 1, exp: "Advocacy requires the nurse to actively protect vulnerable clients' dignity and rights." },
+    { text: "In evidence-based practice (EBP), the nurse synthesizes research evidence primarily with:", options: ["Hospital tradition and historical policy", "Clinical expertise and client values/preferences", "Physician personal intuition", "Cost-minimization metrics"], answer: 1, exp: "EBP integrates best external research with clinical expertise and individual patient preferences." },
+    { text: "A nurse witnesses a colleague preparing a medication without checking two patient identifiers. The appropriate immediate action is:", options: ["Report the colleague to the state licensing board", "Privately and immediately intervene before the drug is administered", "Document the error after the colleague administers the dose", "Inform the patient to verify their own medication"], answer: 1, exp: "Patient safety requires immediate intervention to intercept potential adverse drug errors." },
+    { text: "When delegating vital sign measurement to an unlicensed assistive personnel (UAP), the nurse retains accountability for:", options: ["Physically taking the measurements personally", "Interpreting the clinical significance of the results", "Calibrating the blood pressure monitor", "Supervising every second of the measurement"], answer: 1, exp: "Delegators transfer responsibility for task execution but retain accountability for analysis and outcome." },
+    { text: "Informed consent is legally valid only if the patient:", options: ["Is verbally oriented to person only", "Receives adequate information, has cognitive capacity, and agrees voluntarily without coercion", "Signs the form regardless of reading comprehension", "Has a family member co-sign the document"], answer: 1, exp: "Valid consent requires voluntary choice, complete disclosure of risks/benefits, and mental capacity." },
+    // L3: Advanced Hard / Prioritization
+    { text: "During morning rounds, which client should the nurse prioritize to assess FIRST?", options: ["A 45-year-old post-cholecystectomy reporting surgical site pain rated 6/10", "A 62-year-old with chronic heart failure reporting mild ankle edema", "A 54-year-old with pneumonia who is newly confused, restless, and has SpO2 88%", "A 70-year-old with diabetes and a fasting blood glucose of 145 mg/dL"], answer: 2, exp: "Acute confusion, restlessness, and SpO2 88% indicate cerebral hypoxia requiring immediate airway/O2 intervention." },
+    { text: "A terminally ill client with an active DNR order develops sudden agonal respirations. The client's spouse frantically demands CPR. The nurse's priority action is to:", options: ["Initiate chest compressions immediately", "Gently support the spouse, explain the DNR directive, and provide comfort care to the client", "Call the code blue team", "Page the attending physician for a stat order"], answer: 1, exp: "The nurse must uphold the client's documented legal advance directive while providing compassionate support." },
+    { text: "A nurse is assigned four clients. Which laboratory result requires the most URGENT provider clarification?", options: ["Hemoglobin 11.2 g/dL in a post-op orthopedic client", "Serum potassium 6.2 mEq/L in an oliguric client", "WBC count 11,500/mm3 in a client with cellulitis", "Serum sodium 136 mEq/L in a client on IV fluids"], answer: 1, exp: "Serum potassium 6.2 mEq/L poses imminent risk of fatal ventricular dysrhythmias and cardiac arrest." },
+    { text: "A client who underwent an open exploratory laparotomy 4 hours ago has a saturated abdominal dressing with bright red blood. Vital signs: BP 90/58 mmHg, HR 122 bpm. The nurse's immediate action is to:", options: ["Change the dressing completely with sterile gauze", "Reinforce the dressing, elevate the client's legs, and immediately summon the surgical team", "Administer prescribed oral analgesics", "Encourage deep breathing and coughing"], answer: 1, exp: "Signs of active surgical hemorrhage and hypovolemic shock require dressing reinforcement and immediate surgeon escalation." },
+    { text: "Which ethical dilemma represents a conflict between Beneficence and Patient Autonomy?", options: ["Administering pain medication per scheduled orders", "A competent Jehovah's Witness refusing a life-saving blood transfusion for severe anemia", "Refusing to care for an infectious patient", "Documenting a medication error truthfully"], answer: 1, exp: "Beneficence impels saving the client's life, while autonomy respects the competent client's right to refuse." },
+    // L4: Peak Acuity Emergency
+    { text: "A multi-trauma client arrives in the emergency department with severe facial trauma, gurgling respirations, and cyanosis. The FIRST priority life-saving intervention is:", options: ["Insert a large-bore peripheral IV catheter", "Clear secretions with rigid suction and prepare for immediate endotracheal intubation or surgical airway", "Obtain a portable cervical spine X-ray", "Infuse 2 units of uncrossmatched packed red blood cells"], answer: 1, exp: "Airway with cervical spine protection is the absolute first priority in emergency trauma resuscitation." },
+    { text: "During rapid sequence intubation (RSI) for a critically decompensating client, the nurse notes severe bradycardia (HR 32 bpm) and falling SpO2 (68%). The nurse must immediately:", options: ["Administer the neuromuscular paralytic agent", "Halt the intubation attempt, ventilate with 100% O2 via bag-valve-mask, and administer Atropine if indicated", "Insert a nasogastric tube", "Apply warm blankets for hypothermia"], answer: 1, exp: "Profound hypoxia-induced bradycardia during intubation requires immediate abort and manual bag-valve-mask re-oxygenation." },
+    { text: "A client in the ICU on mechanical ventilation suddenly develops severe tracheal deviation to the left, absent right breath sounds, and BP 72/40 mmHg. The nurse should anticipate:", options: ["Stat portable chest X-ray", "Immediate needle thoracostomy decompression in the 2nd right intercostal space", "Increasing the tidal volume on the ventilator", "Administering IV furosemide"], answer: 1, exp: "Tension pneumothorax with obstructive shock is a clinical emergency requiring immediate needle decompression without waiting for X-ray." },
+    { text: "A client with septic shock remains hypotensive (MAP 52 mmHg) despite 30 mL/kg crystalloid resuscitation. The nurse's priority vasoactive drug titration is:", options: ["Dobutamine infusion", "Norepinephrine infusion titrated to maintain MAP ≥65 mmHg", "Epinephrine sublingually", "Atropine IV push"], answer: 1, exp: "Norepinephrine is the first-line vasopressor in septic shock to restore systemic vascular resistance and organ perfusion." },
+    { text: "In a mass casualty disaster triage (START protocol), which patient receives an immediate RED (Priority 1) tag?", options: ["An unconscious client with no respirations after airway repositioning", "A client with respiratory rate 36 breaths/min, capillary refill >2 seconds, and altered mental status", "A client with a closed wrist fracture who is ambulatory", "A client with severe third-degree burns over 95% of body surface and agonal respirations"], answer: 1, exp: "Tachypnea (>30/min), prolonged CRT (>2s), and inability to follow commands indicate Immediate Red (Priority 1) status." }
   ],
 
+  // ─────────────────────────────────────────────────────────────
+  // 2. VITAL SIGNS ASSESSMENT
+  // ─────────────────────────────────────────────────────────────
   "Vital Signs Assessment": [
-    { text:"A BP of 158/96 mmHg on two readings is classified as:", options:["Normal","Elevated","Stage 1 Hypertension","Stage 2 Hypertension"], answer:3, exp:"ACC/AHA 2017: Stage 2 HTN = systolic ≥140 or diastolic ≥90 mmHg." },
-    { text:"After a cold drink, oral temperature should be delayed by:", options:["5 minutes","15 minutes","30 minutes","1 hour"], answer:2, exp:"Waiting 30 minutes after food or drink ensures an accurate oral temperature reading." },
-    { text:"The best pulse site for assessing foot circulation:", options:["Radial","Brachial","Dorsalis pedis","Carotid"], answer:2, exp:"The dorsalis pedis pulse on the dorsum of the foot assesses peripheral vascular circulation." },
-    { text:"A respiratory rate of 26 breaths/min in an adult is:", options:["Eupnea","Bradypnea","Tachypnea","Apnea"], answer:2, exp:"Tachypnea = respiratory rate >20 breaths/min in adults." },
-    { text:"Using a cuff too small for the arm causes a:", options:["Falsely low reading","Falsely high reading","Accurate reading","No change"], answer:1, exp:"A cuff too small traps blood and produces falsely elevated BP readings." },
-    { text:"Pulse deficit = :", options:["Systolic − Diastolic BP","Apical − peripheral pulse rate","Left − right radial pulse","Systolic + Diastolic ÷ 2"], answer:1, exp:"Pulse deficit = Apical rate − Radial rate; indicates beats not reaching the periphery." },
-    { text:"Rectal temperature is approximately how much higher than oral?", options:["0.2°C","0.5°C","1.0°C","1.5°C"], answer:1, exp:"Rectal temperature is approximately 0.5°C (1°F) higher than oral temperature." },
-    { text:"Hyperpyrexia is body temperature above:", options:["37.5°C","38.5°C","39.5°C","41.0°C"], answer:3, exp:"Hyperpyrexia (>41°C/105.8°F) is a medical emergency." },
-    { text:"In atrial fibrillation, the pulse is:", options:["Strong and bounding","Slow and regular","Irregularly irregular with variable volume","Rapid and regular"], answer:2, exp:"AF produces an irregularly irregular pulse with varying beat-to-beat volumes." },
-    { text:"SpO2 of 88% requires:", options:["No intervention","Monitoring only","Low-flow oxygen therapy","Immediate ventilatory support"], answer:3, exp:"SpO2 <90% indicates severe hypoxemia requiring immediate intervention." },
-    { text:"Biot's respirations are characterized by:", options:["Waxing-waning depth with apnea","Rapid deep breathing then apnea","Completely irregular rate and depth with unpredictable apnea","Very slow deep breaths"], answer:2, exp:"Biot's (ataxic) respirations: completely irregular with unpredictable apnea — sign of brainstem damage." },
-    { text:"Normal capillary refill time in an adult:", options:["<1 second","<2 seconds","3-4 seconds",">4 seconds"], answer:1, exp:"CRT <2 seconds is normal; >2 seconds suggests poor peripheral perfusion." },
-    { text:"A 3+ bounding pulse is MOST associated with:", options:["Hypovolemia","Peripheral vascular disease","Aortic regurgitation","Cardiac tamponade"], answer:2, exp:"Aortic regurgitation causes wide pulse pressure and water-hammer (bounding) pulse." },
-    { text:"Pulse pressure = :", options:["Systolic − Diastolic","Diastolic − Systolic","MAP × 0.5","Systolic ÷ Diastolic"], answer:0, exp:"Pulse pressure = Systolic − Diastolic; normal 40 mmHg." },
-    { text:"Cheyne-Stokes respiration is MOST commonly seen in:", options:["Asthma","Heart failure and brain injury","COPD","Pulmonary embolism"], answer:1, exp:"Cheyne-Stokes: waxing-waning with apnea, associated with HF and cerebral injury." },
-    { text:"BP difference >10 mmHg between arms may indicate:", options:["Normal variation","Subclavian artery stenosis or aortic dissection","White coat hypertension","Improper cuff size"], answer:1, exp:"A significant arm BP difference warrants investigation for subclavian disease or dissection." },
-    { text:"Most accurate core body temperature is measured by:", options:["Oral","Axillary","Tympanic","Pulmonary artery catheter"], answer:3, exp:"Pulmonary artery catheter provides the most accurate core temperature, used in ICU." },
-    { text:"Normal Mean Arterial Pressure (MAP) range:", options:["50-60 mmHg","70-100 mmHg","100-120 mmHg","120-140 mmHg"], answer:1, exp:"MAP 70-100 mmHg ensures adequate organ perfusion; <60 mmHg = shock." },
-    { text:"Korotkoff sounds are associated with:", options:["Temperature measurement","Pulse oximetry","Auscultatory blood pressure measurement","Respiratory assessment"], answer:2, exp:"Korotkoff sounds are heard through a stethoscope during BP measurement." },
-    { text:"The apical pulse is BEST assessed at which landmark?", options:["2nd intercostal space, right sternal border","5th intercostal space, midclavicular line","3rd intercostal space, left sternal border","4th intercostal space, anterior axillary line"], answer:1, exp:"The cardiac apex is at the 5th ICS, midclavicular line (point of maximal impulse)." }
+    // L1: Foundational Recall
+    { text: "According to standard clinical guidelines, what is considered the normal resting adult respiratory rate range?", options: ["8 to 12 breaths/min", "12 to 20 breaths/min", "22 to 28 breaths/min", "30 to 36 breaths/min"], answer: 1, exp: "Normal resting adult respiratory rate is 12 to 20 breaths per minute." },
+    { text: "Which pulse site is the most reliable and standard for assessing cardiovascular status in an adult undergoing CPR?", options: ["Radial pulse", "Carotid pulse", "Brachial pulse", "Dorsalis pedis pulse"], answer: 1, exp: "The carotid artery provides the most accessible central pulse during adult cardiac arrest." },
+    { text: "Using a blood pressure cuff that is too narrow (too small) for the client's arm circumference will result in:", options: ["A falsely low blood pressure reading", "A falsely high blood pressure reading", "No effect on the reading", "An undetectable Korotkoff sound"], answer: 1, exp: "A cuff bladder that is too small requires excessive pressure to occlude the artery, producing falsely elevated BP." },
+    { text: "What is the normal adult core body temperature range measured orally?", options: ["35.0°C to 36.0°C (95.0°F to 96.8°F)", "36.5°C to 37.5°C (97.7°F to 99.5°F)", "38.0°C to 39.0°C (100.4°F to 102.2°F)", "34.5°C to 35.5°C (94.1°F to 95.9°F)"], answer: 1, exp: "Normal adult oral temperature ranges between 36.5°C and 37.5°C." },
+    { text: "A pulse deficit is calculated by determining the difference between:", options: ["The systolic and diastolic blood pressure", "The apical heart rate and the radial pulse rate measured simultaneously", "The right arm and left arm blood pressure", "The morning and evening body temperatures"], answer: 1, exp: "Pulse deficit = Apical rate - Radial rate; indicates non-perfusing ventricular contractions." },
+    // L2: Base Clinical Practice
+    { text: "A client who had a hot cup of tea 5 minutes ago requires an oral temperature check. The nurse should:", options: ["Take the oral temperature immediately", "Wait 20 to 30 minutes before obtaining an oral reading", "Add 1.0°F to the obtained value", "Use an axillary measurement and multiply by 1.5"], answer: 1, exp: "Hot or cold ingestion alters oral mucosal temperature; waiting 20-30 minutes ensures accuracy." },
+    { text: "The nurse assesses a client's apical pulse at which anatomical landmark?", options: ["2nd intercostal space, right sternal border", "5th intercostal space, left midclavicular line", "3rd intercostal space, left sternal border", "4th intercostal space, midaxillary line"], answer: 1, exp: "The point of maximal impulse (PMI) is located at the 5th intercostal space, left midclavicular line." },
+    { text: "A client's blood pressure is 156/94 mmHg on two consecutive visits. Under AHA/ACC guidelines, this is classified as:", options: ["Normal Blood Pressure", "Elevated Blood Pressure", "Stage 1 Hypertension", "Stage 2 Hypertension"], answer: 3, exp: "Stage 2 Hypertension is defined as systolic ≥140 mmHg or diastolic ≥90 mmHg." },
+    { text: "When evaluating orthostatic hypotension, the nurse records blood pressure and heart rate in which sequence?", options: ["Standing, then sitting, then lying down", "Supine, then sitting, then standing (with 2-3 min intervals)", "Walking, then resting supine", "Simultaneously using two cuffs"], answer: 1, exp: "Orthostatics are measured supine, sitting, then standing with 2-3 minutes between position changes." },
+    { text: "A client's pulse oximeter reads 89% SpO2 on room air. The client is alert and speaking in full sentences without distress. The nurse's first action is to:", options: ["Call a code blue", "Verify sensor placement, probe position, and peripheral perfusion", "Administer 100% O2 via non-rebreather", "Prepare for endotracheal intubation"], answer: 1, exp: "Before escalating, verify probe alignment, skin warmth, and plethysmographic waveform reliability." },
+    // L3: Advanced Hard / Prioritization
+    { text: "A client with head trauma exhibits Cheyne-Stokes respirations. The nurse recognizes this breathing pattern as:", options: ["Rapid, deep respirations with a fruity acetone odor", "A rhythmic pattern of increasing rate and depth followed by gradual decrease and temporary apnea", "Completely irregular respirations with unpredictable pauses", "Prolonged gasping inspiration followed by short expiration"], answer: 1, exp: "Cheyne-Stokes breathing cycles between hyperpnea and apnea, indicating bilateral hemispheric or diencephalic injury." },
+    { text: "Which client should the nurse evaluate FIRST based on vital signs?", options: ["Post-op client with BP 118/76 mmHg, HR 82 bpm, RR 18/min", "COPD client with SpO2 90% on 2 L/min nasal cannula and HR 88 bpm", "Pneumonia client with HR 128 bpm, RR 30/min, BP 84/52 mmHg, and SpO2 86%", "Hypertensive client with BP 148/92 mmHg, HR 76 bpm, and no complaints"], answer: 2, exp: "Severe tachycardia, tachypnea, hypotension, and severe hypoxia indicate decompensating septic shock." },
+    { text: "A client with a history of hypertension reports a sudden tearing chest pain radiating to the back. BP is 194/110 mmHg in the right arm and 142/80 mmHg in the left arm. The nurse anticipates:", options: ["Myocardial infarction requiring immediate tPA", "Acute aortic dissection requiring emergency CT angiogram and blood pressure reduction", "Pulmonary embolism requiring heparin", "Costochondritis requiring NSAIDs"], answer: 1, exp: "Tearing back pain with an inter-arm BP differential >20 mmHg is classic for acute aortic dissection; thrombolytics are fatal." },
+    { text: "The nurse notes a client's pulse pressure has narrowed from 45 mmHg to 18 mmHg over 2 hours, with muffled heart tones and distended jugular veins. This indicates:", options: ["Left ventricular hypertrophy", "Cardiac tamponade (Beck's triad)", "Hyperthyroidism", "Aortic valve regurgitation"], answer: 1, exp: "Beck's triad (hypotension with narrowed pulse pressure, JVD, muffled heart sounds) indicates acute cardiac tamponade." },
+    { text: "In a patient receiving patient-controlled analgesia (PCA) morphine, the nurse assesses RR 7 breaths/min and lethargy. The immediate priority intervention is to:", options: ["Stop the PCA infusion, stimulate the client, and administer IV Naloxone", "Check blood glucose level", "Administer oxygen via nasal cannula and continue PCA", "Document findings as expected deep sleep"], answer: 0, exp: "Life-threatening opioid-induced respiratory depression requires immediate drug cessation, stimulation, and IV Naloxone reversal." },
+    // L4: Peak Acuity Emergency
+    { text: "An ICU client's arterial line waveform suddenly displays severe pulsus paradoxus (drop in systolic BP >15 mmHg during inspiration). The nurse prepares for:", options: ["Immediate emergency pericardiocentesis", "Infusion of 500 mL albumin", "Endotracheal extubation", "Initiating a beta-blocker infusion"], answer: 0, exp: "Marked pulsus paradoxus indicates pericardial tamponade causing ventricular compromise requiring emergent pericardiocentesis." },
+    { text: "A post-coronary bypass client displays sudden ventricular tachycardia with no palpable carotid pulse. The nurse's immediate action is to:", options: ["Administer IV Amiodarone 300 mg over 10 minutes", "Initiate immediate chest compressions, call code blue, and defibrillate as soon as the defibrillator is ready", "Perform synchronous cardioversion at 50 Joules", "Administer IV Epinephrine 1 mg before CPR"], answer: 1, exp: "Pulseless VT is a shockable cardiac arrest rhythm requiring immediate high-quality CPR and rapid unsynchronized defibrillation." },
+    { text: "A client with traumatic brain injury displays Cushing's Triad. Which cluster of vital signs confirms this life-threatening state?", options: ["BP 80/50 mmHg, HR 130 bpm, RR 32/min", "BP 196/64 mmHg (widened pulse pressure), HR 42 bpm (bradycardia), RR 8/min irregular", "BP 120/80 mmHg, HR 72 bpm, RR 16/min", "BP 160/100 mmHg, HR 110 bpm, RR 24/min"], answer: 1, exp: "Cushing's Triad (severe hypertension with widened pulse pressure, bradycardia, irregular respirations) signals impending brain herniation." },
+    { text: "A client in anaphylactic shock displays BP 68/38 mmHg, HR 140 bpm, and severe audible laryngeal stridor. The absolute FIRST medication to administer is:", options: ["Intravenous Diphenhydramine 50 mg", "Intravenous Methylprednisolone 125 mg", "Intramuscular Epinephrine (1:1000) 0.3–0.5 mg into the anterolateral thigh", "Inhaled Albuterol nebulizer"], answer: 2, exp: "IM Epinephrine is the first-line life-saving medication for anaphylaxis, causing immediate vasoconstriction and bronchodilation." },
+    { text: "During hemodynamic titration in septic shock, which parameter indicates adequate end-organ cellular perfusion?", options: ["Central venous pressure (CVP) of 2 mmHg", "Mean arterial pressure (MAP) ≥65 mmHg and serum lactate clearing to <2.0 mmol/L", "Heart rate >120 bpm", "Urine output of 10 mL/hr"], answer: 1, exp: "MAP ≥65 mmHg combined with lactate clearance confirms restoration of cellular tissue perfusion." }
   ],
 
+  // ─────────────────────────────────────────────────────────────
+  // 3. MEDICATION ADMINISTRATION & PHARMACOLOGY
+  // ─────────────────────────────────────────────────────────────
   "Medication Administration": [
-    { text:"The 'five rights' of medication administration does NOT include:", options:["Right patient","Right dose","Right diagnosis","Right route"], answer:2, exp:"The 5 Rights: patient, drug, dose, route, time. 'Right diagnosis' is not one of them." },
-    { text:"Before administering a narcotic, the FIRST step is:", options:["Assess pain level","Check allergy history","Verify the complete physician's order","Check the MAR for last dose time"], answer:2, exp:"Verifying the complete order (drug, dose, route, frequency) is the priority first step." },
-    { text:"INR of 4.8 in a warfarin patient — nurse should:", options:["Administer as ordered","Hold and notify physician","Give half the dose","Give extra dose"], answer:1, exp:"Therapeutic INR 2.0-3.0; INR 4.8 = supratherapeutic, high bleeding risk; hold and notify." },
-    { text:"Insulin is NEVER given by which route?", options:["Subcutaneous","IV (in ICU)","Intramuscular","Oral"], answer:3, exp:"Insulin is a protein destroyed by gastric enzymes; it cannot be given orally." },
-    { text:"QID means:", options:["Once daily","Twice daily","Three times daily","Four times daily"], answer:3, exp:"QID (quater in die) = four times daily." },
-    { text:"Z-track injection technique prevents:", options:["Pain at injection site","Medication leaking back into subcutaneous tissue","Speed of absorption","Intramuscular hematoma"], answer:1, exp:"Z-track seals medication within the muscle, preventing irritating agents from leaking back." },
-    { text:"Preferred IM injection site in infants under 3 years:", options:["Deltoid","Vastus lateralis","Ventrogluteal","Dorsogluteal"], answer:1, exp:"Vastus lateralis (anterolateral thigh) is recommended for infants due to adequate muscle mass." },
-    { text:"Dose calculation: 250 mg in 2 mL — to give 375 mg, administer:", options:["2.5 mL","3 mL","1.5 mL","4 mL"], answer:1, exp:"Volume = (Desired/Have) × Volume = (375/250) × 2 = 3 mL." },
-    { text:"0.45% NaCl is classified as:", options:["Isotonic","Hypertonic","Hypotonic","Colloid"], answer:2, exp:"0.45% NaCl (half-normal saline) is hypotonic, shifting fluid into cells." },
-    { text:"IV site is painful, swollen, and cool — FIRST action:", options:["Slow infusion","Warm compress","Stop infusion and remove catheter","Notify physician"], answer:2, exp:"Infiltration requires immediate cessation and catheter removal to prevent tissue damage." },
-    { text:"Narrow therapeutic index drugs require:", options:["Less frequent monitoring","Higher doses","Close serum drug level monitoring","Oral route only"], answer:2, exp:"Narrow therapeutic index drugs (digoxin, lithium, phenytoin) need frequent level checks." },
-    { text:"Drip rate for 100 mL over 30 min with 15 gtt/mL set:", options:["25 gtt/min","50 gtt/min","100 gtt/min","15 gtt/min"], answer:1, exp:"Drip rate = (100 × 15) / 30 = 50 gtt/min." },
-    { text:"Extended-release tablets should NEVER be crushed because:", options:["They taste bad","Crushing destroys sustained-release mechanism causing toxic dumping","They are too large","Crushing reduces effectiveness"], answer:1, exp:"Crushing ER tablets releases entire dose at once, causing toxicity." },
-    { text:"Antidote for heparin overdose:", options:["Vitamin K","Protamine sulfate","Fresh frozen plasma","Phytonadione"], answer:1, exp:"Protamine sulfate binds and neutralizes heparin." },
-    { text:"'Red man syndrome' from vancomycin is managed by:", options:["Stopping and giving epinephrine","Slowing or stopping the infusion","Continuing at same rate","Giving diphenhydramine and continuing"], answer:1, exp:"Red man syndrome (flushing, hypotension) is an infusion-rate reaction; slow or stop the infusion." },
-    { text:"The maximum volume for a single IM injection in the deltoid is:", options:["1 mL","2 mL","3 mL","5 mL"], answer:0, exp:"Deltoid is small; max volume 1 mL. Larger volumes require ventrogluteal site." },
-    { text:"Only which IV solution is safe to co-administer with blood products?", options:["D5W","Lactated Ringer's","0.9% NaCl","D5 0.45% NaCl"], answer:2, exp:"Only 0.9% NS is compatible with blood; dextrose solutions cause RBC hemolysis." },
-    { text:"First-pass metabolism occurs with which administration route?", options:["Intravenous","Sublingual","Oral","Inhalation"], answer:2, exp:"Oral drugs pass through the liver via portal circulation, reducing bioavailability before reaching systemic circulation." },
-    { text:"Medication reconciliation is most critical at:", options:["Routine assessments","Transitions of care (admission, transfer, discharge)","Patient request","Only before surgery"], answer:1, exp:"Medication errors most commonly occur at care transitions; reconciliation prevents discrepancies." },
-    { text:"Before a contrast CT scan, metformin should be:", options:["Continued as normal","Held 48 hours before and after contrast","Doubled post-scan","Replaced with insulin"], answer:1, exp:"Contrast can impair kidneys; metformin accumulation in renal impairment causes lactic acidosis." }
+    // L1: Foundational Recall
+    { text: "Which of the following is NOT one of the traditional core 'rights' of medication administration?", options: ["Right patient", "Right dose", "Right room number", "Right route"], answer: 2, exp: "Core rights include: patient, drug, dose, route, time. Room number is not an acceptable identifier." },
+    { text: "Which intramuscular injection site is the preferred and safest choice for infants under 12 months?", options: ["Deltiod muscle", "Vastus lateralis muscle (anterolateral thigh)", "Dorsogluteal muscle", "Abdominal rectus muscle"], answer: 1, exp: "The vastus lateralis is well-developed in infants and avoids major nerves and vascular bundles." },
+    { text: "The primary purpose of using the Z-track technique for intramuscular injections is to:", options: ["Speed up the rate of systemic absorption", "Prevent leakage of irritating medication into the subcutaneous tissue and skin", "Reduce the needle penetration depth", "Allow administration of large volumes up to 10 mL"], answer: 1, exp: "Z-track seals the needle path, trapping irritating drugs (like iron) deep within the muscle." },
+    { text: "A physician prescribes medication 'QID'. The nurse administers this medication:", options: ["Once every other day", "Twice daily", "Three times daily", "Four times daily"], answer: 3, exp: "QID (quater in die) designates administration four times daily." },
+    { text: "Sublingual tablets are administered by placing them:", options: ["Between the cheek and gum", "Under the tongue until dissolved completely without swallowing water", "Directly swallowed with warm milk", "Crushed and mixed with applesauce"], answer: 1, exp: "Sublingual drugs dissolve under the tongue for rapid absorption through the sublingual vascular bed." },
+    // L2: Base Clinical Practice
+    { text: "A client is prescribed regular insulin 8 units and NPH insulin 20 units subcutaneously. In what order should the nurse draw them into a single syringe?", options: ["Air into Regular, air into NPH, draw NPH, draw Regular", "Air into NPH, air into Regular, draw Regular (clear), draw NPH (cloudy)", "Draw NPH first, then draw Regular", "Mix both in a medicine cup before aspiration"], answer: 1, exp: "Clear before cloudy: inject air into NPH, air into Regular, draw Regular (clear), then draw NPH (cloudy)." },
+    { text: "Prior to administering a scheduled morning dose of Digoxin 0.25 mg, the nurse counts an apical pulse of 52 bpm. The nurse must:", options: ["Administer the medication with orange juice", "Hold the dose, document the pulse, and notify the healthcare provider", "Give half of the prescribed dose", "Administer the dose intramuscularly"], answer: 1, exp: "Digoxin slows AV node conduction; withhold if apical HR is <60 bpm in adults to prevent fatal bradycardia." },
+    { text: "The nurse is infusing IV Vancomycin over 30 minutes. The client suddenly develops intense facial flushing, erythematous rash on the neck and torso, and pruritus. The nurse recognizes this as:", options: ["An immediate IgE-mediated anaphylactic reaction", "'Red Man Syndrome' caused by too-rapid infusion of Vancomycin", "Stevens-Johnson syndrome", "Expected therapeutic antibiotic effect"], answer: 1, exp: "Red Man Syndrome is a rate-dependent histamine release managed by stopping/slowing infusion over ≥60-120 min." },
+    { text: "Which oral medication can be safely crushed for a client with dysphagia?", options: ["Metoprolol Succinate Extended-Release (ER)", "Enteric-coated Aspirin (Ecotrin)", "Acetaminophen immediate-release regular tablet", "Potassium Chloride Extended-Release (Micro-K)"], answer: 2, exp: "Immediate-release acetaminophen can be crushed; crushing ER or enteric-coated drugs causes toxic dumping." },
+    { text: "A client receiving IV peripheral fluid therapy reports sudden burning pain at the site. The nurse assesses coolness to touch, pallor, and swelling. The nurse's immediate action is:", options: ["Apply a warm compress and continue infusion", "Stop the infusion immediately and remove the peripheral IV catheter (Infiltration)", "Slow the infusion rate to keep vein open (KVO)", "Flush the catheter with 10 mL heparin"], answer: 1, exp: "Coolness, pallor, and swelling confirm infiltration; the infusion must be stopped and catheter discontinued." },
+    // L3: Advanced Hard / Prioritization
+    { text: "A client receiving a continuous IV unfractionated heparin infusion for deep vein thrombosis has an aPTT of 152 seconds (control: 30 seconds) with new epistaxis. The nurse anticipates administering:", options: ["Phytonadione (Vitamin K)", "Protamine Sulfate IV", "Fresh Frozen Plasma (FFP)", "Aminocaproic acid"], answer: 1, exp: "Protamine Sulfate is the specific, rapid-acting chemical antagonist for unfractionated heparin overdose." },
+    { text: "A client with bipolar disorder taking Lithium Carbonate 600 mg TID presents with coarse tremors, persistent vomiting, severe diarrhea, ataxia, and confusion. Serum lithium level is 2.6 mEq/L. The nurse anticipates:", options: ["Administering additional oral lithium", "Withholding lithium, initiating aggressive IV hydration with 0.9% NS, and preparing for hemodialysis", "Administering potassium chloride bolus", "Administering oral activated charcoal"], answer: 1, exp: "Lithium level >2.0 mEq/L with neurological symptoms represents severe toxicity requiring IV saline or hemodialysis." },
+    { text: "A client on Warfarin has an INR of 7.8 with active hematuria. The nurse prepares to administer:", options: ["Protamine sulfate", "Vitamin K (Phytonadione) and Prothrombin Complex Concentrate (PCC)", "Aspirin 325 mg", "Low-molecular-weight heparin"], answer: 1, exp: "Supratherapeutic INR with major bleeding warrants rapid reversal with Vitamin K and 4-factor PCC." },
+    { text: "A nurse is preparing to administer IV Potassium Chloride 40 mEq. Which administration route/technique is FATALLY CONTRAINDICATED?", options: ["IV infusion via volumetric pump at 10 mEq/hr", "Direct IV push injection (bolus)", "Diluting in 500 mL normal saline", "Continuous cardiac telemetry monitoring during infusion"], answer: 1, exp: "Potassium Chloride must NEVER be given IV push; rapid bolus causes instant cardiac arrest." },
+    { text: "Which assessment finding in a client receiving Gentamicin IV requires IMMEDIATE intervention to prevent permanent disability?", options: ["Mild dry mouth", "Tinnitus, high-frequency hearing loss, or progressive dizziness (ototoxicity)", "Nausea after meals", "Slight headache"], answer: 1, exp: "Aminoglycosides cause irreversible ototoxicity (damage to CN VIII) and nephrotoxicity; report immediately." },
+    // L4: Peak Acuity Emergency
+    { text: "A client receiving a continuous IV Nitroglycerin infusion for STEMI has a sudden blood pressure drop to 74/42 mmHg with HR 118 bpm. The nurse's first action is to:", options: ["Increase the nitroglycerin rate", "Turn off the nitroglycerin infusion immediately and elevate the client's legs", "Administer sublingual nitroglycerin", "Administer IV metoprolol"], answer: 1, exp: "Profound hypotension compromises coronary perfusion; stop the nitrate vasodilator immediately." },
+    { text: "A client experiencing status epilepticus has received two doses of IV Lorazepam without seizure termination. The next emergent medication to prepare is:", options: ["Oral Phenobarbital", "Intravenous Fosphenytoin or Levetiracetam infusion", "Sublingual Carbamazepine", "Subcutaneous Insulin"], answer: 1, exp: "Refractory status epilepticus following benzodiazepines requires second-line IV anticonvulsants (fosphenytoin/levetiracetam)." },
+    { text: "During continuous epidural bupivacaine infusion, the client develops perioral numbness, metallic taste, severe agitation, followed by cardiovascular collapse. The nurse prepares the antidote:", options: ["Naloxone", "Flumazenil", "Intravenous Lipid Emulsion (Intralipid 20%)", "Sodium bicarbonate"], answer: 2, exp: "Local Anesthetic Systemic Toxicity (LAST) from bupivacaine requires emergent 20% Lipid Emulsion resuscitation." },
+    { text: "A patient with myasthenic crisis vs cholinergic crisis receives the Tensilon (Edrophonium) test. Following injection, the patient develops profound muscle weakness and apnea. The nurse immediately gives:", options: ["Neostigmine", "Atropine Sulfate IV", "Dantrolene", "Calcium gluconate"], answer: 1, exp: "Worsening symptoms upon Tensilon confirm Cholinergic Crisis; Atropine is the immediate anticholinergic antidote." },
+    { text: "A septic client is receiving Norepinephrine at maximum dose with persistent MAP 54 mmHg. The intensivist orders a second-line vasopressor to restore tone. The nurse anticipates:", options: ["Vasopressin (0.03 units/min non-titrated infusion)", "Furosemide IV", "Nitroprusside IV", "Metoprolol IV"], answer: 0, exp: "Vasopressin acts on V1 receptors and is the standard second-line agent added to norepinephrine in refractory septic shock." }
   ],
 
+  // ─────────────────────────────────────────────────────────────
+  // 4. INFECTION PREVENTION AND CONTROL & MICROBIOLOGY
+  // ─────────────────────────────────────────────────────────────
   "Infection Prevention and Control": [
-    { text:"Active pulmonary tuberculosis requires which isolation precaution?", options:["Contact","Droplet","Airborne","Standard only"], answer:2, exp:"TB is airborne (droplet nuclei <5 microns); requires N95 respirator and airborne precautions." },
-    { text:"Most effective method to prevent HAIs:", options:["Wearing gloves always","Proper hand hygiene","Using isolation rooms","Prophylactic antibiotics"], answer:1, exp:"Hand hygiene is the single most effective measure to prevent healthcare-associated infections." },
-    { text:"C. difficile requires contact precautions WITH:", options:["Alcohol-based hand rub","Soap and water hand hygiene","N95 respirator","Positive pressure room"], answer:1, exp:"Alcohol-based rubs are NOT effective against C. diff spores — soap and water must be used." },
-    { text:"Standard precautions apply to:", options:["Patients with known infections only","All patients' blood, body fluids, non-intact skin, mucous membranes","Blood and urine only","Isolation patients only"], answer:1, exp:"Standard precautions treat ALL patients as potentially infectious." },
-    { text:"First PPE donned when entering isolation room:", options:["Gloves","Gown","Mask/respirator","Eye protection"], answer:1, exp:"Donning sequence: Gown → Mask → Eye protection → Gloves." },
-    { text:"Surgical asepsis differs from medical asepsis by:", options:["Reducing pathogen numbers","Eliminating ALL microorganisms including spores","Applying only to handwashing","Used for all patient care"], answer:1, exp:"Surgical (sterile) asepsis eliminates ALL microorganisms including spores." },
-    { text:"N95 respirator requires fit-testing because:", options:["Comfort purposes","It must form a tight seal to filter airborne particles","All healthcare facilities require it","It prevents all infection types"], answer:1, exp:"N95 must form a proper facial seal to achieve ≥95% filtration efficiency." },
-    { text:"'Portal of exit' refers to:", options:["Pathway pathogen uses to enter new host","Site where pathogen leaves the reservoir","Susceptibility of host","Mode of transmission"], answer:1, exp:"Portal of exit is where the infectious agent leaves the reservoir (e.g., respiratory tract)." },
-    { text:"First action after a needlestick injury:", options:["Report to occupational health","Apply pressure","Wash area with soap and water for ≥15 minutes","Squeeze wound to express blood"], answer:2, exp:"Immediate thorough washing with soap and water is the first action after needlestick." },
-    { text:"Sterile gloves are required for:", options:["NG tube insertion","Routine IV insertion","Urinary catheter insertion","Blood glucose measurement"], answer:2, exp:"Urinary catheter insertion requires sterile technique to prevent introducing pathogens into the sterile urinary tract." },
-    { text:"BMW Category 1 includes:", options:["Sharps waste","Microbiological waste","Human anatomical waste (body parts, organs)","Pharmaceutical waste"], answer:2, exp:"BMW Category 1 (Yellow bag) = human anatomical waste: body parts, organs, tissues, blood." },
-    { text:"Best sterilization method for heat-sensitive instruments:", options:["Autoclaving","Dry heat","Ethylene oxide gas","Boiling"], answer:2, exp:"ETO gas sterilization is used for heat-sensitive equipment like endoscopes and plastics." },
-    { text:"Most effective surface disinfectant for blood contamination:", options:["70% isopropyl alcohol","0.5% sodium hypochlorite","3% hydrogen peroxide","10% povidone iodine"], answer:1, exp:"0.5% sodium hypochlorite (1:10 bleach dilution) is recommended for blood/body fluid surface decontamination." },
-    { text:"A patient on droplet precautions should wear a mask:", options:["At all times in room","When transported outside room","Only during procedures","Only with visitors"], answer:1, exp:"During transport, patient wears a surgical mask to contain respiratory secretions." },
-    { text:"Nosocomial infection means:", options:["Community-acquired infection","Infection acquired during hospital stay","Food-borne infection","Animal-to-human infection"], answer:1, exp:"Nosocomial (HAI) infections are acquired during hospitalization, not present on admission." },
-    { text:"Hepatitis virus transmitted via fecal-oral route:", options:["Hepatitis B","Hepatitis C","Hepatitis A","Hepatitis D"], answer:2, exp:"Hepatitis A (and E) are transmitted via fecal-oral route through contaminated food/water." },
-    { text:"Last item removed when doffing PPE:", options:["Gown","Gloves","Mask/respirator","Eye protection"], answer:2, exp:"Doffing sequence: Gloves → Gown → Eye protection → Mask (last). Hand hygiene after each step." },
-    { text:"Most common cause of surgical site infections:", options:["E. coli","Pseudomonas aeruginosa","Staphylococcus aureus","Klebsiella pneumoniae"], answer:2, exp:"S. aureus (including MRSA) is the most common cause of SSIs worldwide." },
-    { text:"Antiseptics differ from disinfectants in that antiseptics are:", options:["Used on inanimate surfaces","Used on living tissue","More effective","Sterilizing agents"], answer:1, exp:"Antiseptics are used on living tissue/skin; disinfectants are for inanimate objects." },
-    { text:"Blood splashed into eyes — FIRST action:", options:["Apply antibiotic eye drops","Flush eyes with clean water for ≥15 minutes","Report to infection control","Close eyes tightly"], answer:1, exp:"Immediate copious irrigation of eyes with water or saline for at least 15 minutes is the priority." }
+    // L1: Foundational Recall
+    { text: "What is the single most effective method to prevent healthcare-associated infections (HAIs)?", options: ["Wearing clean gloves for all client interactions", "Thorough hand hygiene with soap and water or alcohol-based hand rub", "Routine prophylactic antibiotic administration", "Using ultraviolet radiation in all patient rooms"], answer: 1, exp: "Hand hygiene is universally recognized as the single most effective intervention to prevent HAI transmission." },
+    { text: "A client with active pulmonary tuberculosis requires which category of transmission-based precautions?", options: ["Standard precautions only", "Contact precautions", "Droplet precautions", "Airborne precautions with an N95 respirator and negative-pressure room"], answer: 3, exp: "Mycobacterium tuberculosis travels via airborne droplet nuclei; requires negative airflow and N95 respirators." },
+    { text: "What is the proper sequence for DONNING personal protective equipment (PPE)?", options: ["Gloves -> Gown -> Mask -> Goggles", "Gown -> Mask/Respirator -> Goggles/Face Shield -> Gloves", "Mask -> Gloves -> Gown -> Goggles", "Goggles -> Gown -> Gloves -> Mask"], answer: 1, exp: "Donning sequence: Gown first, followed by Mask/Respirator, Goggles/Face Shield, and Gloves last." },
+    { text: "What is the proper sequence for DOFFING personal protective equipment (PPE)?", options: ["Gown -> Mask -> Goggles -> Gloves", "Gloves -> Goggles/Face Shield -> Gown -> Mask/Respirator (clean hands between)", "Mask -> Gown -> Gloves -> Goggles", "Gloves -> Mask -> Gown -> Goggles"], answer: 1, exp: "Doffing sequence: Remove most contaminated items first: Gloves, Goggles, Gown, then Mask last outside the room." },
+    { text: "According to biomedical waste management guidelines, human anatomical waste and soiled dressings are discarded in:", options: ["Blue container", "Red puncture-proof container", "Yellow bag", "Black general waste container"], answer: 2, exp: "Yellow biomedical bags are designated for anatomical waste, pathological specimens, and blood-soaked items." },
+    // L2: Base Clinical Practice
+    { text: "A client is admitted with confirmed Clostridioides difficile enteritis. Which hand hygiene protocol is MANDATORY?", options: ["Alcohol-based hand rub for 15 seconds", "Washing hands with soap and water for at least 20 seconds", "Wiping hands with sterile saline gauze", "Using chlorhexidine sponge without water"], answer: 1, exp: "C. difficile produces spores resistant to alcohol; mechanical friction with soap and water is required." },
+    { text: "When caring for a client on Droplet Precautions (e.g., bacterial meningitis or influenza), the nurse must wear:", options: ["An N95 particulate respirator", "A surgical mask upon entering the room within 3-6 feet of the client", "A sterile positive-pressure space suit", "Gloves only"], answer: 1, exp: "Droplet transmission occurs via large respiratory droplets; a surgical mask within close proximity is mandatory." },
+    { text: "A nurse sustains an accidental needlestick injury from a contaminated needle used on an unknown patient. The nurse's FIRST action is:", options: ["Squeeze the wound vigorously to express blood", "Wash the needlestick site thoroughly with soap and water", "Apply a tourniquet proximal to the puncture", "Report directly to the employee health department without washing"], answer: 1, exp: "Immediate copious washing of the puncture site with soap and water is the critical first action." },
+    { text: "In maintaining a sterile field for catheterization, which action by the nurse VIOLATES surgical asepsis?", options: ["Keeping sterile hands above waist level at all times", "Turning one's back on the sterile field to answer a question", "Pouring sterile liquid without splashing onto the field", "Discarding a kit whose wrapper is torn or wet"], answer: 1, exp: "Turning one's back or losing visual contact breaks sterility and renders the field unsterile." },
+    { text: "Which organism is the most frequent cause of surgical site infections (SSIs)?", options: ["Staphylococcus aureus (including MRSA)", "Pseudomonas aeruginosa", "Escherichia coli", "Candida albicans"], answer: 0, exp: "Staphylococcus aureus colonizing skin is the leading cause of surgical wound infections worldwide." },
+    // L3: Advanced Hard / Prioritization
+    { text: "A client with neutropenia (Absolute Neutrophil Count ANC 350/mm3) is placed in protective isolation. Which item is CONTRAINDICATED in the room?", options: ["Bottled sterile water", "Cooked vegetables and well-done meats", "Fresh flowers, live plants, and unpeeled raw fruits", "Electric razor for shaving"], answer: 2, exp: "Fresh flowers, plants, and raw fruits harbor soil microbes and Aspergillus, posing fatal infection risks to neutropenic clients." },
+    { text: "A postoperative client with a central venous catheter develops rigors, temp 39.4°C, HR 122 bpm, and BP 88/50 mmHg. The nurse's immediate priority is to:", options: ["Administer oral acetaminophen", "Draw two sets of blood cultures (one peripheral, one from central line) and begin stat broad-spectrum IV antibiotics", "Remove the central line immediately without culturing", "Infuse 5% dextrose water at 50 mL/hr"], answer: 1, exp: "Suspected central line-associated bloodstream infection (CLABSI) requires urgent blood cultures followed immediately by broad-spectrum empiric antibiotics." },
+    { text: "When evaluating culture and sensitivity reports for a client with urosepsis, the nurse identifies ESBL-producing Klebsiella pneumoniae. Which isolation precaution is required?", options: ["Airborne precautions", "Contact precautions", "Droplet precautions", "Standard precautions only"], answer: 1, exp: "Extended-Spectrum Beta-Lactamase (ESBL) producing bacteria are multidrug-resistant and require strict Contact Precautions." },
+    { text: "A client undergoing hemodialysis tests positive for Hepatitis B surface antigen (HBsAg). The nurse ensures that:", options: ["The client is isolated in a negative pressure airborne room", "The client is dialyzed on a dedicated machine in an isolated Hepatitis B dialysis area", "Dialysis tubing is disinfected with alcohol and reused", "The client receives an immediate dose of Hepatitis B vaccine"], answer: 1, exp: "Hepatitis B transmission in dialysis requires dedicated dialysis machines and isolated treatment spaces." },
+    { text: "Which sterilization method is standard for heat-sensitive surgical instruments like flexible endoscopes?", options: ["Steam autoclaving at 121°C", "Ethylene Oxide (EtO) gas or low-temperature hydrogen peroxide gas plasma", "Boiling water for 15 minutes", "Immersion in 70% ethyl alcohol"], answer: 1, exp: "Low-temperature hydrogen peroxide plasma or EtO gas sterilizes heat-labile optical equipment without heat damage." },
+    // L4: Peak Acuity Emergency
+    { text: "A client in septic shock secondary to necrotizing fasciitis displays mottled extremities, severe acidosis (pH 7.15, lactate 6.8 mmol/L), and crepitus over the thigh. The nurse anticipates:", options: ["Conservative dressing changes with antibiotic ointment", "Immediate emergent surgical fasciotomy and debridement in the operating room", "Hyperbaric oxygen therapy next week", "Corticosteroid therapy alone"], answer: 1, exp: "Necrotizing soft tissue infection is a surgical emergency; immediate aggressive debridement is essential to halt lethal toxemia." },
+    { text: "A client presenting with suspected Ebola or Viral Hemorrhagic Fever displays hematemesis and delirium. The nurse's absolute safety requirement before entering is:", options: ["Surgical mask and clean gloves", "Full-body impermeable protective suit, PAPR or N95, double gloving, boot covers, with trained observer oversight", "Standard precautions with eye goggles", "Administering oral ribavirin"], answer: 1, exp: "VHF protocols mandate complete skin barrier coverage with trained observer monitoring during donning and doffing." },
+    { text: "During the first hour of a suspected septic shock presentation (Surviving Sepsis Campaign bundle), which four actions must be executed?", options: ["Stat head CT, lumbar puncture, chest tube, insulin infusion", "Measure lactate, obtain blood cultures before antibiotics, administer broad-spectrum antibiotics, begin 30 mL/kg crystalloids for hypotension/lactate ≥4", "Insert arterial line, endotracheal tube, swan-ganz catheter, dialysis catheter", "Administer vasopressors before IV fluids"], answer: 1, exp: "The 1-hour sepsis bundle: measure lactate, blood cultures prior to antibiotics, broad-spectrum antibiotics, and 30 mL/kg fluids for shock." },
+    { text: "A healthcare worker is splashed with HIV-positive blood directly across mucous membranes (eyes). Post-exposure prophylaxis (PEP) should ideally be initiated within:", options: ["72 hours, preferably within 2 hours", "1 week", "24 hours only", "1 month"], answer: 0, exp: "HIV PEP is most effective when started immediately, ideally within 2 hours and no later than 72 hours post-exposure." },
+    { text: "An intensive care client with multidrug-resistant Acinetobacter baumannii ventilator-associated pneumonia requires transport to CT. The infection control requirement is:", options: ["Canceling the CT scan indefinitely", "Placing an in-line bacterial filter on the ventilator circuit and alerting the destination department to prepare contact isolation barriers", "Removing the endotracheal tube for transport", "Spraying the client with bleach prior to transfer"], answer: 1, exp: "Safe transport of critically ill colonized patients requires in-line closed filtration and barrier isolation at the receiving unit." }
   ],
 
-  // ── ANATOMY & PHYSIOLOGY ────────────────────────────────
-  "Cardiovascular System": [
-    { text:"Primary pacemaker of the heart:", options:["AV node","Bundle of His","SA node","Purkinje fibers"], answer:2, exp:"The sinoatrial (SA) node initiates electrical impulses at 60-100 bpm." },
-    { text:"The mitral valve separates:", options:["Right atrium and right ventricle","Right ventricle and pulmonary artery","Left atrium and left ventricle","Left ventricle and aorta"], answer:2, exp:"The mitral (bicuspid) valve guards the left atrioventricular orifice." },
-    { text:"Cardiac output = :", options:["HR × BP","Stroke volume × Heart rate","BP ÷ HR","SV + HR"], answer:1, exp:"CO = SV × HR. Normal CO = 4-8 L/min." },
-    { text:"Most specific STEMI indicator on ECG:", options:["Peaked T waves","ST-segment elevation >1 mm in 2 contiguous leads","Prolonged PR interval","Wide QRS"], answer:1, exp:"ST-elevation >1 mm in ≥2 contiguous leads indicates full-thickness myocardial injury." },
-    { text:"Frank-Starling law states:", options:["HR increases with venous return","Increased ventricular filling increases force of contraction","CO is constant regardless of preload","Afterload is inversely proportional to SV"], answer:1, exp:"Greater stretch (preload) leads to greater force of contraction within physiological limits." },
-    { text:"Afterload is primarily determined by:", options:["Venous return","Systemic vascular resistance","Heart rate","Contractility"], answer:1, exp:"Afterload is the resistance the ventricle must overcome to eject blood; primarily determined by SVR." },
-    { text:"Tachycardia and hypotension after trauma suggests:", options:["Neurogenic shock","Hypovolemic shock","Septic shock","Cardiogenic shock"], answer:1, exp:"Tachycardia with hypotension post-trauma = hypovolemic shock from hemorrhage." },
-    { text:"Most specific biomarker for myocardial infarction:", options:["CK total","AST","Troponin I","LDH"], answer:2, exp:"Troponin I is highly cardiac-specific — gold standard biomarker for MI." },
-    { text:"Central cyanosis involves:", options:["Blue extremities only","Blue mucous membranes and tongue indicating arterial desaturation","Normal mucous membranes","Only nail beds"], answer:1, exp:"Central cyanosis (blue tongue/lips) indicates arterial desaturation; peripheral cyanosis = poor circulation." },
-    { text:"S1 heart sound = closure of:", options:["Aortic and pulmonary valves","Mitral and tricuspid (AV) valves","Mitral valve only","Pulmonary valve only"], answer:1, exp:"S1 ('lub') = closure of the AV (mitral and tricuspid) valves at start of systole." },
-    { text:"Coronary arteries fill during:", options:["Systole","Diastole","Isovolumetric contraction","Atrial kick"], answer:1, exp:"Coronary arteries fill during diastole when the ventricles relax." },
-    { text:"JVD, peripheral oedema, and positive hepatojugular reflux indicate:", options:["Left heart failure","Right heart failure","Pulmonary embolism","Aortic stenosis"], answer:1, exp:"These signs indicate right-sided heart failure due to increased right-sided pressures." },
-    { text:"First-line drug class for HFrEF (heart failure with reduced EF):", options:["Calcium channel blockers","ACE inhibitors or ARBs","Digoxin","Loop diuretics alone"], answer:1, exp:"ACE inhibitors (or ARBs) are the cornerstone of HFrEF treatment, reducing mortality." },
-    { text:"Adult CPR compression-to-ventilation ratio for single rescuer:", options:["15:2","30:2","10:1","5:1"], answer:1, exp:"Current AHA guidelines: 30:2 for adult CPR with single rescuer." },
-    { text:"Electrolyte causing Torsades de Pointes:", options:["Hyperkalemia","Hypokalemia","Hypernatremia","Hyperphosphatemia"], answer:1, exp:"Hypokalemia prolongs QT interval, precipitating Torsades de Pointes." },
-    { text:"QRS complex represents:", options:["Atrial depolarization","Ventricular depolarization","Ventricular repolarization","AV conduction"], answer:1, exp:"QRS = ventricular depolarization, triggering ventricular contraction." },
-    { text:"Beck's triad of cardiac tamponade:", options:["Hypertension, bradycardia, tachypnea","Hypotension, JVD, muffled heart sounds","Fever, chest pain, pericardial rub","Dyspnea, cyanosis, stridor"], answer:1, exp:"Beck's triad: hypotension + JVD + muffled heart sounds." },
-    { text:"Most common complication within first 24 hours of MI:", options:["Ventricular rupture","Ventricular arrhythmias","Dressler's syndrome","Cardiogenic shock"], answer:1, exp:"Ventricular arrhythmias (VF, VT) are the most common and dangerous early post-MI complications." },
-    { text:"Preload is BEST defined as:", options:["Resistance against which ventricle ejects blood","End-diastolic volume/ventricular filling pressure","Intrinsic contractile strength","Heart rate per minute"], answer:1, exp:"Preload = degree of ventricular stretch at end-diastole; estimated by EDV or PCWP." },
-    { text:"Normal QT interval in adults:", options:["<0.12 seconds","<0.20 seconds","0.36-0.44 seconds",">0.50 seconds"], answer:2, exp:"Normal QT interval is 0.36-0.44 seconds; QTc >0.45 s in men / >0.46 s in women = prolonged." }
+  // ─────────────────────────────────────────────────────────────
+  // 5. NUTRITION & DIETETICS
+  // ─────────────────────────────────────────────────────────────
+  "Basic Nutrition": [
+    // L1: Foundational Recall
+    { text: "Which vitamin deficiency is classically responsible for scurvy, characterized by bleeding gums and poor wound healing?", options: ["Vitamin A", "Vitamin B1 (Thiamine)", "Vitamin C (Ascorbic acid)", "Vitamin D"], answer: 2, exp: "Vitamin C is essential for collagen synthesis; deficiency causes capillary fragility, bleeding gums, and scurvy." },
+    { text: "Which vitamin is synthesized in the skin upon exposure to ultraviolet B (UVB) sunlight?", options: ["Vitamin A", "Vitamin D", "Vitamin E", "Vitamin K"], answer: 1, exp: "Cholecalciferol (Vitamin D3) is synthesized in epidermal keratinocytes catalyzed by UVB radiation." },
+    { text: "Which group consists entirely of fat-soluble vitamins?", options: ["Vitamins B1, B6, B12, and C", "Vitamins A, D, E, and K", "Vitamins B, C, D, and Iron", "Folic acid, Niacin, Biotin, and Calcium"], answer: 1, exp: "Vitamins A, D, E, and K are fat-soluble and stored in the liver and adipose tissue." },
+    { text: "To maximize absorption of non-heme oral iron supplements, the client should take them with:", options: ["A full glass of whole milk", "Orange juice or food rich in Vitamin C", "Hot black tea or coffee", "Calcium carbonate antacid tablets"], answer: 1, exp: "Vitamin C reduces ferric iron to ferrous iron, which is significantly more soluble and easily absorbed in the duodenum." },
+    { text: "What is the primary macronutrient responsible for tissue building, cellular repair, and wound healing?", options: ["Carbohydrates", "Proteins", "Dietary fats", "Insoluble fiber"], answer: 1, exp: "Amino acids from dietary protein provide the essential structural nitrogen required for tissue regeneration." },
+    // L2: Base Clinical Practice
+    { text: "A client with Chronic Kidney Disease (Stage 4, pre-dialysis) requires dietary modification. Which diet is prescribed?", options: ["High protein, high potassium, unrestricted sodium", "Low protein, restricted potassium, restricted sodium, and low phosphorus", "High sodium, high potassium liquid diet", "Strict ketogenic diet"], answer: 1, exp: "Non-dialyzed CKD clients require protein, potassium, sodium, and phosphorus restrictions to prevent uremia and hyperkalemia." },
+    { text: "A client with newly diagnosed Celiac Disease must strictly avoid which grains?", options: ["Corn, rice, and soy", "Wheat, barley, and rye", "Oats, millet, and quinoa", "Buckwheat, arrowroot, and tapioca"], answer: 1, exp: "Gluten is a protein complex found in wheat, barley, and rye that triggers autoimmune intestinal villous atrophy." },
+    { text: "Which food item is permitted on a Full Liquid diet but excluded from a Clear Liquid diet?", options: ["Apple juice", "Strained cream of chicken soup and milk", "Black coffee without sugar", "Clear chicken broth"], answer: 1, exp: "Milk, cream soups, and puddings are opaque liquids allowed on full liquid diets but excluded from clear liquid diets." },
+    { text: "To prevent aspiration in a client receiving continuous enteral tube feeding via nasogastric tube, the nurse must:", options: ["Keep the head of the bed elevated at 30 to 45 degrees at all times", "Lay the client flat in supine position during infusions", "Flush the tube with iced ginger ale every hour", "Administer bolus feeds over 2 minutes"], answer: 0, exp: "Maintaining HOB elevation at 30-45 degrees significantly reduces gastroesophageal reflux and aspiration pneumonia." },
+    { text: "A client with cirrhosis and hepatic encephalopathy has an elevated serum ammonia level. The nurse anticipates:", options: ["Encouraging a massive red-meat protein diet", "Administering Lactulose orally to trap ammonia in the colon and promote excretion", "Restricting all dietary fluids to <200 mL/day", "Administering high-dose potassium supplements"], answer: 1, exp: "Lactulose acidifies colonic contents, converting ammonia (NH3) to non-absorbable ammonium (NH4+) excreted in stool." },
+    // L3: Advanced Hard / Prioritization
+    { text: "A client with severe anorexia nervosa and BMI 13 kg/m2 is started on Total Parenteral Nutrition (TPN). The nurse monitors for Refeeding Syndrome by evaluating which critical electrolyte triad?", options: ["Hypernatremia, hypercalcemia, and hypermagnesemia", "Severe Hypophosphatemia, Hypokalemia, and Hypomagnesemia", "Hyperkalemia and metabolic acidosis", "Elevated blood urea nitrogen and creatinine"], answer: 1, exp: "Carbohydrate infusion stimulates insulin, driving phosphorus, potassium, and magnesium into cells causing life-threatening hypophosphatemia." },
+    { text: "A client receiving continuous TPN has their infusion bag run out unexpectedly, and the next bag is delayed from pharmacy. To prevent acute rebound hypoglycemia, the nurse immediately infuses:", options: ["0.9% Normal Saline at 50 mL/hr", "10% Dextrose in Water (D10W) at the same infusion rate", "Sterile Water for injection", "Lactated Ringer's solution"], answer: 1, exp: "Abrupt cessation of high-glucose TPN triggers profound hypoglycemia from hyperinsulinemia; infuse 10% dextrose while awaiting new bag." },
+    { text: "A client who underwent a total gastrectomy 1 year ago presents with severe fatigue, smooth beefy red tongue, paresthesias in the feet, and macrocytic anemia. The nurse identifies:", options: ["Iron deficiency microcytic anemia", "Vitamin B12 deficiency (Pernicious anemia) due to loss of parietal cell Intrinsic Factor", "Folic acid deficiency from poor citrus intake", "Thiamine deficiency (Beri-beri)"], answer: 1, exp: "Gastrectomy removes parietal cells that produce intrinsic factor, preventing terminal ileal B12 absorption." },
+    { text: "Which client is at the HIGHEST risk for developing Wernicke-Korsakoff Encephalopathy, requiring immediate IV Thiamine?", options: ["A teenager with type 1 diabetes", "A chronic alcohol-dependent client presenting with malnutrition, ataxia, and nystagmus", "An elderly client with osteoporosis taking calcium", "A pregnant client with mild morning sickness"], answer: 1, exp: "Chronic alcoholism impairs thiamine absorption; thiamine deficiency leads to life-threatening acute Wernicke encephalopathy." },
+    { text: "In a client with severe acute pancreatitis, which nutritional strategy is supported by current clinical guidelines?", options: ["Total starvation for 3 weeks with no IV support", "Early enteral nutrition via nasojejunal tube past the ligament of Treitz to maintain gut mucosal barrier", "High-fat oral liquid supplements", "Immediate exploratory laparotomy"], answer: 1, exp: "Early enteral nutrition distal to the duodenum prevents gut bacterial translocation and reduces systemic infectious complications." },
+    // L4: Peak Acuity Emergency
+    { text: "A severely malnourished client developing acute Refeeding Syndrome exhibits serum phosphorus 0.8 mg/dL (normal: 2.5-4.5 mg/dL), acute respiratory muscle paralysis, and cardiac dysrhythmias. The nurse's immediate action is:", options: ["Continue TPN at increased rate", "Halt carbohydrate infusion and administer emergent IV Sodium or Potassium Phosphate with continuous cardiac telemetry", "Administer oral antacids containing aluminum", "Give subcutaneous regular insulin"], answer: 1, exp: "Severe hypophosphatemia (<1.0 mg/dL) impairs ATP synthesis and diaphragm contractility; requires urgent IV phosphate repletion." },
+    { text: "A client on TPN presents with acute fever (40.1°C), chills, hypotension (BP 76/42 mmHg), and purulent drainage at the central line insertion site. The nurse's priority action is:", options: ["Change the dressing and flush line with heparin", "Stop TPN infusion, obtain blood cultures from line and periphery, remove catheter and culture catheter tip, and start IV resuscitation", "Increase TPN infusion rate to maintain calories", "Administer oral antipyretics only"], answer: 1, exp: "Catheter-related bloodstream infection with septic shock mandates immediate line removal, culture, and resuscitation." },
+    { text: "A type 1 diabetic client on an intensive insulin regimen is found unconscious, diaphoresis profuse, with blood glucose 24 mg/dL. The client has no IV access. The immediate life-saving intervention is:", options: ["Forcing oral orange juice with sugar into the mouth", "Administering Glucagon 1 mg intramuscularly or subcutaneously", "Waiting for emergency medical services to establish an arterial line", "Administering regular insulin"], answer: 1, exp: "Never give oral fluids to an unconscious client due to fatal aspiration; IM/SC Glucagon mobilizes hepatic glycogen stores." },
+    { text: "A client with end-stage renal disease accidentally consumes high-potassium dried fruits and presents with muscle flaccidity, HR 34 bpm, and tall peaked T waves merging into a sine wave. The nurse's FIRST life-saving drug to give is:", options: ["Sodium polystyrene sulfonate (Kayexalate) orally", "Intravenous Calcium Gluconate 10% over 2-3 minutes to stabilize the myocardium", "Furosemide IV bolus", "Hemodialysis tomorrow morning"], answer: 1, exp: "Calcium gluconate does not lower potassium, but instantly antagonizes membrane excitability, preventing imminent cardiac arrest." },
+    { text: "A client receiving an intravenous lipid emulsion (IVLE) during parenteral nutrition suddenly develops dyspnea, cyanosis, back pain, and anaphylactoid shock. The nurse's immediate action is:", options: ["Increase the lipid infusion to finish quickly", "Immediately stop the lipid infusion and maintain airway and emergency vascular access", "Administer oral antihistamines", "Document as normal infusion sensation"], answer: 1, exp: "Acute lipid intolerance/anaphylactoid reaction mandates immediate infusion cessation and emergency airway/shock management." }
   ],
 
-  "Respiratory System": [
-    { text:"Primary muscle of respiration:", options:["External intercostals","Internal intercostals","Diaphragm","Sternocleidomastoid"], answer:2, exp:"Diaphragm contracts during inspiration to increase thoracic volume." },
-    { text:"Normal PaO2 in an adult:", options:["35-45 mmHg","80-100 mmHg","45-60 mmHg","60-80 mmHg"], answer:1, exp:"Normal arterial oxygen partial pressure = 80-100 mmHg." },
-    { text:"ABG: pH 7.28, PaCO2 55, HCO3 25 — this is:", options:["Metabolic acidosis","Metabolic alkalosis","Respiratory acidosis","Respiratory alkalosis"], answer:2, exp:"Low pH + high PaCO2 + normal HCO3 = uncompensated respiratory acidosis." },
-    { text:"Hypoxemia is defined as PaO2 below:", options:["80 mmHg","60 mmHg","70 mmHg","90 mmHg"], answer:1, exp:"PaO2 <60 mmHg = hypoxemia, correlating with SpO2 ~90%." },
-    { text:"Optimal position in acute respiratory distress:", options:["Supine","Trendelenburg","High Fowler's (90°)","Lateral recumbent"], answer:2, exp:"High Fowler's maximizes diaphragmatic excursion and lung expansion." },
-    { text:"Pursed-lip breathing benefits COPD by:", options:["Increasing RR","Creating back-pressure preventing airway collapse during exhalation","Increasing tidal volume","Strengthening intercostals"], answer:1, exp:"Pursed-lip breathing prevents dynamic airway collapse and air trapping in COPD." },
-    { text:"Fine crackles (crepitations) indicate:", options:["Airway secretions","Fluid in alveoli/small airways","Pleural rub","Upper airway obstruction"], answer:1, exp:"Fine crackles indicate fluid in alveoli (pulmonary edema, pneumonia)." },
-    { text:"Most common organism causing community-acquired pneumonia:", options:["Staphylococcus aureus","Klebsiella pneumoniae","Streptococcus pneumoniae","Haemophilus influenzae"], answer:2, exp:"Streptococcus pneumoniae is the most common CAP organism in adults." },
-    { text:"Tension pneumothorax is characterized by:", options:["Absent breath sounds with mediastinal shift AWAY from affected side","Decreased resonance","Bilateral absent breath sounds","Dullness on affected side"], answer:0, exp:"Tension pneumothorax: absent breath sounds + mediastinal shift to opposite side — emergency." },
-    { text:"Most precise FiO2 delivery system:", options:["Nasal cannula","Simple face mask","Venturi mask","Non-rebreather mask"], answer:2, exp:"Venturi masks deliver precise fixed FiO2 (24-60%) regardless of breathing pattern; ideal in COPD." },
-    { text:"SpO2 target for COPD patients receiving supplemental O2:", options:["95-100%","88-92%","80-85%",">94%"], answer:1, exp:"COPD patients target SpO2 88-92% to avoid suppressing their hypoxic ventilatory drive." },
-    { text:"Pulmonary embolism MOST commonly originates from:", options:["Pulmonary veins","Right atrium","Deep veins of lower extremities","Coronary arteries"], answer:2, exp:"DVT of lower extremities is the source of ~90% of pulmonary emboli." },
-    { text:"Surfactant is produced by:", options:["Type I pneumocytes","Type II pneumocytes","Alveolar macrophages","Clara cells"], answer:1, exp:"Type II pneumocytes produce surfactant, reducing surface tension and preventing alveolar collapse." },
-    { text:"Respiratory acidosis (uncompensated) ABG pattern:", options:["pH↓, PaCO2↑, HCO3 normal","pH↑, PaCO2↓, HCO3 normal","pH↓, PaCO2 normal, HCO3↓","pH↑, PaCO2 normal, HCO3↑"], answer:0, exp:"Respiratory acidosis: low pH + high PaCO2 (CO2 retention) + normal HCO3 if uncompensated." },
-    { text:"Barrel chest is associated with:", options:["Pneumonia","Pleural effusion","Emphysema","Pulmonary fibrosis"], answer:2, exp:"Barrel chest (AP = lateral diameter) results from chronic air trapping in emphysema." },
-    { text:"Open pneumothorax (sucking chest wound) is managed with:", options:["Occlusive dressing taped on 3 sides","Gauze packing","4-sided sealed dressing","Immediate chest tube"], answer:0, exp:"3-sided dressing allows air escape on exhalation, preventing tension pneumothorax." },
-    { text:"Stridor indicates:", options:["Lower airway obstruction","Upper airway obstruction","Fluid in alveoli","Pleural inflammation"], answer:1, exp:"Stridor is a high-pitched inspiratory sound indicating upper airway (laryngeal/tracheal) obstruction." },
-    { text:"Peak expiratory flow rate (PEFR) monitors:", options:["COPD severity","Pneumonia","Asthma control","Pulmonary fibrosis"], answer:2, exp:"PEFR is a key monitoring tool in asthma action plans." },
-    { text:"Tracheostomy tube displacement presents as:", options:["Low-pressure alarm","High SpO2","Agitation, increased WOB, inability to pass suction catheter","Normal ventilator waveforms"], answer:2, exp:"Tube displacement is a life-threatening emergency; agitation + increased WOB + suction resistance = displaced tube." },
-    { text:"Heimlich maneuver is performed for:", options:["Respiratory arrest","Complete airway obstruction by foreign body","Anaphylaxis","Tension pneumothorax"], answer:1, exp:"Abdominal thrusts (Heimlich) are used for complete foreign body airway obstruction in conscious adults." }
+  // ─────────────────────────────────────────────────────────────
+  // 6. MICROBIOLOGY & IMMUNOLOGY
+  // ─────────────────────────────────────────────────────────────
+  "Introduction to Microbiology": [
+    // L1: Foundational Recall
+    { text: "Under Gram-staining microscopy, Gram-positive bacteria retain which color?", options: ["Pink or Red", "Crystal violet or Purple", "Bright yellow", "Colorless"], answer: 1, exp: "Gram-positive bacteria have thick peptidoglycan cell walls that retain crystal violet-iodine complex, appearing purple." },
+    { text: "Bacterial endospores produced by Bacillus and Clostridium species are clinically significant because they:", options: ["Are easily killed by standard alcohol rubs", "Are highly resistant to heat, drying, chemical disinfectants, and radiation", "Cause immediate viral replication", "Form only in freezing temperatures"], answer: 1, exp: "Endospores are dormant, highly durable dehydrated structures that survive standard boiling and chemical agents." },
+    { text: "Which organism represents the predominant normal bacterial flora of healthy human skin?", options: ["Escherichia coli", "Staphylococcus epidermidis", "Pseudomonas aeruginosa", "Clostridium perfringens"], answer: 1, exp: "Staphylococcus epidermidis is the dominant coagulase-negative commensal bacterium inhabiting normal skin." },
+    { text: "Passive immunity is best exemplified by:", options: ["Immunity acquired following natural infection with measles", "Immunity acquired through active vaccination with MMR vaccine", "Transfer of maternal antibodies (IgG and IgA) across the placenta and through breast milk", "Antibodies produced by memory B-cells years after exposure"], answer: 2, exp: "Passive immunity involves receiving preformed antibodies from an external source, providing immediate but temporary protection." },
+    { text: "Which diagnostic stain is specifically utilized to identify Acid-Fast Bacilli (Mycobacterium tuberculosis)?", options: ["Gram stain", "Ziehl-Neelsen stain", "India ink preparation", "Giemsa stain"], answer: 1, exp: "Ziehl-Neelsen acid-fast staining identifies mycolic acid in Mycobacterium cell walls that resist acid-alcohol decolorization." },
+    // L2: Base Clinical Practice
+    { text: "Prior to initiating prescribed broad-spectrum intravenous antibiotic therapy for a client with pneumonia, the nurse must ensure that:", options: ["The client has finished lunch", "Diagnostic blood and sputum cultures have been collected", "The client has received a chest CT scan", "The white blood cell count is above 20,000/mm3"], answer: 1, exp: "Cultures must always be obtained prior to starting antibiotics to prevent false-negative culture suppression." },
+    { text: "Endotoxins differ from exotoxins primarily in that endotoxins are:", options: ["Proteins actively secreted by living Gram-positive bacteria", "Lipopolysaccharide (LPS) components of Gram-negative outer cell walls released upon bacterial lysis", "Inactivated readily by boiling for 5 minutes", "Used to produce commercial toxoid vaccines"], answer: 1, exp: "Endotoxin (Lipid A of LPS) resides in Gram-negative outer membranes and triggers severe systemic inflammatory cascades upon lysis." },
+    { text: "The most frequent bacterial cause of uncomplicated community-acquired urinary tract infections (UTIs) is:", options: ["Staphylococcus aureus", "Escherichia coli (uropathogenic strains)", "Proteus mirabilis", "Klebsiella pneumoniae"], answer: 1, exp: "Uropathogenic E. coli ascends from the gastrointestinal tract and accounts for 80-85% of uncomplicated UTIs." },
+    { text: "A client who completed a 14-day course of oral Clindamycin develops watery diarrhea (8-10 episodes/day) with abdominal cramping. The nurse suspects enteritis caused by:", options: ["Salmonella enterica", "Clostridioides difficile", "Campylobacter jejuni", "Shigella dysenteriae"], answer: 1, exp: "Broad-spectrum antibiotics eliminate normal gut flora, allowing spore-forming C. difficile to proliferate and produce enterotoxins." },
+    { text: "Which antibody isotype crosses the human placenta to confer passive humoral immunity to the developing fetus?", options: ["Immunoglobulin M (IgM)", "Immunoglobulin G (IgG)", "Immunoglobulin A (IgA)", "Immunoglobulin E (IgE)"], answer: 1, exp: "IgG is the only immunoglobulin class with Fc-receptor mediated active transport across the human placental syncytiotrophoblast." },
+    // L3: Advanced Hard / Prioritization
+    { text: "Methicillin-resistant Staphylococcus aureus (MRSA) confers resistance to all beta-lactam antibiotics via which genetic mechanism?", options: ["Production of beta-lactamase enzyme only", "Acquisition of the mecA gene encoding an altered Penicillin-Binding Protein (PBP2a) with low antibiotic affinity", "Efflux pumps that eliminate aminoglycosides", "Mutation in DNA gyrase enzyme"], answer: 1, exp: "The mecA gene encodes PBP2a, which prevents beta-lactam drugs (methicillin, oxacillin) from binding to the cell wall." },
+    { text: "A client receives an injection of penicillin and within 3 minutes develops acute stridor, urticaria, facial angioedema, and BP 78/40 mmHg. Which immunological mechanism is responsible?", options: ["Type I IgE-mediated immediate hypersensitivity with mast cell degranulation", "Type II antibody-mediated cytotoxic reaction", "Type III immune-complex mediated Arthus reaction", "Type IV T-cell mediated delayed hypersensitivity"], answer: 0, exp: "Type I anaphylactic hypersensitivity involves allergen cross-linking of IgE on mast cells and basophils, releasing histamine and leukotrienes." },
+    { text: "A client with persistent fever has blood cultures growing Gram-positive cocci in clusters that are coagulase-positive. The identification is:", options: ["Staphylococcus epidermidis", "Staphylococcus aureus", "Streptococcus pyogenes", "Enterococcus faecalis"], answer: 1, exp: "Coagulase-positivity definitively differentiates pathogenic Staphylococcus aureus from coagulase-negative staphylococci." },
+    { text: "A child presents with acute pharyngitis. A rapid antigen detection test (RADT) confirms Group A Beta-Hemolytic Streptococcus (GABHS). Prompt antibiotic treatment is critical to prevent which non-suppurative complication?", options: ["Rheumatic Fever and post-streptococcal glomerulonephritis", "Infectious mononucleosis", "Measles encephalitis", "Diphtheria membranous croup"], answer: 0, exp: "Eradication of GABHS pharyngitis with penicillin within 9 days prevents acute rheumatic fever and valvular carditis." },
+    { text: "Which viral pathogen has a single-stranded RNA genome and replicates via a reverse transcriptase enzyme integrating into human host DNA?", options: ["Hepatitis B virus", "Human Immunodeficiency Virus (HIV)", "Influenza A virus", "Herpes Simplex virus"], answer: 1, exp: "HIV is a retrovirus that uses reverse transcriptase to synthesize cDNA, which viral integrase embeds into host chromosomes." },
+    // L4: Peak Acuity Emergency
+    { text: "A client in the ICU with Gram-negative bacteremia develops profound refractory septic shock, diffuse bleeding from venipuncture sites, and petechiae. Labs reveal platelets 32,000/mm3, prolonged PT/INR, low fibrinogen, and high D-dimer. The nurse identifies:", options: ["Immune thrombocytopenic purpura (ITP)", "Disseminated Intravascular Coagulation (DIC) triggered by bacterial endotoxin release", "Heparin-induced thrombocytopenia", "Vitamin K deficiency"], answer: 1, exp: "Gram-negative endotoxin activates widespread tissue factor, causing explosive microvascular thrombosis and consumption of clotting factors (DIC)." },
+    { text: "A client with acute meningococcal meningitis (Neisseria meningitidis) presents with purpuric petechial rash, high fever, and sudden profound hypotension and cyanosis. The nurse anticipates Waterhouse-Friderichsen syndrome, which represents:", options: ["Acute renal tubular necrosis", "Bilateral adrenal gland hemorrhagic infarction causing acute adrenal failure", "Acute pulmonary embolism", "Severe diabetic ketoacidosis"], answer: 1, exp: "Fulminant meningococcemia causes bilateral adrenal hemorrhage and acute cortisol deficiency (Waterhouse-Friderichsen syndrome)." },
+    { text: "A client with suspected botulism intoxication presents with descending symmetrical flaccid paralysis, ptosis, diplopia, dysphagia, and clear sensorium. The priority life-saving nursing intervention is:", options: ["Administering oral broad-spectrum antibiotics", "Continuous monitoring of forced vital capacity and immediate preparation for endotracheal intubation and mechanical ventilation", "Inducing emesis immediately", "Applying warm heating pads to limbs"], answer: 1, exp: "Botulinum neurotoxin blocks acetylcholine release at the neuromuscular junction; descending paralysis leads to fatal respiratory arrest." },
+    { text: "A young female client presents with high fever (40.2°C), diffuse 'sunburn-like' macular erythroderma, desquamation of palms/soles, and BP 68/40 mmHg during menstruation while using superabsorbent tampons. The nurse identifies:", options: ["Toxic Shock Syndrome (TSS) mediated by TSST-1 superantigen from S. aureus", "Toxic epidermal necrolysis", "Scarlet fever", "Meningococcemia"], answer: 0, exp: "TSST-1 functions as a superantigen, non-specifically activating massive polyclonal T-cells and precipitating lethal cytokine storms." },
+    { text: "During biological warfare emergency response, a patient presents with widened mediastinum on chest X-ray, acute respiratory failure, and Gram-positive spore-forming rods in blood. The diagnosis is:", options: ["Inhalation Anthrax (Bacillus anthracis)", "Pneumonic Plague (Yersinia pestis)", "Pulmonary Tularemia", "Smallpox"], answer: 0, exp: "Inhalation anthrax presents with hemorrhagic mediastinitis, widened mediastinal silhouette, and rapid septic collapse." }
   ],
 
-  // ── PHARMACOLOGY ────────────────────────────────────────
-  "Cardiovascular Drugs": [
-    { text:"Digoxin toxicity risk is MOST increased by:", options:["Hyperkalemia","Hypokalemia","Hypernatremia","Hypomagnesemia"], answer:1, exp:"Hypokalemia enhances digoxin binding to Na+/K+ ATPase, dramatically increasing toxicity." },
-    { text:"ACE inhibitor contraindicated in bilateral renal artery stenosis because:", options:["Causes hypertension","Dilates efferent arterioles, reducing GFR in affected kidneys, risking acute renal failure","Causes fluid retention","Increases potassium loss"], answer:1, exp:"ACE inhibitors dilate efferent arterioles, reducing already-compromised GFR in renal artery stenosis." },
-    { text:"Nitroglycerin is stored in dark glass because:", options:["Sensitive to light and heat","Corrosive to plastics","Controlled substance requirement","Temperature-dependent only"], answer:0, exp:"Nitroglycerin degrades rapidly with light, heat, air, and moisture; dark amber glass preserves potency." },
-    { text:"Platelet drop from 250,000 to 85,000 on day 7 of heparin therapy suggests:", options:["DIC","Heparin-induced thrombocytopenia (HIT)","Vitamin K deficiency","Sepsis"], answer:1, exp:"HIT: ≥50% platelet drop 5-10 days after heparin — paradoxically causes thrombosis, not just bleeding." },
-    { text:"Furosemide mechanism of action:", options:["Inhibits aldosterone","Blocks Na+/K+/2Cl- transporter in loop of Henle","Inhibits carbonic anhydrase","Blocks ENaC channels"], answer:1, exp:"Furosemide inhibits the Na+/K+/2Cl- cotransporter in the thick ascending limb, producing potent diuresis." },
-    { text:"Statin drugs work by:", options:["Blocking bile acid reabsorption","Inhibiting HMG-CoA reductase (cholesterol synthesis in liver)","Blocking intestinal cholesterol absorption","Activating lipoprotein lipase"], answer:1, exp:"Statins inhibit HMG-CoA reductase, the rate-limiting enzyme in hepatic cholesterol synthesis." },
-    { text:"A patient on warfarin eating excess green leafy vegetables would:", options:["Increase INR","Decrease INR","Have no effect","Cause warfarin toxicity"], answer:1, exp:"Green leafy vegetables are rich in Vitamin K, antagonizing warfarin and decreasing INR." },
-    { text:"First-line drug for stable monomorphic VT:", options:["Atropine","Adenosine","Amiodarone","Lidocaine"], answer:2, exp:"Amiodarone is preferred for stable VT per ACLS guidelines." },
-    { text:"Key adverse effects of ACE inhibitors:", options:["Hyperkalemia and dry cough","Hypokalemia and gynecomastia","Liver toxicity","Photosensitivity"], answer:0, exp:"ACE inhibitors cause hyperkalemia (reduced aldosterone) and dry cough (bradykinin accumulation)." },
-    { text:"Adenosine is used to treat:", options:["VF","Atrial fibrillation","Paroxysmal SVT (PSVT)","3rd degree heart block"], answer:2, exp:"Adenosine blocks AV node conduction transiently, terminating PSVT re-entry circuits." },
-    { text:"Primary risk of tPA (thrombolytic) therapy:", options:["Hypertension","Bleeding complications including ICH","Renal failure","Hyperglycemia"], answer:1, exp:"Thrombolytics carry high bleeding risk, including intracranial hemorrhage." },
-    { text:"Antidote for warfarin with severe bleeding:", options:["Protamine sulfate","Vitamin K + FFP","Platelets","Cryoprecipitate"], answer:1, exp:"Vitamin K (delayed reversal) + FFP (immediate factor replacement) for severe warfarin bleeding." },
-    { text:"Digoxin toxicity does NOT cause:", options:["Yellow-green visual disturbances","Nausea and vomiting","Bradycardia","Tachycardia and hypertension"], answer:3, exp:"Digoxin toxicity causes bradycardia, nausea, and xanthopsia — NOT tachycardia and hypertension." },
-    { text:"Atropine works in bradycardia by:", options:["Increasing contractility","Blocking vagal (parasympathetic) tone to increase HR","Directly stimulating SA node","Blocking beta receptors"], answer:1, exp:"Atropine is anticholinergic; blocks muscarinic receptors reducing parasympathetic slowing of HR." },
-    { text:"Spironolactone is classified as:", options:["Loop diuretic","Thiazide diuretic","Potassium-sparing diuretic","Osmotic diuretic"], answer:2, exp:"Spironolactone blocks aldosterone receptors, reducing K+ excretion — potassium-sparing." },
-    { text:"Metformin is held before contrast CT because:", options:["It reacts with contrast chemically","Contrast may impair kidneys; metformin accumulates causing lactic acidosis in renal impairment","It increases radiation risk","It affects image quality"], answer:1, exp:"Hold metformin 48 hours pericontrast to prevent lactic acidosis from renal impairment." },
-    { text:"Preferred antihypertensive in diabetic patients with proteinuria:", options:["Calcium channel blockers","Beta-blockers","ACE inhibitors/ARBs","Alpha-blockers"], answer:2, exp:"ACE inhibitors/ARBs are nephroprotective, reducing intraglomerular pressure and proteinuria in diabetic nephropathy." },
-    { text:"Epinephrine is FIRST-LINE for:", options:["Hypertensive crisis","Anaphylaxis","Septic shock","Ventricular tachycardia"], answer:1, exp:"Epinephrine 0.3-0.5 mg IM is first-line for anaphylaxis due to vasoconstriction and bronchodilation." },
-    { text:"Beta-blockers are CONTRAINDICATED in acute:", options:["Hypertension","Angina","Decompensated heart failure","Migraine prophylaxis"], answer:2, exp:"Beta-blockers reduce contractility and cannot be initiated during acute decompensated HF." },
-    { text:"Which drug reverses opioid-induced respiratory depression?", options:["Flumazenil","Naloxone","Protamine sulfate","Vitamin K"], answer:1, exp:"Naloxone is an opioid antagonist that reverses opioid-induced sedation and respiratory depression." }
+  // ─────────────────────────────────────────────────────────────
+  // 7. PSYCHOLOGY & SOCIOLOGY IN NURSING
+  // ─────────────────────────────────────────────────────────────
+  "Introduction to Psychology": [
+    // L1: Foundational Recall
+    { text: "According to Maslow's Hierarchy of Human Needs, which tier represents the fundamental base that must be satisfied first?", options: ["Love and belonging needs", "Self-esteem needs", "Physiological needs (air, water, food, shelter, elimination)", "Self-actualization needs"], answer: 2, exp: "Maslow's hierarchy states basic physiological survival needs must be met before higher psychosocial needs." },
+    { text: "In Sigmund Freud's psychoanalytic model of personality, the 'Id' operates strictly on the:", options: ["Reality principle", "Pleasure principle (seeking immediate gratification of instinctual impulses)", "Moral principle", "Social conformity principle"], answer: 1, exp: "The Id represents unconscious biological drives functioning entirely on the pleasure principle." },
+    { text: "In classical conditioning demonstrated by Ivan Pavlov, the dog salivating in response to meat powder before any conditioning is the:", options: ["Conditioned stimulus", "Unconditioned response (UCR)", "Conditioned response", "Extinct response"], answer: 1, exp: "Unconditioned response is the innate, unlearned physiological reaction triggered by an unconditioned stimulus." },
+    { text: "A traditional 'Nuclear Family' structure is sociologically defined as:", options: ["Three or more generations living in a single household", "Two parents (mother and father) and their biological or adopted children residing together", "Single individuals living in communal arrangements", "Extended kinship networks sharing agricultural resources"], answer: 1, exp: "A nuclear family consists strictly of two parents and their dependent offspring in a shared residence." },
+    { text: "Which stage of Erikson's Psychosocial Development corresponds to infancy (0 to 18 months)?", options: ["Autonomy vs. Shame and Doubt", "Trust vs. Mistrust", "Initiative vs. Guilt", "Industry vs. Inferiority"], answer: 1, exp: "Infants develop basic trust when primary caregivers provide consistent, reliable warmth, nourishment, and comfort." },
+    // L2: Base Clinical Practice
+    { text: "A client who recently received a diagnosis of terminal pancreatic cancer states: 'The laboratory mixed up my biopsy results with someone else's; I am completely fine.' According to Kubler-Ross, this exemplifies:", options: ["Anger", "Denial", "Bargaining", "Depression"], answer: 1, exp: "Denial is the initial defense mechanism buffering the sudden psychological shock of catastrophic news." },
+    { text: "A hospitalized toddler (2 years old) screams, kicks, and cries inconsolably when their mother leaves the bedside. According to John Bowlby, this phase of separation anxiety is:", options: ["Protest", "Despair", "Detachment (Denial)", "Acceptance"], answer: 0, exp: "The Protest phase is characterized by acute distress, crying, and active search for the departed primary caregiver." },
+    { text: "Which therapeutic communication technique is demonstrated when the nurse states: 'You said you feel overwhelmed when your family visits. Can you describe what happens during those visits?'", options: ["Giving false reassurance", "Clarifying and Exploring", "Changing the subject", "Passing moral judgment"], answer: 1, exp: "Exploring encourages the client to delve deeper into thoughts and feelings without feeling judged." },
+    { text: "A client who feels intense hostility toward their direct supervisor at work comes home and yells aggressively at their spouse and children. Which ego defense mechanism is this?", options: ["Sublimation", "Displacement", "Reaction Formation", "Intellectualization"], answer: 1, exp: "Displacement transfers emotional reactions from a threatening original object to a safer substitute target." },
+    { text: "According to Jean Piaget's stages of cognitive development, a 4-year-old child who believes the moon follows them wherever they walk exhibits:", options: ["Abstract operational reasoning", "Egocentric thinking (Preoperational stage)", "Conservation mastery", "Sensorimotor reflexes"], answer: 1, exp: "Egocentrism in Piaget's preoperational stage reflects an inability to perceive situations from perspectives other than one's own." },
+    // L3: Advanced Hard / Prioritization
+    { text: "A client admitted following a motor vehicle collision in which their sibling died is uninjured but has no memory of the collision or sibling's death. Organic neurological causes are ruled out. This exemplifies:", options: ["Malingering", "Dissociative Amnesia", "Obsessive-compulsive disorder", "Schizophrenic delusion"], answer: 1, exp: "Dissociative amnesia involves an inability to recall important personal traumatic information beyond ordinary forgetfulness." },
+    { text: "A medical resident who has deep, unconscious hatred for a difficult client treats that client with exaggerated, effusive sweetness, gifts, and excessive praise. This defense mechanism is:", options: ["Reaction Formation", "Projection", "Sublimation", "Rationalization"], answer: 0, exp: "Reaction formation transforms unacceptable unconscious impulses into their exact behavioral opposites." },
+    { text: "In sociological analysis of healthcare, 'The Sick Role' described by Talcott Parsons confers which social right and obligation to the patient?", options: ["Exemption from normal social responsibilities, coupled with the obligation to seek competent medical help and try to get well", "Right to permanent financial compensation without seeking treatment", "Obligation to self-treat without medical intervention", "Right to disregard physician counsel"], answer: 0, exp: "Parsons' sick role legitimizes temporary deviance from social roles while obligating the individual to cooperate with medical care." },
+    { text: "A 42-year-old client presents with bilateral lower limb paralysis. Comprehensive neurological workup (MRI, EMG, nerve conduction) is entirely normal. The paralysis developed immediately after discovering marital infidelity. The diagnosis is:", options: ["Illness Anxiety Disorder", "Conversion Disorder (Functional Neurological Symptom Disorder)", "Hypochondriasis", "Somatic Symptom Disorder"], answer: 1, exp: "Conversion disorder presents with altered voluntary motor or sensory function incompatible with recognized neurological disease." },
+    { text: "When evaluating a client's risk for completed suicide, which factor represents the HIGHEST acute predictive risk?", options: ["Occasional sad mood without a plan", "A concrete, lethal suicide plan with immediate access to lethal means and a history of previous attempts", "Expressing religious beliefs against suicide", "Having strong family and social support"], answer: 1, exp: "A detailed, lethal plan, accessible means, and prior suicide attempts are the strongest predictors of imminent suicide completion." },
+    // L4: Peak Acuity Emergency
+    { text: "A disaster survivor from a collapsed building is admitted to the emergency center experiencing profound psychological dissociation, mutism, tremor, and tachycardia. The nurse's immediate psychological crisis intervention is:", options: ["Pressuring the client to narrate the trauma in detail", "Providing a quiet, safe, secure environment, grounding techniques, calm orientation, and basic physical needs", "Administering high-dose intravenous stimulants", "Isolating the client in complete darkness"], answer: 1, exp: "Acute crisis intervention requires establishing physiological safety, calm containment, and sensory grounding." },
+    { text: "An acutely manic client in an inpatient psychiatric unit is pacing rapidly, shouting profanities, threatening staff, and brandishing a heavy metal chair. The priority action is to:", options: ["Argue with the client about their behavior", "Ensure safety of all clients in the milieu, maintain clear escape routes, call for immediate staff show of force, and implement de-escalation protocols", "Tackle the client alone from behind", "Turn off the lights in the ward"], answer: 1, exp: "Milieu safety and staff protection take absolute priority; never attempt physical containment alone without trained assistance." },
+    { text: "A client who experienced severe sexual assault 2 hours ago is brought to the emergency department. The client sits rocking back and forth, repeating 'I'm dirty, I'm dead.' The nurse's first communication approach must be:", options: ["'You should be grateful you survived.'", "'You are safe here in the hospital. I am your nurse, and I will stay with you. You will not be left alone.'", "'Why were you out so late?'", "'Please sign these legal forms before we can talk.'"], answer: 1, exp: "Trauma-informed crisis communication provides explicit safety reassurance, continuous presence, and predictable boundaries." },
+    { text: "A client with delirium in the ICU becomes severely combative, pulls out a central line, and attempts to pull out an endotracheal tube. The nurse's priority emergency management is:", options: ["Restraining all four limbs without medical evaluation", "Securing the airway, applying direct pressure to the central line site, and obtaining emergency orders for chemical de-escalation (Dexmedetomidine or Haloperidol)", "Administering high-dose neuromuscular blockers without sedation", "Discharging the client to a psychiatric facility immediately"], answer: 1, exp: "Protect the airway and vascular access while rapidly treating the underlying organic delirium pharmacologically." },
+    { text: "A nurse is conducting a suicide lethality assessment on a client with Major Depressive Disorder who suddenly appears calm, happy, and peaceful after weeks of profound depression. The nurse recognizes that this sudden euphoria indicates:", options: ["Immediate cure of the clinical depression", "High imminent risk of suicide because the client has finalized their suicide plan and feels relief", "Effectiveness of oral antidepressant taken 2 days ago", "Malingering"], answer: 1, exp: "A sudden, unexplained elevation in mood in severe depression often indicates the client has resolved internal conflict by deciding to complete suicide." }
   ],
 
-  // ── MEDICAL-SURGICAL ────────────────────────────────────
-  "Fluid, Electrolyte & Acid–Base Balance": [
-    { text:"Serum sodium 125 mEq/L — FIRST nursing action:", options:["Give hypertonic saline IV push","Assess neurological status and fluid restrict","Give oral sodium tablets","Increase IV fluid rate"], answer:1, exp:"Hyponatremia causes cerebral edema; assess neuro status first. Treat with fluid restriction in euvolemic/hypervolemic states." },
-    { text:"Best fluid for initial hypovolemic shock resuscitation:", options:["D5W","0.45% NaCl","Lactated Ringer's or 0.9% NaCl","Albumin 25%"], answer:2, exp:"Isotonic crystalloids (LR or NS) are first-line for volume resuscitation." },
-    { text:"ABG: pH 7.50, PaCO2 30, HCO3 23:", options:["Respiratory acidosis","Respiratory alkalosis","Metabolic acidosis","Metabolic alkalosis"], answer:1, exp:"High pH + low PaCO2 + normal HCO3 = respiratory alkalosis (hyperventilation)." },
-    { text:"Positive Chvostek's sign indicates:", options:["Hyperkalemia","Hypercalcemia","Hypocalcemia","Hypernatremia"], answer:2, exp:"Chvostek's (facial twitch on tapping facial nerve) = hypocalcemia-induced neuromuscular irritability." },
-    { text:"Peaked T waves on ECG indicate:", options:["Hypokalemia","Hyperkalemia","Hypocalcemia","Hypernatremia"], answer:1, exp:"Hyperkalemia initially causes peaked (tall, tented) T waves." },
-    { text:"Parkland formula for burns — 70 kg patient, 40% BSA — first 8 hours receive:", options:["5,600 mL","11,200 mL","2,800 mL","8,000 mL"], answer:0, exp:"Total = 4 × 70 × 40 = 11,200 mL. First 8 hours = half = 5,600 mL." },
-    { text:"Prolonged vomiting causes:", options:["Metabolic acidosis","Metabolic alkalosis","Respiratory acidosis","Respiratory alkalosis"], answer:1, exp:"Prolonged vomiting = HCl loss → metabolic alkalosis." },
-    { text:"PRIORITY treatment for severe hyperkalemia (K+ 6.8 mEq/L) with ECG changes:", options:["Kayexalate","Furosemide","Calcium gluconate IV","Insulin + D50W"], answer:2, exp:"Calcium gluconate stabilizes cardiac membranes immediately before lowering K+ levels." },
-    { text:"Third-spacing of fluids means:", options:["Fluid shifts from vascular to non-functional spaces (interstitial/body cavities)","Fluid moves from cells into blood","IV fluid leaks from venipuncture site","Kidneys retain sodium"], answer:0, exp:"Third spacing moves fluid into non-functional compartments, causing relative hypovolemia despite excess total body water." },
-    { text:"Hypernatremia most commonly results from:", options:["Excessive sodium intake alone","Free water deficit (dehydration)","Hypoaldosteronism","SIADH"], answer:1, exp:"Hypernatremia is most commonly caused by inadequate free water intake or excessive loss." },
-    { text:"In CRF, hyperphosphatemia causes:", options:["Hypercalcemia","Hypocalcemia and potential tetany","Hypermagnesemia","Metabolic alkalosis"], answer:1, exp:"Hyperphosphatemia binds calcium, causing hypocalcemia, tetany, and seizure risk in CRF." },
-    { text:"Respiratory compensation for metabolic acidosis:", options:["Bicarbonate retention by kidneys","Hyperventilation (Kussmaul breathing) to blow off CO2","Decreased RR","Increased CO2 production"], answer:1, exp:"Kussmaul breathing is the compensatory hyperventilation of metabolic acidosis." },
-    { text:"Best fluid for isotonic dehydration:", options:["D5W","0.45% NaCl","0.9% NaCl","D5W in 0.45% NaCl"], answer:2, exp:"Isotonic dehydration = equal water and solute loss; 0.9% NaCl replaces both without fluid shifts." },
-    { text:"SIADH results in:", options:["Hypernatremia and hypervolemia","Hyponatremia and fluid retention","Hypernatremia and dehydration","Hypokalemia and alkalosis"], answer:1, exp:"SIADH: excess ADH → water retention → dilutional hyponatremia." },
-    { text:"Muscle weakness, polyuria, alkalosis after high-dose corticosteroids suggests:", options:["Hyperkalemia","Hypokalemia","Hypernatremia","Hypocalcemia"], answer:1, exp:"Corticosteroids cause renal K+ wasting, resulting in hypokalemia and metabolic alkalosis." },
-    { text:"Fully compensated metabolic acidosis ABG:", options:["pH 7.35, PaCO2 30, HCO3 18","pH 7.28, PaCO2 40, HCO3 18","pH 7.44, PaCO2 60, HCO3 30","pH 7.32, PaCO2 30, HCO3 22"], answer:0, exp:"Compensated metabolic acidosis: low-normal pH (7.35), low HCO3 (acidosis), low PaCO2 (respiratory compensation)." },
-    { text:"Albumin infusion primarily:", options:["Provides calories","Expands intravascular volume by oncotic pressure","Replaces RBCs","Corrects coagulation defects"], answer:1, exp:"Albumin is a colloid that exerts oncotic pressure, drawing fluid into the vascular space." },
-    { text:"Hypertonic saline (3% NaCl) is indicated for:", options:["Isotonic dehydration","Severe symptomatic hyponatremia with seizures","Hypernatremia","Routine maintenance"], answer:1, exp:"3% NaCl is for severe symptomatic hyponatremia; correct slowly to prevent osmotic demyelination." },
-    { text:"Most common cause of anion gap metabolic acidosis:", options:["Diarrhea","Renal tubular acidosis","Diabetic ketoacidosis","Antacid overuse"], answer:2, exp:"DKA causes anion gap acidosis (MUDPILES) from accumulation of keto acids." },
-    { text:"Urine specific gravity of 1.035 MOST indicates:", options:["Overhydration","Diabetes insipidus","Dehydration or SIADH","Normal hydration"], answer:2, exp:"High SG (>1.030) = concentrated urine, seen in dehydration or SIADH." }
+  // ─────────────────────────────────────────────────────────────
+  // 8. MEDICAL-SURGICAL: NEUROLOGICAL & ENDOCRINE DISORDERS
+  // ─────────────────────────────────────────────────────────────
+  "Neurological Disorders": [
+    // L1: Foundational Recall
+    { text: "In the Glasgow Coma Scale (GCS), what is the minimum possible total score and what does it indicate?", options: ["Score 0 (Mild confusion)", "Score 3 (Deep unconsciousness or coma)", "Score 1 (Normal response)", "Score 5 (Brain death)"], answer: 1, exp: "GCS ranges from 3 (no eye, verbal, or motor response) to 15 (fully alert and oriented)." },
+    { text: "What is the normal physiological range for Cerebral Perfusion Pressure (CPP = MAP - ICP) in adults?", options: ["20 to 40 mmHg", "60 to 100 mmHg", "120 to 160 mmHg", "180 to 220 mmHg"], answer: 1, exp: "Normal CPP is 60 to 100 mmHg; CPP <50 mmHg results in critical cerebral ischemia." },
+    { text: "Which cranial nerve (CN) provides motor innervation to the muscles of facial expression and conveys taste from the anterior two-thirds of the tongue?", options: ["Cranial Nerve V (Trigeminal)", "Cranial Nerve VII (Facial)", "Cranial Nerve IX (Glossopharyngeal)", "Cranial Nerve XII (Hypoglossal)"], answer: 1, exp: "CN VII (Facial nerve) controls facial expression muscles; dysfunction causes Bell's palsy." },
+    { text: "Decerebrate posturing (abnormal extensor posturing with adducted, extended arms and pronated wrists) indicates damage to which central nervous system structure?", options: ["Cerebral cortex", "Brainstem (Midbrain or Upper Pons)", "Cerebellar vermis", "Thoracic spinal cord"], answer: 1, exp: "Decerebrate posturing reflects severe brainstem compression or disruption, indicating worse prognosis than decorticate posturing." },
+    { text: "A positive Babinski sign (dorsiflexion of the great toe with fanning of the other toes) in an adult indicates:", options: ["A normal healthy plantar reflex", "An Upper Motor Neuron (UMN) lesion along the corticospinal tract", "A peripheral sensory neuropathy", "A Lower Motor Neuron (LMN) lesion"], answer: 1, exp: "In adults, the normal response is plantar flexion; extension/fanning is abnormal and indicates pyramidal tract pathology." },
+    // L2: Base Clinical Practice
+    { text: "The classic clinical triad of Parkinson's Disease consists of:", options: ["Chorea, dementia, and dysphagia", "Resting 'pill-rolling' tremor, cogwheel rigidity, and bradykinesia", "Spastic paraparesis, optic neuritis, and urinary retention", "Ptosis, diplopia, and proximal limb weakness"], answer: 1, exp: "Dopamine deficiency in the substantia nigra produces the hallmark motor triad: tremor, rigidity, and bradykinesia." },
+    { text: "A client with newly diagnosed Myasthenia Gravis is prescribed Pyridostigmine (Mestinon). The nurse instructs the client to take the medication:", options: ["Directly before going to sleep at night", "30 to 45 minutes before meals to optimize swallowing muscle strength and prevent aspiration", "Only when experiencing severe shortness of breath", "With high-dose antacids on an empty stomach"], answer: 1, exp: "Administering anticholinesterase inhibitors 30-45 minutes before meals ensures peak muscle strength for chewing and swallowing." },
+    { text: "When performing nursing care for a client with increased intracranial pressure (ICP), which intervention is appropriate?", options: ["Positioning the client flat with head rotated to the extreme left", "Elevating the head of the bed 30 degrees with neck in neutral midline alignment", "Clustering all nursing care activities together in one 2-hour window", "Performing deep tracheal suctioning every 30 minutes routinely"], answer: 1, exp: "Elevating HOB 30° with midline neck alignment promotes jugular venous drainage and minimizes intracranial pressure." },
+    { text: "A client with Multiple Sclerosis (MS) experiencing acute relapsing exacerbation is treated with which first-line therapy?", options: ["Oral NSAIDs", "High-dose intravenous Methylprednisolone (corticosteroid pulse)", "Lifelong bedrest and fluid restriction", "Oral Pyridostigmine"], answer: 1, exp: "High-dose IV glucocorticoids shorten the duration and accelerate recovery from acute MS inflammatory relapses." },
+    { text: "During a generalized tonic-clonic seizure, the nurse's priority action is to:", options: ["Force a plastic bite-block between the client's teeth", "Protect the client's head from injury, turn client onto side to prevent aspiration, and maintain airway", "Physically restrain the client's flailing extremities", "Administer oral antiepileptic tablets immediately"], answer: 1, exp: "Never insert objects into the mouth or restrain limbs; protect the head and turn the client lateral to keep airway clear." },
+    // L3: Advanced Hard / Prioritization
+    { text: "A client with an acute ischemic stroke presents 2.5 hours after symptom onset. Before initiating IV Alteplase (tPA), which criterion must be strictly met?", options: ["Non-contrast head CT scan rules out intracranial hemorrhage, and BP is maintained <185/110 mmHg", "Blood glucose is >400 mg/dL", "Platelet count is <50,000/mm3", "The client is on therapeutic warfarin with INR >3.0"], answer: 0, exp: "Thrombolysis requires ruling out hemorrhage on non-contrast CT and strictly controlling BP <185/110 mmHg to prevent hemorrhagic conversion." },
+    { text: "A client with a spinal cord injury at T4 suddenly develops severe throbbing headache, profuse diaphoresis and flushing above T4, and BP 210/115 mmHg with HR 48 bpm. The nurse's IMMEDIATE action is to:", options: ["Place the client flat in Trendelenburg position", "Elevate the head of the bed 90 degrees (high-Fowler's) and loosen tight clothing, then assess for bladder distention", "Administer IV morphine bolus", "Wait 15 minutes and repeat vital signs"], answer: 1, exp: "Autonomic Dysreflexia is a medical emergency; sitting the client upright induces orthostatic pooling while eliminating the noxious trigger (e.g., full bladder)." },
+    { text: "A client has been experiencing continuous generalized tonic-clonic seizures for 8 minutes without regaining consciousness (Status Epilepticus). The FIRST-LINE medication to administer is:", options: ["Oral Carbamazepine", "Intravenous Lorazepam (Ativan) 4 mg slow push", "Subcutaneous Insulin", "Intramuscular Neostigmine"], answer: 1, exp: "IV benzodiazepines (Lorazepam 0.1 mg/kg or Diazepam) cross the blood-brain barrier rapidly to terminate ongoing seizure activity." },
+    { text: "A client who underwent a lumbar puncture 3 hours ago reports a severe throbbing headache that worsens significantly when sitting up and improves when lying flat. The nurse identifies this as:", options: ["Bacterial meningitis relapse", "Post-Dural Puncture Headache (PDPH) caused by persistent CSF leakage through the dural puncture site", "Epidural abscess formation", "Acute cerebral herniation"], answer: 1, exp: "Low CSF pressure from persistent dural leak causes traction on pain-sensitive meninges when upright, relieved by recumbency." },
+    { text: "Which assessment finding in a client following head trauma indicates a Basilar Skull Fracture?", options: ["Bilateral papilledema and hyperreflexia", "Periorbital ecchymosis ('raccoon eyes'), Battle's sign (mastoid ecchymosis), and clear CSF rhinorrhea/otorrhea", "Unilateral dilated pupil only", "Neck stiffness with high fever"], answer: 1, exp: "Raccoon eyes, Battle's sign, and CSF rhinorrhea (halo sign) are pathognomonic physical signs of a basilar skull fracture." },
+    // L4: Peak Acuity Emergency
+    { text: "An ICU client with traumatic brain injury displays sudden bradycardia (HR 38 bpm), systolic hypertension with widening pulse pressure (BP 208/62 mmHg), and irregular agonal respirations. The nurse identifies:", options: ["Spinal shock", "Cushing's Triad signaling imminent brainstem herniation through the foramen magnum", "Neurogenic shock", "Severe pulmonary embolism"], answer: 1, exp: "Cushing's Triad reflects terminal intracranial hypertension with brainstem compression; an emergency hyperosmolar therapy is indicated." },
+    { text: "A client with acute massive ischemic stroke deteriorates neurologically: GCS drops from 12 to 6, right pupil becomes fixed and dilated (8 mm), and left-sided hemiplegia worsens. The nurse prepares for:", options: ["Stat administration of 3% Hypertonic Saline or IV Mannitol 20% and emergent decompressive craniectomy", "Infusing Dextrose 5% in water rapidly", "Administering oral aspirin", "Discharging to rehabilitation"], answer: 0, exp: "Uncal herniation compressing CN III requires immediate hyperosmolar therapy (mannitol/3% saline) and emergent neurosurgical decompression." },
+    { text: "A client with Guillain-Barré Syndrome has ascending flaccid paralysis progressing to the thoracic level. Which assessment finding signals the NEED FOR IMMEDIATE MECHANICAL VENTILATION?", options: ["Paresthesias in the toes", "Forced Vital Capacity (FVC) falling below 15 mL/kg and Negative Inspiratory Force (NIF) weaker than -20 cmH2O", "Mild sinus tachycardia", "Loss of ankle deep tendon reflexes"], answer: 1, exp: "FVC <15 mL/kg indicates respiratory muscle exhaustion and imminent diaphragmatic paralysis requiring elective intubation." },
+    { text: "A client presents with the 'worst headache of my life' (thunderclap headache) followed by syncope and nuchal rigidity. Non-contrast CT reveals a ruptured cerebral berry aneurysm with Subarachnoid Hemorrhage (SAH). The primary priority medication to prevent delayed ischemic neurological deficits from vasospasm is:", options: ["Oral Nimodipine (calcium channel blocker) 60 mg every 4 hours", "Intravenous Heparin infusion", "High-dose Aspirin", "Sublingual Nitroglycerin"], answer: 0, exp: "Oral Nimodipine is the standard of care to prevent cerebral vasospasm and secondary infarction in aneurysmal SAH." },
+    { text: "A post-neurosurgery client with a ventriculostomy drainage system displays ICP rising to 32 mmHg for >5 minutes. The nurse's immediate corrective checks include:", options: ["Lowering the transducer below the ear level", "Verifying leveling of the transducer at the Foramen of Monro (tragus of the ear) and checking system patency for kinks or closed stopcocks", "Clamping the drainage bag permanently", "Flushing the intraventricular catheter with 10 mL saline bolus"], answer: 1, exp: "Improper leveling or closed stopcocks produce false readings or prevent CSF venting; zero at the tragus of the ear." }
   ],
 
-  // ── MENTAL HEALTH ────────────────────────────────────────
-  "Schizophrenia and Psychotic Disorders": [
-    { text:"Which is a POSITIVE symptom of schizophrenia?", options:["Flat affect","Avolition","Hallucinations","Alogia"], answer:2, exp:"Positive symptoms = additions to behavior: hallucinations, delusions, disorganized speech." },
-    { text:"'The TV is sending me special messages' — this is:", options:["Hallucination","Idea of reference","Thought broadcasting","Echolalia"], answer:1, exp:"Ideas of reference: beliefs that external events have special personal significance." },
-    { text:"Clozapine requires weekly CBC monitoring for:", options:["Hepatotoxicity","Agranulocytosis","Nephrotoxicity","Serotonin syndrome"], answer:1, exp:"Clozapine causes potentially fatal agranulocytosis in 1-2%; mandatory ANC monitoring required." },
-    { text:"NMS (Neuroleptic Malignant Syndrome) features:", options:["Hyperthermia, muscle rigidity, altered consciousness, autonomic instability","Bradycardia, miosis, secretions","Serotonin excess","Tardive dyskinesia"], answer:0, exp:"NMS: hyperthermia >40°C, lead-pipe rigidity, altered consciousness, autonomic instability — medical emergency." },
-    { text:"Most therapeutic response to a patient hearing auditory hallucinations:", options:["Argue voices are not real","Ignore until it passes","Acknowledge distress and redirect to reality","Agree with content of hallucinations"], answer:2, exp:"Acknowledge the patient's distress (real experience) while gently redirecting to present reality." },
-    { text:"Tardive dyskinesia presents as:", options:["Muscle rigidity and tremor","Involuntary repetitive movements of face, tongue, and limbs","Restless pacing","Acute sustained muscle spasm"], answer:1, exp:"Tardive dyskinesia: involuntary rhythmic movements (lip smacking, tongue thrusting) from long-term dopamine blockade." },
-    { text:"Akathisia is described as:", options:["Involuntary facial movements","Sustained painful muscle contractions","Subjective restlessness with compulsive motor movement","Slow shuffling gait"], answer:2, exp:"Akathisia = inner restlessness with inability to sit still; occurs days-weeks after starting antipsychotics." },
-    { text:"Dopamine hypothesis of schizophrenia proposes:", options:["Serotonin excess","Norepinephrine deficiency","Excess dopaminergic activity in mesolimbic pathway","GABA deficiency"], answer:2, exp:"Excess mesolimbic dopamine causes positive symptoms of schizophrenia." },
-    { text:"Echolalia is:", options:["Imitation of another's movements","Pathological repetition of words spoken by another","Inability to initiate speech","Perseverative repetition of own words"], answer:1, exp:"Echolalia = pathological repetition of another's words; echopraxia = imitation of movements." },
-    { text:"Command hallucinations present the greatest risk of:", options:["Sleep disturbances","Violence toward self or others","Medication non-adherence","Social isolation"], answer:1, exp:"Command hallucinations (voices ordering acts) pose direct risk of self-harm or harm to others." },
-    { text:"EPS (extrapyramidal side effects) are managed with:", options:["Benzodiazepines","Anticholinergics (benztropine, diphenhydramine)","Additional antipsychotics","Beta-blockers"], answer:1, exp:"Anticholinergics counteract EPS by restoring the dopamine-acetylcholine balance." },
-    { text:"Best intervention to promote medication compliance in schizophrenia:", options:["Most sedating antipsychotic","Psychoeducation + long-acting injectable formulations","Hospitalization on every relapse","Ignoring missed doses"], answer:1, exp:"Psychoeducation and LAIs dramatically improve adherence by eliminating daily pill burden." },
-    { text:"Waxy flexibility (cerea flexibilitas) is:", options:["Automatic obedience","Limbs maintaining placed positions like soft wax","Stereotypic movements","Echopraxia"], answer:1, exp:"Waxy flexibility is a catatonic feature; limbs remain in whatever position they are placed." },
-    { text:"Safe communication with a paranoid patient — AVOID:", options:["Stating facts clearly","Whispering in front of the patient","Calm, consistent approach","Clear boundaries"], answer:1, exp:"Whispering increases paranoid patients' suspicion and worsens their symptoms." },
-    { text:"Risperidone is classified as:", options:["First-generation (typical)","Second-generation (atypical) antipsychotic","Mood stabilizer","Benzodiazepine"], answer:1, exp:"Risperidone is a second-generation (atypical) antipsychotic; haloperidol is first-generation." },
-    { text:"Catatonic schizophrenia is characterized by:", options:["Persecutory delusions","Psychomotor disturbance: stupor or excitement, waxy flexibility","Disorganized speech","Prominent negative symptoms"], answer:1, exp:"Catatonia: extremes of motor activity — stupor/mutism or catatonic excitement." },
-    { text:"Disorganized (hebephrenic) schizophrenia features:", options:["Paranoid delusions","Catatonic posturing","Disorganized speech/behavior, flat or inappropriate affect","Residual negative symptoms only"], answer:2, exp:"Disorganized schizophrenia: disorganized speech/behavior + flat/inappropriate affect + negative symptoms." },
-    { text:"Which statement indicates understanding of antipsychotic medication?", options:["'I take it only when I hear voices'","'I stop when I feel better'","'I take it regularly even when feeling well'","'This will cure my schizophrenia completely'"], answer:2, exp:"Schizophrenia requires continuous medication; stopping when feeling well is the most common cause of relapse." },
-    { text:"De-escalation for an agitated psychotic patient AVOIDS:", options:["Calm voice and non-threatening posture","Offering choices","Crowding with multiple staff","Quiet environment"], answer:2, exp:"Crowding increases agitation and paranoia; calm one-to-one approach is key." },
-    { text:"Thought broadcasting in schizophrenia means:", options:["Patient believes others can hear their thoughts","Patient receives messages through TV/radio","Patient's thoughts jump rapidly between topics","Patient repeats others' words"], answer:0, exp:"Thought broadcasting = belief that one's thoughts are being transmitted and can be heard by others." }
+  // ─────────────────────────────────────────────────────────────
+  // 9. MEDICAL-SURGICAL: ENDOCRINE DISORDERS & DIABETES
+  // ─────────────────────────────────────────────────────────────
+  "Endocrine Disorders": [
+    // L1: Foundational Recall
+    { text: "What is the normal diagnostic fasting plasma glucose (FPG) threshold for diagnosing Diabetes Mellitus?", options: ["Fasting plasma glucose ≥100 mg/dL", "Fasting plasma glucose ≥126 mg/dL (on two separate tests)", "Fasting plasma glucose ≥200 mg/dL only", "HbA1c between 5.0% and 5.6%"], answer: 1, exp: "An FPG ≥126 mg/dL on more than one occasion or HbA1c ≥6.5% establishes the diagnosis of Diabetes Mellitus." },
+    { text: "The primary underlying pathophysiology of Type 1 Diabetes Mellitus is:", options: ["Insulin resistance in peripheral tissues", "Autoimmune destruction of pancreatic beta-cells resulting in absolute insulin deficiency", "Excessive glucagon secretion by alpha cells", "Renal tubular glycosuria"], answer: 1, exp: "Type 1 diabetes is characterized by autoimmune T-cell mediated destruction of pancreatic islet beta-cells." },
+    { text: "Which anatomical endocrine structure is traditionally termed the 'master gland' of the endocrine system?", options: ["Thyroid gland", "Adrenal gland", "Pituitary gland (Hypophysis)", "Pancreas"], answer: 2, exp: "The pituitary gland secretes tropic hormones (TSH, ACTH, FSH, LH, GH) that regulate peripheral endocrine glands." },
+    { text: "The classic clinical signs of hypoglycemia include:", options: ["Polyuria, polydipsia, and warm dry skin", "Diaphoresis, tremors, tachycardia, palpitations, hunger, and dizziness", "Deep Kussmaul respirations and fruity breath", "Severe constipation and cold intolerance"], answer: 1, exp: "Adrenergic surge during acute hypoglycemia stimulates sweating, tremor, tachycardia, and hunger." },
+    { text: "A client is prescribed Levothyroxine (Synthroid) for primary hypothyroidism. The nurse instructs the client to take the medication:", options: ["With a high-fat dinner", "In the morning on an empty stomach at least 30 to 60 minutes before breakfast with water", "Only when feeling fatigued", "Simultaneously with calcium and iron supplements"], answer: 1, exp: "Levothyroxine requires an acidic gastric environment; food, iron, and calcium significantly impair absorption." },
+    // L2: Base Clinical Practice
+    { text: "A client with Graves' disease (hyperthyroidism) typically displays which clinical manifestation?", options: ["Weight gain, cold intolerance, and constipation", "Heat intolerance, unexplained weight loss, exophthalmos, fine tremors, and palpitations", "Moon facies, buffalo hump, and purple abdominal striae", "Severe hypercalcemia and bone fractures"], answer: 1, exp: "Excess thyroid hormones stimulate hypermetabolism: weight loss, heat intolerance, and autoimmune exophthalmos." },
+    { text: "A client with Cushing's Syndrome from chronic corticosteroid use exhibits which constellation of physical findings?", options: ["Hypoglycemia and bronze hyperpigmentation of skin", "Central obesity, 'moon facies', 'buffalo hump', purple abdominal striae, and muscle wasting", "Profound weight loss and hypotension", "Severe dehydration and low blood pressure"], answer: 1, exp: "Hypercortisolemia causes fat redistribution (face, neck), catabolism (thin skin, striae), and hypertension." },
+    { text: "Which assessment finding confirms a positive Chvostek's sign following accidental parathyroid removal during thyroidectomy?", options: ["Carpal spasm when a BP cuff is inflated on the upper arm", "Twitching of the facial muscles elicited by tapping the facial nerve anterior to the ear (Hypocalcemia)", "Pain in the calf upon dorsiflexion of the foot", "Flexion of the knees upon passive neck flexion"], answer: 1, exp: "Chvostek's sign reflects neuromuscular hyperexcitability secondary to acute hypocalcemia." },
+    { text: "A client with Type 2 Diabetes is scheduled for a contrast-enhanced CT scan. The nurse verifies that which medication is held 48 hours pre- and post-procedure?", options: ["Metformin (Glucophage)", "Glipizide", "Atorvastatin", "Lisinopril"], answer: 0, exp: "Contrast can induce acute renal impairment; Metformin accumulation in renal failure triggers fatal Lactic Acidosis." },
+    { text: "In managing a conscious client experiencing mild hypoglycemia (blood glucose 54 mg/dL), the nurse follows the 'Rule of 15':", options: ["Administer 15 grams of fast-acting carbohydrate (e.g., 4 oz fruit juice), recheck glucose in 15 minutes", "Give 15 units of regular insulin subcutaneously", "Provide 15 grams of pure fat (butter)", "Withhold all carbohydrates for 15 minutes"], answer: 0, exp: "The Rule of 15: 15g simple fast-acting carbs, wait 15 min, recheck blood sugar, repeat if still <70 mg/dL." },
+    // L3: Advanced Hard / Prioritization
+    { text: "A client with Type 1 Diabetes is admitted with Diabetic Ketoacidosis (DKA): glucose 480 mg/dL, arterial pH 7.18, HCO3 11 mEq/L, and potassium 5.8 mEq/L. The ABSOLUTE FIRST priority intervention is:", options: ["Administer high-dose subcutaneous glargine insulin", "Rapid IV fluid resuscitation with 0.9% Normal Saline at 1000 mL/hr to restore intravascular volume", "Administer IV sodium bicarbonate bolus", "Administer oral potassium chloride"], answer: 1, exp: "Fluid deficit in DKA is typically 5-10 liters; restoring perfusion with isotonic saline precedes insulin therapy." },
+    { text: "In managing DKA, when blood glucose decreases to 250 mg/dL (13.9 mmol/L), what essential change must be made to the IV fluid regimen?", options: ["Stop all IV infusions immediately", "Add 5% Dextrose (D5W or D5 0.45% NS) to the IV fluids while continuing regular insulin infusion", "Switch to sterile water infusion", "Double the insulin infusion rate"], answer: 1, exp: "Adding dextrose prevents rapid glucose drops that trigger cerebral edema, while insulin continues to clear ketoacids." },
+    { text: "A client with small cell lung cancer develops SIADH (Syndrome of Inappropriate Antidiuretic Hormone). The nurse anticipates which lab profile?", options: ["Serum sodium 118 mEq/L (dilutional hyponatremia), low serum osmolality (<275 mOsm/kg), and concentrated urine (urine SG >1.030)", "Hypernatremia (Na 158 mEq/L) and dilute urine", "Hyperglycemia and ketoacidosis", "Elevated serum potassium and low calcium"], answer: 0, exp: "Excess ADH causes water retention without edema, producing dilutional hyponatremia and inappropriately concentrated urine." },
+    { text: "A client following pituitary surgery develops massive dilute urine output of 600 mL/hr, urine specific gravity 1.002, and serum sodium 152 mEq/L. The nurse identifies Diabetes Insipidus (DI) and anticipates administering:", options: ["Intravenous Furosemide", "Desmopressin Acetate (DDAVP) subcutaneously or IV", "10% Dextrose in saline bolus", "Oral Spironolactone"], answer: 1, exp: "Central DI is caused by ADH deficiency; Desmopressin (DDAVP) replaces ADH, stopping life-threatening water loss." },
+    { text: "A client with primary adrenal insufficiency (Addison's disease) is maintained on oral hydrocortisone. During periods of acute physiological stress (infection, surgery), the nurse instructs the client to:", options: ["Stop taking hydrocortisone until the stress resolves", "Increase (double or triple) the hydrocortisone dosage to prevent acute adrenal crisis", "Substitute hydrocortisone with high-dose aspirin", "Switch to an all-liquid diet"], answer: 1, exp: "The normal adrenal response to stress is increased cortisol; Addisonian clients must double or triple doses ('sick-day rules')." },
+    // L4: Peak Acuity Emergency
+    { text: "A client with Addison's disease presents in acute Addisonian Crisis: BP 64/38 mmHg, HR 126 bpm, lethargy, serum sodium 116 mEq/L, and potassium 6.9 mEq/L. The priority life-saving medication is:", options: ["Oral fludrocortisone", "Intravenous Hydrocortisone 100 mg stat bolus with aggressive IV 0.9% Normal Saline and Dextrose", "Subcutaneous Insulin without glucose", "IV Furosemide"], answer: 1, exp: "Acute adrenal crisis causes lethal vascular collapse and hyperkalemic arrest; high-dose IV hydrocortisone is life-saving." },
+    { text: "A client with severe Graves' disease develops Thyroid Storm (Thyrotoxic Crisis): temp 41.2°C (106.1°F), HR 174 bpm (atrial fibrillation), extreme agitation, and jaundice. The sequence of emergency medications includes:", options: ["Aspirin, calcium, and levothyroxine", "Beta-blocker (Propranolol) stat, Propylthiouracil (PTU), Lugol's iodine (after PTU), and IV Hydrocortisone", "Methimazole only after 48 hours", "External warm blankets and thyroid extract"], answer: 1, exp: "Thyroid storm requires beta-blockade, thionamides (PTU), delayed iodine (prevents hormone release), and corticosteroids." },
+    { text: "A client with Hyperosmolar Hyperglycemic State (HHS) presents with glucose 980 mg/dL, serum osmolality 360 mOsm/kg, profound dehydration, and stupor without significant ketoacidosis. The primary risk during initial fluid therapy is:", options: ["Acute hypoglycemia", "Cerebral edema from too-rapid reduction of serum osmolality and hypokalemia from insulin driving K+ intracellularly", "Immediate renal stone formation", "Hypercalcemic tetany"], answer: 1, exp: "Overly rapid fluid and osmolar shifts cause water to rush into brain cells (cerebral edema); gradual correction is vital." },
+    { text: "A client 6 hours post-subtotal thyroidectomy develops acute laryngeal stridor, restlessness, respiratory distress, and an expanding neck hematoma. The nurse's immediate action is to:", options: ["Administer an aerosolized bronchodilator", "Immediately cut the neck sutures at the bedside to decompress the trachea, call for emergency surgical airway, and ventilate with 100% O2", "Apply a pressure dressing tightly around the neck", "Administer oral calcium tablets"], answer: 1, exp: "Expanding neck hematoma compresses the trachea; immediate suture release at the bedside is the only life-saving intervention." },
+    { text: "A client with severe symptomatic hyponatremia (Na 108 mEq/L) secondary to SIADH develops generalized seizures and coma. The nurse prepares to infuse 3% Hypertonic Saline. The critical safety precaution is to:", options: ["Infuse 1000 mL rapidly over 30 minutes", "Limit sodium correction rate to no more than 6 to 8 mEq/L in 24 hours to prevent Central Pontine Myelinolysis (Osmotic Demyelination Syndrome)", "Allow sodium to rise by 25 mEq/L in 4 hours", "Administer free sterile water simultaneously"], answer: 1, exp: "Rapid correction of chronic hyponatremia causes irreversible brainstem demyelination (osmotic demyelination syndrome)." }
   ],
 
-  // ── OBSTETRICS & GYN ────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────
+  // 10. CHILD HEALTH (PEDIATRIC) NURSING
+  // ─────────────────────────────────────────────────────────────
+  "Growth and Development": [
+    // L1: Foundational Recall
+    { text: "At what age does a normal infant's birth weight typically double and triple, respectively?", options: ["Doubles by 2 months, triples by 6 months", "Doubles by 5 to 6 months, triples by 12 months", "Doubles by 9 months, triples by 24 months", "Doubles by 12 months, triples by 36 months"], answer: 1, exp: "Healthy infants double birth weight by 5-6 months and triple their birth weight by 1 year." },
+    { text: "By what age does the anterior fontanelle of a normal healthy infant normally close?", options: ["2 to 3 months", "12 to 18 months", "24 to 36 months", "At birth"], answer: 1, exp: "The posterior fontanelle closes by 2-3 months; the anterior fontanelle closes between 12-18 months." },
+    { text: "What is the normal resting heart rate range for a healthy newborn infant?", options: ["60 to 80 bpm", "80 to 100 bpm", "110 to 160 bpm", "180 to 220 bpm"], answer: 2, exp: "Normal newborn heart rate ranges between 110 and 160 bpm, varying with crying or sleep." },
+    { text: "At what developmental age is an infant expected to sit independently without support?", options: ["2 to 3 months", "6 to 8 months", "12 to 14 months", "18 months"], answer: 1, exp: "Independent sitting unsupported is a classic gross motor milestone achieved between 6-8 months." },
+    { text: "Which play behavior is characteristic of normal toddlers (1 to 3 years old)?", options: ["Solitary play with no awareness of others", "Parallel play (playing alongside other children without interactive cooperation)", "Associative cooperative team play", "Competitive organized sports"], answer: 1, exp: "Toddlers engage in parallel play: playing side-by-side with similar toys without direct cooperative interaction." },
+    // L2: Base Clinical Practice
+    { text: "A 4-week-old male infant presents with non-bilious projectile vomiting immediately after feedings, persistent hunger, and an olive-shaped mass in the right upper quadrant. The nurse suspects:", options: ["Gastroesophageal reflux disease", "Hypertrophic Pyloric Stenosis", "Intussusception", "Hirschsprung disease"], answer: 1, exp: "Projectile non-bilious vomiting with a palpable olive mass confirms hypertrophic pyloric stenosis." },
+    { text: "A 10-month-old infant presents with sudden episodic abdominal pain, crying while pulling knees to chest, vomiting, and passage of red 'currant jelly' stools. The diagnosis is:", options: ["Acute appendicitis", "Intussusception", "Celiac disease", "Meckel's diverticulum"], answer: 1, exp: "Currant jelly stools (blood and mucus) with episodic colic and drawing knees to chest characterize intussusception." },
+    { text: "When administering oral liquid iron supplement to a child with iron deficiency anemia, the nurse advises the parent to:", options: ["Mix the iron directly into a full bottle of cow's milk", "Administer through a straw or dropper directed to the back of the mouth, followed by citrus juice, to prevent tooth staining", "Give with calcium antacids", "Avoid brushing the child's teeth after administration"], answer: 1, exp: "Liquid iron stains dental enamel; administration via straw/dropper with vitamin C enhances absorption and protects teeth." },
+    { text: "A 3-year-old child presents with barking 'seal-like' cough, hoarseness, and inspiratory stridor that worsens at night (Croup / Laryngotracheobronchitis). Standard medical management includes:", options: ["Immediate oral antibiotics and warm blankets", "Nebulized Racemic Epinephrine and oral/IM Dexamethasone", "Immediate tonsillectomy", "High-dose sedatives"], answer: 1, exp: "Croup responds to nebulized racemic epinephrine (rapid subglottic vasoconstriction) and dexamethasone (systemic anti-inflammatory)." },
+    { text: "A child with Nephrotic Syndrome presents with severe generalized edema (anasarca) and proteinuria. What is the classic laboratory triad?", options: ["Hematuria, hypertension, and azotemia", "Massive proteinuria (>3.5g/24hr or 3+), profound Hypoalbuminemia, and Hyperlipidemia", "Hyperglycemia, ketonuria, and acidosis", "Elevated liver enzymes and jaundice"], answer: 1, exp: "Glomerular podocyte effacement leads to massive proteinuria, hypoalbuminemia, fluid shifts (edema), and compensatory hyperlipidemia." },
+    // L3: Advanced Hard / Prioritization
+    { text: "A 6-month-old infant with Tetralogy of Fallot (TOF) suddenly becomes irritable, intensely cyanotic, tachypneic, and tachypneic ('Tet spell' / hypercyanotic episode). The nurse's IMMEDIATE action is to:", options: ["Place the infant in the knee-chest position", "Administer oral digoxin", "Start chest compressions", "Lay the infant completely flat on their stomach"], answer: 0, exp: "The knee-chest position increases systemic vascular resistance, reversing right-to-left shunting and forcing blood into the pulmonary circulation." },
+    { text: "A 4-year-old child presents with high fever, sore throat, severe dysphagia, drooling, muffled voice, and sits in a 'tripod' position. What action is STRICTLY CONTRAINDICATED?", options: ["Administering supplemental humidified oxygen", "Inspecting the throat with a tongue depressor or obtaining a throat swab (Acute Epiglottitis)", "Calling the emergency airway team", "Preparing for lateral neck X-ray with emergency staff present"], answer: 1, exp: "Oral instrumentation in suspected acute epiglottitis can trigger sudden, fatal, complete laryngospasm and airway obstruction." },
+    { text: "A child with Sickle Cell Disease is admitted in severe Vaso-Occlusive Pain Crisis. What are the two HIGHEST priority nursing interventions?", options: ["Immediate vigorous intravenous hydration and aggressive opioid pain management", "Ice packs applied directly to painful joints and fluid restriction", "Immediate blood transfusion before hydration", "High-dose aspirin and complete immobilization"], answer: 0, exp: "Aggressive IV hydration reverses sickling and improves microvascular capillary flow, while opioids manage severe ischemic pain." },
+    { text: "A child diagnosed with Wilms' Tumor (Nephroblastoma) is admitted. The nurse places a prominent warning sign over the head of the bed stating:", options: ["'Strict fluid restriction'", "'DO NOT PALPATE ABDOMEN'", "'Check rectal temperatures every 2 hours'", "'Keep in Trendelenburg position'"], answer: 1, exp: "Abdominal palpation of Wilms' tumor can rupture the delicate encapsulated renal mass, spilling malignant cells throughout the peritoneum." },
+    { text: "A 5-year-old presents with fever lasting 6 days, bilateral non-purulent conjunctivitis, strawberry tongue, erythema of palms/soles with edema, and cervical lymphadenopathy (Kawasaki Disease). The nurse prepares to administer:", options: ["Intravenous Immunoglobulin (IVIG) and high-dose Aspirin therapy", "Oral Penicillin and steroids", "Acyclovir infusion", "Warfarin anticoagulation alone"], answer: 0, exp: "High-dose IVIG within the first 10 days combined with aspirin prevents coronary artery aneurysm formation in Kawasaki disease." },
+    // L4: Peak Acuity Emergency
+    { text: "An infant presents in severe respiratory failure with nasal flaring, grunting, intercostal retractions, and RR 84 breaths/min, followed by sudden bradycardia (HR 54 bpm). The nurse recognizes that in pediatrics:", options: ["Bradycardia is an expected sign of deep relaxation", "Bradycardia is the critical ominous terminal sign of severe hypoxia, signaling imminent cardiopulmonary arrest", "The infant needs immediate feeding", "The infant has heart block unrelated to respiration"], answer: 1, exp: "In pediatrics, respiratory failure precedes cardiac arrest; hypoxia-induced bradycardia indicates imminent cardiac arrest requiring ventilation and chest compressions." },
+    { text: "During pediatric resuscitation for pulseless ventricular fibrillation, the recommended initial defibrillation energy dose is:", options: ["0.5 Joules/kg", "2 Joules/kg (followed by 4 J/kg if refractory)", "10 Joules/kg immediately", "Adult fixed dose of 200 Joules"], answer: 1, exp: "PALS guidelines mandate initial shock energy of 2 J/kg for pediatric shockable rhythms, escalating to 4 J/kg for subsequent shocks." },
+    { text: "An 18-month-old child presents in septic shock refractory to fluid boluses. Capillary refill is 5 seconds, extremities cold, and pulses weak. Intraosseous (IO) access is required. The standard site for pediatric IO insertion is:", options: ["Anterior superior iliac spine", "Proximal tibia (1-2 cm below and medial to the tibial tuberosity)", "Distal radius", "Sternum"], answer: 1, exp: "The anteromedial surface of the proximal tibia provides rapid, safe, high-flow vascular access in pediatric emergencies." },
+    { text: "A 7-year-old child with severe asthma exacerbation has had severe wheezing, but on re-assessment the breath sounds have become completely ABSENT ('silent chest') with lethargy. The nurse identifies:", options: ["Complete resolution of bronchospasm", "Critical impending respiratory arrest due to air movement cessation requiring immediate emergency airway management", "Sleepiness from nebulizer", "Pneumothorax alone"], answer: 1, exp: "A 'silent chest' indicates severe airflow obstruction where ventilation is insufficient to generate wheezing, heralding immediate arrest." },
+    { text: "A neonate born at 28 weeks gestation presents with respiratory distress syndrome (RDS) due to surfactant deficiency. Following endotracheal intubation, the nurse prepares to assist with:", options: ["Endotracheal instillation of exogenous lung surfactant (e.g., Beractant/Poractant alfa)", "Subcutaneous terbutaline injection", "Intravenous broad-spectrum penicillins only", "Chest physiotherapy with vigorous percussion"], answer: 0, exp: "Intratracheal surfactant instillation restores alveolar surface tension, preventing widespread atelectasis and improving compliance." }
+  ],
+
+  // ─────────────────────────────────────────────────────────────
+  // 11. OBSTETRICS & GYNECOLOGICAL NURSING
+  // ─────────────────────────────────────────────────────────────
   "Normal Labour and Delivery": [
-    { text:"Smallest (most favorable) presenting head diameter in vertex presentation:", options:["Occipitofrontal (11.5 cm)","Suboccipitobregmatic (9.5 cm)","Mentovertical (13.5 cm)","Biparietal (9.5 cm)"], answer:1, exp:"Well-flexed vertex presents the suboccipitobregmatic diameter (9.5 cm) — smallest and most favorable." },
-    { text:"Hormone responsible for initiating uterine contractions:", options:["Progesterone","Estrogen","Oxytocin","Prolactin"], answer:2, exp:"Oxytocin from the posterior pituitary stimulates uterine contractions and is used to induce/augment labor." },
-    { text:"Minimum cervical dilation rate in active phase for primigravida:", options:["0.5 cm/hour","1.2 cm/hour","2 cm/hour","3 cm/hour"], answer:1, exp:"Friedman curve: minimum 1.2 cm/hour for nulliparas in active phase." },
-    { text:"Variable decelerations are MOST associated with:", options:["Uteroplacental insufficiency","Head compression","Umbilical cord compression","Vagal stimulation from pushing"], answer:2, exp:"Variable decelerations (abrupt, V-shaped) = umbilical cord compression." },
-    { text:"Third stage of labor is:", options:["Full dilation to delivery of baby","Delivery of baby to delivery of placenta","Onset to full dilation","Post-delivery observation"], answer:1, exp:"Third stage: from delivery of the baby to complete delivery of the placenta." },
-    { text:"Sign of placental separation includes:", options:["Decrease in uterine firmness","Lengthening of umbilical cord","Return of FHR","Onset of Braxton Hicks"], answer:1, exp:"Signs of placental separation: cord lengthening, gush of blood, uterus becomes globular and rises." },
-    { text:"First-line maneuver for shoulder dystocia:", options:["Zavanelli maneuver","McRoberts + suprapubic pressure","Fundal pressure","Episiotomy"], answer:1, exp:"McRoberts maneuver (hyperflexion of thighs) + suprapubic pressure is the first-line for shoulder dystocia." },
-    { text:"Late decelerations on CTG indicate:", options:["Head compression","Cord compression","Uteroplacental insufficiency","Maternal hyperventilation"], answer:2, exp:"Late decelerations (after contraction peak) indicate uteroplacental insufficiency and fetal hypoxia." },
-    { text:"Most ideal fetal position for vaginal delivery:", options:["ROA","LOP","LOA","ROP"], answer:2, exp:"LOA (Left Occiput Anterior) is the most common and ideal position for delivery." },
-    { text:"Uterine atony after delivery — first management:", options:["Surgical intervention","Uterine massage + oxytocin","Blood transfusion","Intrauterine balloon"], answer:1, exp:"Uterine atony (most common cause of PPH) = bimanual uterine massage + IV oxytocin first." },
-    { text:"Sinusoidal FHR pattern requires:", options:["Continued monitoring","Position change","Immediate emergency intervention","Fetal scalp electrode placement"], answer:2, exp:"Sinusoidal pattern = severe fetal anemia or hypoxia; requires immediate emergency delivery." },
-    { text:"Meconium-stained amniotic fluid indicates:", options:["Normal bowel function","Fetal distress or postmaturity","Immature fetal lungs","Chorioamnionitis"], answer:1, exp:"Meconium in utero suggests fetal distress or postmaturity; prepare for neonatal resuscitation." },
-    { text:"Latent phase for a primigravida can last up to:", options:["6 hours","14 hours","20 hours","4 hours"], answer:2, exp:"Latent phase (0-6 cm) can last up to 20 hours in nulliparas before being classified as prolonged." },
-    { text:"Bishop score assesses:", options:["Gestational age","Fetal lung maturity","Cervical favorability for labor induction","Fetal well-being"], answer:2, exp:"Bishop score evaluates dilation, effacement, station, consistency, and position for induction readiness." },
-    { text:"Postpartum hemorrhage (PPH) definition:", options:["250 mL after vaginal delivery","500 mL after vaginal or 1000 mL after cesarean","750 mL after any delivery","1000 mL after vaginal delivery"], answer:1, exp:"PPH = ≥500 mL blood loss after vaginal delivery or ≥1000 mL after cesarean." },
-    { text:"Active management of third stage (AMTSL) includes:", options:["Watchful waiting","Oxytocin after delivery + controlled cord traction + uterine massage","Ergometrine only","Immediate manual placenta removal"], answer:1, exp:"WHO AMTSL standard: oxytocin within 1 min of delivery + controlled cord traction + uterine massage." },
-    { text:"A tight nuchal cord at delivery is managed by:", options:["Emergency cesarean","Double-clamp and cut between clamps before continuing delivery","Fundal pressure","Waiting for spontaneous resolution"], answer:1, exp:"Tight nuchal cord: clamp and cut between two clamps, then continue delivery." },
-    { text:"Best analgesia in labor with minimal fetal effects:", options:["IV pethidine","Entonox (inhalation)","Epidural analgesia","Paracervical block"], answer:2, exp:"Epidural provides superior pain relief with minimal fetal drug transfer compared to systemic opioids." },
-    { text:"Drug used for tocolysis (stopping preterm labor):", options:["Oxytocin","Nifedipine (calcium channel blocker)","Prostaglandin E2","Misoprostol"], answer:1, exp:"Nifedipine (and other tocolytics) inhibit uterine contractions to delay preterm labor." },
-    { text:"Cardinal movements of normal labor in correct order include:", options:["Flexion before descent","Extension before internal rotation","Internal rotation before extension","Expulsion before external rotation"], answer:2, exp:"Cardinal movements: engagement → descent → flexion → INTERNAL ROTATION → EXTENSION → external rotation → expulsion." }
+    // L1: Foundational Recall
+    { text: "Using Naegele's rule, calculate the Estimated Date of Delivery (EDD) for a woman whose Last Menstrual Period (LMP) began on May 10, 2024:", options: ["February 17, 2025", "February 10, 2025", "August 17, 2025", "March 17, 2025"], answer: 0, exp: "Naegele's rule: LMP + 7 days - 3 months + 1 year: May 10 + 7 days = May 17; May - 3 months = February 17, 2025." },
+    { text: "Which anatomical landmark defines 'zero station' (Station 0) in the assessment of fetal descent during labor?", options: ["Iliac crests", "Ischial spines of the maternal pelvis", "Pubic symphysis", "Sacral promontory"], answer: 1, exp: "Station 0 indicates that the widest diameter of the fetal presenting part has engaged at the level of the maternal ischial spines." },
+    { text: "What is the normal baseline Fetal Heart Rate (FHR) range during labor at term?", options: ["80 to 110 bpm", "110 to 160 bpm", "160 to 200 bpm", "60 to 90 bpm"], answer: 1, exp: "Normal baseline fetal heart rate ranges between 110 and 160 beats per minute." },
+    { text: "The third stage of labor begins and ends with which physiological events?", options: ["From onset of regular contractions to complete cervical dilation (10 cm)", "From complete cervical dilation to delivery of the infant", "From delivery of the infant to the complete delivery of the placenta", "From delivery of the placenta through the first 4 hours postpartum"], answer: 2, exp: "The third stage of labor encompasses the interval between delivery of the neonate and complete expulsion of the placenta." },
+    { text: "Chadwick's sign, a probable sign of pregnancy, is characterized by:", options: ["Softening of the cervix (Goodell's sign)", "Bluish-purple discoloration of the vaginal mucosa and cervix caused by increased pelvic vascularity", "Softening of the lower uterine segment (Hegar's sign)", "Painless irregular uterine contractions"], answer: 1, exp: "Chadwick's sign is the deep violet-blue coloration of the cervix and vagina resulting from estrogen-induced venous congestion." },
+    // L2: Base Clinical Practice
+    { text: "A laboring client's cardiotocograph (CTG) displays FHR decelerations that begin after the peak of a uterine contraction and return to baseline well after the contraction ends. These are:", options: ["Early decelerations (head compression)", "Variable decelerations (cord compression)", "Late decelerations indicating uteroplacental insufficiency", "Accelerations indicating fetal well-being"], answer: 2, exp: "Late decelerations reflect compromised intervillous placental blood flow and fetal hypoxemia during contractions." },
+    { text: "The primary initial action when the nurse identifies late decelerations on the fetal monitor is to:", options: ["Increase the oxytocin (Pitocin) infusion rate", "Turn the client onto her left side, administer O2 at 8-10 L/min via non-rebreather, stop oxytocin, and increase IV fluids", "Perform an immediate vaginal examination", "Prepare for immediate vacuum extraction without repositioning"], answer: 1, exp: "Intrauterine resuscitation: maternal left-lateral positioning relieves caval compression, stop oxytocin, give O2 and IV fluids." },
+    { text: "A pregnant client at 28 weeks gestation is Rh-negative and unsensitized (negative indirect Coombs' test). The nurse prepares to administer:", options: ["Rho(D) Immune Globulin (RhoGAM) 300 mcg intramuscularly", "Packed red blood cell transfusion", "Rubella vaccination immediately", "Oxytocin infusion"], answer: 0, exp: "RhoGAM at 28 weeks and within 72 hours postpartum prevents maternal isoimmunization against Rh-positive fetal cells." },
+    { text: "A client who gave birth vaginally 1 hour ago has a boggy (atonic) uterus displaced to the right of the midline with increased lochial bleeding. The nurse's first action is to:", options: ["Administer methylergonovine immediately", "Assist the client to void or catheterize the bladder, then perform fundal massage", "Place client in Trendelenburg position", "Pack the vagina with sterile gauze"], answer: 1, exp: "A full bladder displaces the uterus, inhibiting normal myometrial contractions; emptying the bladder restores fundal tone." },
+    { text: "Postpartum Hemorrhage (PPH) is clinically defined as cumulative blood loss of:", options: ["≥100 mL after delivery", "≥500 mL following vaginal delivery or ≥1000 mL following Cesarean delivery", "≥2000 mL in all deliveries", "≥250 mL within 24 hours"], answer: 1, exp: "Standard obstetric criteria define PPH as ≥500 mL blood loss post-vaginal or ≥1000 mL post-cesarean delivery." },
+    // L3: Advanced Hard / Prioritization
+    { text: "A client with severe preeclampsia is receiving continuous intravenous Magnesium Sulfate for seizure prophylaxis. Which finding indicates acute MAGNESIUM TOXICITY?", options: ["Hyperactive deep tendon reflexes (4+) and clonus", "Loss of patellar deep tendon reflexes (0), respiratory rate <12 breaths/min, and urine output <30 mL/hr", "Serum magnesium level of 5.5 mg/dL", "Mild facial flushing and warmth"], answer: 1, exp: "Loss of DTRs is the earliest clinical sign of toxicity, followed by respiratory depression; antidote is Calcium Gluconate." },
+    { text: "A pregnant client at 34 weeks gestation presents with sudden, dark red, painful vaginal bleeding, severe abdominal pain, and a rigid 'board-like' tender uterus. The nurse identifies:", options: ["Placenta Previa", "Placental Abruption (Abruptio Placentae)", "Cervical incompetence", "Normal bloody show"], answer: 1, exp: "Dark painful bleeding with a hypertonic board-like uterus characterizes premature separation of the placenta (abruption)." },
+    { text: "A client at 32 weeks gestation presents with painless, bright red vaginal bleeding. What procedure is STRICTLY CONTRAINDICATED?", options: ["Transabdominal ultrasound", "Digital vaginal examination or sterile speculum exam (until placenta previa is ruled out)", "External fetal monitoring", "Drawing maternal blood for type and crossmatch"], answer: 1, exp: "Digital vaginal exam in placenta previa can puncture the low-lying placenta, triggering catastrophic fatal hemorrhage." },
+    { text: "During delivery of a macrosomic infant, the fetal head delivers but immediately retracts tightly against the perineum ('turtle sign'). The nurse prepares for:", options: ["Fundal pressure applied firmly from above", "Shoulder Dystocia emergency: execute McRoberts maneuver (hyperflexing maternal thighs) with suprapubic pressure", "Pushing the head back into the uterus", "Immediate vacuum application to the neck"], answer: 1, exp: "McRoberts maneuver widens pelvic diameters and suprapubic pressure dislodges the anterior shoulder; fundal pressure is contraindicated." },
+    { text: "A client with severe preeclampsia develops HELLP Syndrome. What clinical laboratory abnormalities define this syndrome?", options: ["Hypoglycemia, elevated lipids, low platelets", "Hemolysis (schistocytes on smear), Elevated Liver enzymes (AST/ALT), and Low Platelets (<100,000/mm3)", "High eosinophils, low lactate, low potassium", "Hypernatremia, elevated leukocytes, high platelets"], answer: 1, exp: "HELLP syndrome represents severe microangiopathic hemolytic anemia, hepatic necrosis, and platelet consumption." },
+    // L4: Peak Acuity Emergency
+    { text: "Following spontaneous rupture of membranes, the fetal monitor displays prolonged severe bradycardia (HR 60 bpm). On vaginal examination, the nurse visualizes a pulsating loop in the vagina. The IMMEDIATE life-saving intervention is:", options: ["Push the cord back into the uterus with a dry sponge", "Insert a sterile gloved hand into the vagina and exert upward manual pressure to lift the fetal presenting part off the umbilical cord", "Instruct the mother to bear down and push vigorously", "Administer high-dose oxytocin"], answer: 1, exp: "Umbilical cord prolapse causes total fetal hypoxia; holding the fetal head off the cord manually until emergency C-section is life-saving." },
+    { text: "A client in active labor suddenly gasps, clutches her chest, becomes cyanotic, dyspneic, and collapses with cardiac arrest and severe coagulopathy (Amniotic Fluid Embolism / AFE). The priority action is:", options: ["Initiate high-quality CPR, ventilate with 100% O2, and perform immediate perimortem Cesarean delivery within 4 to 5 minutes", "Administer oral aspirin", "Transport to radiology for CT", "Wait for spontaneous recovery"], answer: 0, exp: "AFE causes anaphylactoid vascular collapse; CPR with resuscitative hysterotomy within 5 minutes optimizes maternal and fetal survival." },
+    { text: "A client with severe preeclampsia begins having a generalized tonic-clonic eclamptic seizure. The nurse's immediate actions are:", options: ["Restrain the client and insert an oral airway", "Protect the airway, turn client on side, administer Magnesium Sulfate IV 4-6g bolus, and prevent maternal injury", "Administer immediate IV glucose bolus", "Perform immediate vaginal delivery during the convulsion"], answer: 1, exp: "Airway protection, left-lateral positioning, and IV Magnesium Sulfate are the cornerstones of eclampsia management." },
+    { text: "A postpartum client who had a precipitous delivery develops refractory uterine atony unresponsive to bimanual massage and oxytocin. Bleeding exceeds 1500 mL and BP is 70/40 mmHg. The nurse anticipates:", options: ["Second-line uterotonics (Methylergonovine, Carboprost/Hemabate, Misoprostol) and intrauterine balloon tamponade (Bakri)", "Applying an ice pack to the perineum", "Oral iron supplements", "Observation for 2 hours"], answer: 0, exp: "Refractory PPH requires rapid second-line uterotonics, intrauterine balloon tamponade, and massive transfusion protocol." },
+    { text: "A woman at 8 weeks gestation presents with sudden severe sharp unilateral lower quadrant abdominal pain, referred right shoulder pain, and syncope with BP 74/42 mmHg. The nurse identifies:", options: ["Ruptured Ectopic Pregnancy causing severe hemoperitoneum and hypovolemic shock", "Normal round ligament pain", "Appendicitis without rupture", "Severe morning sickness"], answer: 0, exp: "Unilateral pelvic pain, Kehr's sign (referred shoulder pain from diaphragmatic blood irritation), and shock indicate ruptured tubal pregnancy." }
   ],
 
-  // ── CHILD HEALTH ─────────────────────────────────────────
-  "Newborn Care": [
-    { text:"Apgar score is assessed at:", options:["1 and 5 minutes","5 and 10 minutes","2 and 5 minutes","1 and 10 minutes"], answer:0, exp:"Apgar score at 1 minute (initial response) and 5 minutes (response to intervention)." },
-    { text:"Normal Apgar score:", options:["0-3","4-6","7-10","5-8"], answer:2, exp:"Apgar 7-10 = vigorous newborn; 4-6 = moderate depression; 0-3 = severe depression." },
-    { text:"FIRST nursing action after birth of neonate:", options:["Administer Vitamin K","Establish airway by drying and stimulating infant","Obtain Apgar score","Initiate breastfeeding"], answer:1, exp:"Immediate priority: establish patent airway by drying, stimulating, and positioning." },
-    { text:"Physiological jaundice appears:", options:["Within 24 hours of birth","After 24-72 hours","Immediately at birth","After 1 week"], answer:1, exp:"Physiological jaundice appears after 24-72 hours due to immature liver function; resolves by day 10-14." },
-    { text:"Pathological jaundice is distinguished by:", options:["Appearing after 24 hours","Appearing WITHIN the first 24 hours","Mild bilirubin elevation","Resolving without treatment"], answer:1, exp:"Jaundice within first 24 hours is ALWAYS pathological (e.g., hemolytic disease of newborn)." },
-    { text:"Normal neonatal respiratory rate:", options:["12-20 breaths/min","20-30 breaths/min","30-60 breaths/min","60-80 breaths/min"], answer:2, exp:"Normal neonatal RR = 30-60 breaths/min; >60 = tachypnea." },
-    { text:"Vitamin K is given at birth to prevent:", options:["Vitamin A deficiency","Anemia","Hemorrhagic disease of the newborn","Hypoglycemia"], answer:2, exp:"Vitamin K1 IM at birth prevents HDN caused by deficiency of vitamin K-dependent clotting factors." },
-    { text:"The umbilical cord contains:", options:["One artery and one vein","Two arteries and one vein","One artery and two veins","Three veins"], answer:1, exp:"2 arteries (deoxygenated blood to placenta) + 1 vein (oxygenated blood to fetus)." },
-    { text:"Meconium is normally passed within:", options:["1-2 hours","24-48 hours","72 hours","1 week"], answer:1, exp:"First meconium stool within 24-48 hours; delay >48 hours may indicate intestinal obstruction." },
-    { text:"KMC (Kangaroo Mother Care) is PRIMARILY for:", options:["Term healthy infants only","Preterm and low birth weight infants","Jaundiced infants","Post-surgical neonates"], answer:1, exp:"KMC provides warmth, promotes breastfeeding, and reduces mortality in preterm/LBW infants." },
-    { text:"Asymptomatic neonatal hypoglycemia (38 mg/dL) — FIRST intervention:", options:["IV dextrose immediately","Breastfeed immediately","Glucagon","Observe only"], answer:1, exp:"For asymptomatic neonatal hypoglycemia, initiating breastfeeding or oral glucose gel is the first step." },
-    { text:"Moro reflex disappears by:", options:["2 months","4-6 months","9 months","12 months"], answer:1, exp:"Moro (startle) reflex disappears by 4-6 months; persistence suggests neurological abnormality." },
-    { text:"Normal head circumference of full-term newborn:", options:["30-32 cm","33-35 cm","34-36 cm","37-40 cm"], answer:1, exp:"Normal HC at birth = 33-35 cm (average 34 cm); 2-3 cm larger than chest circumference." },
-    { text:"Erythromycin eye ointment prevents:", options:["Staphylococcal conjunctivitis","GBS conjunctivitis","Ophthalmia neonatorum from N. gonorrhoeae","Herpes simplex conjunctivitis"], answer:2, exp:"Prophylactic antibiotic eye ointment prevents gonococcal ophthalmia neonatorum acquired during delivery." },
-    { text:"Low birth weight (LBW) = birth weight below:", options:["1500 g","2000 g","2500 g","3000 g"], answer:2, exp:"WHO defines LBW as <2500 g regardless of gestational age." },
-    { text:"Caput succedaneum is:", options:["Subperiosteal hemorrhage not crossing suture lines","Normal scalp edema crossing suture lines, resolving in 2-3 days","Intracranial hemorrhage","Subgaleal hemorrhage"], answer:1, exp:"Caput succedaneum is normal birth-pressure scalp edema; crosses suture lines; resolves in 2-3 days." },
-    { text:"Surfactant deficiency in premature infants causes:", options:["Meconium aspiration","Respiratory Distress Syndrome (hyaline membrane disease)","Bronchopulmonary dysplasia","Transient tachypnea of newborn"], answer:1, exp:"Surfactant deficiency (<34 weeks) causes RDS/hyaline membrane disease with alveolar collapse." },
-    { text:"Birth immunizations per India's national schedule (within 24 hours):", options:["OPV + DPT","BCG + OPV-0 + Hepatitis B 1","MMR","DPT + Hep B"], answer:1, exp:"At birth: BCG + OPV-0 + Hepatitis B first dose per India's NIS." },
-    { text:"Cephalhematoma differs from caput in that it:", options:["Crosses suture lines","Does NOT cross suture lines (subperiosteal hemorrhage)","Resolves within 24 hours","Requires immediate drainage"], answer:1, exp:"Cephalhematoma is a subperiosteal hemorrhage confined within suture lines; takes weeks to resolve." },
-    { text:"Color of meconium:", options:["Yellow","Green-brown","Tarry greenish-black","White"], answer:2, exp:"Meconium is dark greenish-black, odorless; contains intestinal cells, lanugo, and bile." }
+  // ─────────────────────────────────────────────────────────────
+  // 12. MENTAL HEALTH & PSYCHIATRIC NURSING
+  // ─────────────────────────────────────────────────────────────
+  "Schizophrenia and Psychotic Disorders": [
+    // L1: Foundational Recall
+    { text: "Which symptom of Schizophrenia is classified as a 'POSITIVE' symptom?", options: ["Flat or blunted emotional affect", "Auditory hallucinations and persecutory delusions", "Avolition (lack of motivation)", "Alogia (poverty of speech)"], answer: 1, exp: "Positive symptoms reflect an excess or distortion of normal functions: hallucinations, delusions, and disorganized speech." },
+    { text: "A client states: 'The television news anchor is blinking in a code specifically designed to transmit secret instructions to me.' This exemplifies:", options: ["A somatic delusion", "An Idea of Reference (Delusion of Reference)", "Echolalia", "Thought broadcasting"], answer: 1, exp: "Ideas of reference involve interpreting neutral, coincidental external events as having direct personal significance." },
+    { text: "A client prescribed Clozapine (Clozaril) must undergo mandatory regular laboratory monitoring of which parameter?", options: ["Serum creatinine and BUN", "Complete Blood Count (Absolute Neutrophil Count - ANC) to detect Agranulocytosis", "Serum amylase and lipase", "Coagulation PT/INR profile"], answer: 1, exp: "Clozapine carries a black-box warning for potentially fatal agranulocytosis; regular ANC monitoring is legally mandated." },
+    { text: "What is the primary neurotransmitter abnormality hypothesized in the development of the positive symptoms of Schizophrenia?", options: ["Serotonin deficiency", "Dopamine hyperactivity in the mesolimbic pathway", "GABA hypersecretion", "Acetylcholine destruction"], answer: 1, exp: "The dopamine hypothesis attributes positive psychotic symptoms to excessive dopaminergic transmission in mesolimbic pathways." },
+    { text: "A client diagnosed with catatonic schizophrenia maintains awkward physical limb postures for hours when positioned by the nurse. This sign is:", options: ["Waxy flexibility (Cerea flexibilitas)", "Akathisia", "Tardive dyskinesia", "Echopraxia"], answer: 0, exp: "Waxy flexibility allows a catatonic patient's limbs to be molded into positions that are held indefinitely." },
+    // L2: Base Clinical Practice
+    { text: "When a client with Schizophrenia states: 'I hear FBI agents whispering through the air vents that they are going to kill me,' the most therapeutic response is:", options: ["'You are completely mistaken; there is nobody in the vents.'", "'I do not hear the voices, but I understand that this must be very frightening for you. You are safe here.'", "'Why do you think the FBI cares about you?'", "'I hear them too; let's hide under the bed.'"], answer: 1, exp: "Acknowledge the client's emotional distress and validate their feeling without validating or reinforcing the false hallucination." },
+    { text: "A client taking Haloperidol (Haldol) develops intense subjective motor restlessness, inability to sit still, and paces constantly. The nurse identifies:", options: ["Acute dystonic reaction", "Akathisia (an Extrapyramidal Side Effect)", "Tardive dyskinesia", "Catatonic stupor"], answer: 1, exp: "Akathisia is an EPS characterized by motor restlessness and an inner compulsion to move continuously." },
+    { text: "A client on long-term first-generation antipsychotics displays involuntary rhythmic tongue protrusion, lip smacking, and grimacing. The nurse recognizes:", options: ["Tardive Dyskinesia, which may become permanent if the medication is not modified", "Parkinsonian resting tremor", "Normal age-related facial tics", "Acute allergic reaction"], answer: 0, exp: "Tardive dyskinesia consists of involuntary choreoathetoid movements of face and limbs from prolonged dopamine blockade." },
+    { text: "To manage Extrapyramidal Symptoms (EPS) such as acute muscle rigidity or neck dystonia from antipsychotics, the nurse anticipates administering:", options: ["Additional doses of Haloperidol", "Anticholinergic agents such as Benztropine (Cogentin) or Diphenhydramine", "Selective Serotonin Reuptake Inhibitors (SSRIs)", "Oral Lithium carbonate"], answer: 1, exp: "Centrally-acting anticholinergics (Benztropine, Diphenhydramine) restore the dopamine-acetylcholine balance, resolving acute EPS." },
+    { text: "A client experiencing paranoid persecutory delusions refuses hospital food, claiming it is poisoned. The nurse's best intervention is to:", options: ["Force-feed the client with a nasogastric tube", "Provide factory-sealed prepackaged food items or allow the client to select sealed food themselves", "Taste the food in front of the client to prove it is safe", "Tell the client they will be restrained if they don't eat"], answer: 1, exp: "Commercially sealed or unopened food reduces paranoid suspicion and promotes voluntary nutritional intake." },
+    // L3: Advanced Hard / Prioritization
+    { text: "A client taking Fluphenazine develops sudden high fever (40.5°C), severe 'lead-pipe' muscle rigidity, altered mental status, diaphoresis, and BP 188/104 mmHg. The nurse identifies:", options: ["Serotonin syndrome", "Neuroleptic Malignant Syndrome (NMS), a life-threatening medical emergency", "Anticholinergic toxicity", "Acute catatonic excitation"], answer: 1, exp: "NMS is a fatal idiosyncratic reaction to antipsychotics characterized by severe hyperthermia, rigidity, autonomic instability, and elevated CK." },
+    { text: "In managing Neuroleptic Malignant Syndrome (NMS), the nurse immediately discontinues the antipsychotic and prepares to administer which specific medication?", options: ["Dantrolene (skeletal muscle relaxant) and Bromocriptine (dopamine agonist)", "Benztropine and Haloperidol", "Propranolol and Lithium", "Fluoxetine"], answer: 0, exp: "Dantrolene relieves malignant muscle rigidity while Bromocriptine restores central dopaminergic tone." },
+    { text: "A client reports hearing command auditory hallucinations telling them to 'jump off the hospital balcony right now.' The nurse's PRIORITY action is to:", options: ["Place the client on continuous 1:1 one-to-one visual observation and ensure environment safety", "Encourage the client to listen to loud music through headphones", "Ask the client to sign a 'no-harm' contract and leave them in their room", "Administer vitamins"], answer: 0, exp: "Command hallucinations instructing self-harm carry the highest immediate lethality risk and mandate continuous 1:1 supervision." },
+    { text: "A client taking an MAOI antidepressant (e.g., Tranylcypromine, Phenelzine) consumes aged cheeses, smoked sausages, and red wine. The nurse monitors for which life-threatening crisis?", options: ["Profound orthostatic hypotension and hypothermia", "Hypertensive Crisis (severe headache, BP >220/120 mmHg, risk of intracranial hemorrhage) due to Tyramine accumulation", "Agranulocytosis and sepsis", "Severe hypoglycemia"], answer: 1, exp: "MAO inhibition prevents degradation of dietary tyramine, which displaces massive norepinephrine into the circulation." },
+    { text: "A client taking Sertraline (SSRI) and Tramadol presents with acute tremor, hyperreflexia, bilateral inducible ankle clonus, agitation, and temp 39.1°C. The nurse identifies:", options: ["Neuroleptic Malignant Syndrome", "Serotonin Syndrome", "Lithium toxicity", "Opioid withdrawal"], answer: 1, exp: "Serotonin syndrome features neuromuscular hyperactivity (clonus, hyperreflexia) and autonomic instability from excess serotonergic stimulation." },
+    // L4: Peak Acuity Emergency
+    { text: "A client with alcohol use disorder is admitted to the medical floor. 72 hours after the last drink, the client develops extreme agitation, gross tremors, visual hallucinations of insects crawling on the skin, drenching sweats, BP 198/114 mmHg, and HR 142 bpm. The nurse identifies:", options: ["Mild alcohol hangover", "Delirium Tremens (DTs), a life-threatening medical emergency", "Korsakoff's psychosis", "Schizophrenic relapse"], answer: 1, exp: "Delirium tremens is the most severe manifestation of alcohol withdrawal, with a 5-15% mortality rate if untreated." },
+    { text: "In the emergency management of Delirium Tremens (DTs), the priority pharmacological treatment protocol utilizes:", options: ["High-dose intramuscular Haloperidol alone", "Aggressive intravenous Benzodiazepines (e.g., Diazepam or Lorazepam) titrated to CIWA-Ar scores, and IV Thiamine before glucose", "Oral Disulfiram (Antabuse)", "Naltrexone injection"], answer: 1, exp: "High-dose IV benzodiazepines prevent fatal status epilepticus and autonomic collapse in severe alcohol withdrawal delirium." },
+    { text: "A client with an acute acetaminophen (paracetamol) overdose of 25 grams presents 4 hours post-ingestion. To prevent irreversible fatal acute liver failure, the nurse anticipates stat administration of:", options: ["Naloxone", "N-acetylcysteine (NAC / Mucomyst)", "Flumazenil", "Deferoxamine"], answer: 1, exp: "N-acetylcysteine replenishes hepatic glutathione stores, neutralizing the toxic metabolite NAPQI if given within 8-10 hours." },
+    { text: "A client in the psychiatric emergency unit becomes acutely violent, breaks a glass mirror, and lunges at staff with a jagged shard. De-escalation has failed. The team must:", options: ["Run out of the facility and leave the building unlocked", "Execute a coordinated multi-person physical takedown with dedicated leader, secure the weapon, and administer emergency chemical restraint", "Confront the client alone with a broom", "Offer the client a cup of hot coffee"], answer: 1, exp: "Imminent weaponized violence requires immediate coordinated security team takedown to neutralize deadly force." },
+    { text: "An unconscious client presents with pinpoint pupils (miosis), respiratory rate of 4 breaths/min, and cyanosis following an opioid overdose. The immediate life-saving intervention is:", options: ["Administering IV Flumazenil", "Assisting ventilation with bag-valve-mask 100% O2 and administering IV/IM/Nasal Naloxone (Narcan)", "Administering oral activated charcoal", "Performing emergency hemodialysis"], answer: 1, exp: "The opioid overdose triad: miosis, coma, and severe respiratory depression; immediate Naloxone and ventilation are life-saving." }
   ],
-
-  // ── COMMUNITY HEALTH ─────────────────────────────────────
-  "Epidemiology": [
-    { text:"Incidence rate measures:", options:["Total cases at a given time","New cases in a defined population over a specified period","Proportion of population immune","Deaths per 100,000"], answer:1, exp:"Incidence = rate of NEW case development in a population at risk over a defined time." },
-    { text:"Prevalence rate includes:", options:["New cases only","Both existing and new cases at a point in time","Deaths only","Immune population"], answer:1, exp:"Prevalence = all existing cases (new + old) at a specific point or period in time." },
-    { text:"Strongest level of evidence in EBP:", options:["Case reports","Expert opinion","Randomized controlled trials (Level I)","Cohort studies"], answer:2, exp:"RCTs are Level I evidence — strongest for causation due to randomization." },
-    { text:"Attack rate is used in:", options:["Chronic disease surveillance","Outbreak/epidemic investigation","Cancer registries","Hospital mortality statistics"], answer:1, exp:"Attack rate = (ill/exposed) × 100; used in epidemic investigations." },
-    { text:"Relative risk (RR) indicates:", options:["Absolute disease risk","Strength of association between exposure and disease","Prevalence difference","Mortality rate"], answer:1, exp:"Relative risk compares disease occurrence in exposed vs unexposed groups; RR>1 = positive association." },
-    { text:"Case-control study design:", options:["Random exposure assignment","Start with disease status, look back at exposure history","Follow exposure groups forward","Cross-sectional survey"], answer:1, exp:"Case-control: start with cases (diseased) vs controls (non-diseased), then look back at exposures." },
-    { text:"Herd immunity threshold:", options:["All individuals vaccinated","Sufficient proportion immune to interrupt transmission","50% of population immune","Only high-risk groups vaccinated"], answer:1, exp:"Herd immunity protects even unvaccinated individuals when a critical proportion is immune." },
-    { text:"Epidemiological triad consists of:", options:["Agent, host, environment","Prevention, treatment, rehabilitation","Primary, secondary, tertiary prevention","Community, hospital, family"], answer:0, exp:"The epidemiological triad: Agent (pathogen) + Host (susceptible) + Environment." },
-    { text:"Sensitivity of a screening test:", options:["Ability to correctly identify true negatives","Ability to correctly identify true positives","Proportion of correct test results","Likelihood ratio of positive test"], answer:1, exp:"Sensitivity = TP/(TP+FN) — correctly identifies ALL truly diseased individuals." },
-    { text:"Specificity of a diagnostic test:", options:["True positive rate","True negative rate — correctly identifies non-diseased","Positive predictive value","Negative predictive value"], answer:1, exp:"Specificity = TN/(TN+FP) — correctly identifies all truly non-diseased individuals." },
-    { text:"R0 (basic reproduction number) represents:", options:["Deaths from one case","Average secondary cases from one infectious case in fully susceptible population","Attack rate","Vaccine effectiveness"], answer:1, exp:"R0 = average new infections from one case in a fully susceptible population; R0>1 = epidemic." },
-    { text:"Secondary prevention involves:", options:["Primordial prevention","Removing risk factors before disease develops","Early detection through screening","Rehabilitation after disease"], answer:2, exp:"Secondary prevention = early detection at pre-symptomatic stage through screening." },
-    { text:"The 'iceberg phenomenon' in epidemiology refers to:", options:["Disease in cold climates","Vast majority of disease cases being subclinical and undetected","Declining disease rates","Seasonal variation"], answer:1, exp:"The iceberg: clinical cases are the visible tip; the larger hidden portion = subclinical infections." },
-    { text:"Zoonosis refers to:", options:["Foodborne disease","Disease transmissible between vertebrate animals and humans","Hospital-acquired infection","Vector-transmitted diseases only"], answer:1, exp:"Zoonoses naturally transmit from vertebrate animals to humans (rabies, brucellosis, leptospirosis)." },
-    { text:"Infant Mortality Rate (IMR) =", options:["Deaths <1 year / Live births × 1000","Deaths <5 years / Live births × 1000","Total deaths / Population × 1000","Neonatal deaths / Live births × 1000"], answer:0, exp:"IMR = (deaths under 1 year / live births) × 1000; key healthcare quality indicator." },
-    { text:"Mantoux test detects:", options:["Active tuberculosis only","Previous exposure/infection with M. tuberculosis","BCG-conferred immunity only","Drug resistance in TB"], answer:1, exp:"Mantoux detects cell-mediated immunity to TB antigens, indicating past exposure or infection." },
-    { text:"Mode of transmission for cholera:", options:["Airborne","Droplet","Fecal-oral (contaminated water)","Vector-borne"], answer:2, exp:"Cholera (V. cholerae) is transmitted via fecal-oral route through contaminated water." },
-    { text:"Point-source epidemic curve shows:", options:["Prolonged curve over months","Sharp peak within one incubation period of common exposure","Multiple waves over years","Gradual rise without peak"], answer:1, exp:"Point-source outbreak = sharp, bell-shaped curve peaking within one incubation period." },
-    { text:"Type I error in research:", options:["Failing to reject a false null hypothesis","Rejecting a true null hypothesis (false positive)","Incorrect data collection","Sampling error"], answer:1, exp:"Type I error (alpha error) = false positive; rejecting a null hypothesis that is actually true." },
-    { text:"Relative risk is calculated as:", options:["(a/b) / (c/d)","Incidence in exposed / Incidence in unexposed","(a×d) / (b×c)","Prevalence in exposed / Prevalence in unexposed"], answer:1, exp:"RR = [a/(a+b)] / [c/(c+d)]; incidence in exposed divided by incidence in unexposed." }
-  ],
-
-  // ── NURSING RESEARCH ────────────────────────────────────
-  "Biostatistics": [
-    { text:"Measure of central tendency MOST affected by outliers:", options:["Mode","Median","Mean","Range"], answer:2, exp:"The mean uses all values; extreme outliers pull it away from the center." },
-    { text:"Standard deviation measures:", options:["Average value in dataset","Spread of data around the mean","Middle value","Most frequent value"], answer:1, exp:"SD quantifies variability/dispersion of data points around the mean." },
-    { text:"p-value of 0.03 means:", options:["3% chance hypothesis is wrong","3% probability of results as extreme as observed if null hypothesis is true","97% confidence","Effect size is large"], answer:1, exp:"p-value = probability of obtaining results at least as extreme by chance if H0 is true." },
-    { text:"Type I error is:", options:["Failing to reject a false null hypothesis","Rejecting a true null hypothesis (false positive)","Incorrect data collection","Sampling error"], answer:1, exp:"Type I (alpha error) = false positive; controlled by significance level (α)." },
-    { text:"Normal distribution is:", options:["Skewed right","Skewed left","Symmetrical bell-shaped","Bimodal"], answer:2, exp:"Normal (Gaussian) distribution is perfectly symmetrical; mean = median = mode." },
-    { text:"Compare means of two independent groups using:", options:["Chi-square","Pearson correlation","Independent samples t-test","ANOVA"], answer:2, exp:"Independent samples t-test compares means of two unrelated groups." },
-    { text:"Chi-square test is used for:", options:["Comparing two means","Analyzing relationship between two categorical variables","Measuring correlation between continuous variables","Comparing multiple means"], answer:1, exp:"Chi-square analyzes associations between categorical variables in a contingency table." },
-    { text:"Correlation coefficient r = -0.85 indicates:", options:["Weak positive correlation","Strong negative correlation","No correlation","Perfect positive correlation"], answer:1, exp:"r = -0.85 = strong negative (inverse) correlation." },
-    { text:"Statistical power (1-β) is:", options:["Probability of Type I error","Probability of Type II error","Probability of correctly rejecting a false null hypothesis","Sample size / effect size"], answer:2, exp:"Power = probability of detecting a true effect when it exists; influenced by sample size and effect size." },
-    { text:"Simple random sampling ensures:", options:["Representative convenience sample","Each population member has equal probability of selection","Quota proportionality","Purposive selection"], answer:1, exp:"Simple random sampling gives every member an equal known probability of selection." },
-    { text:"Variance is defined as:", options:["Square root of standard deviation","SD squared (SD²)","Mean of squared deviations from median","Sum of deviations from mean"], answer:1, exp:"Variance = SD²; measures average squared differences from the mean." },
-    { text:"95% confidence interval means:", options:["95% of sample values fall within interval","If repeated 100 times, ~95 CIs would contain true parameter","Null rejected 95% of time","Results are 95% accurate"], answer:1, exp:"95% CI: if study repeated 100 times, ~95 of constructed CIs would contain the true population parameter." },
-    { text:"ANOVA is used to:", options:["Compare two independent means","Analyze categorical data","Compare three or more group means","Measure correlation"], answer:2, exp:"ANOVA tests significant differences between means of THREE or more groups." },
-    { text:"Median is preferred over mean when data is:", options:["Normally distributed","Skewed or contains outliers","From a large sample","From a controlled experiment"], answer:1, exp:"Median is resistant to outliers and skewed distributions." },
-    { text:"In a negatively skewed distribution:", options:["Mean > Median > Mode","Mode > Median > Mean","Mean = Median = Mode","Median > Mean > Mode"], answer:1, exp:"Left (negative) skew: tail on left; Mode > Median > Mean (mean pulled toward tail)." },
-    { text:"Lowering the diagnostic cutoff point:", options:["Increases both sensitivity and specificity","Increases sensitivity but decreases specificity","Decreases both","Increases specificity, decreases sensitivity"], answer:1, exp:"Lower cutoff: more true positives (↑sensitivity) but more false positives (↓specificity)." },
-    { text:"Null hypothesis states:", options:["Significant relationship exists between variables","No significant difference or relationship between variables","Alternative hypothesis is false","Results are due to chance"], answer:1, exp:"H0 assumes no significant difference; researcher attempts to disprove it." },
-    { text:"Interval scale has:", options:["No order","Order but unequal intervals","Equal intervals but no true zero","True zero point"], answer:2, exp:"Interval scale (e.g., Celsius) has equal intervals but no true zero; ratio scale has true zero." },
-    { text:"Regression analysis is used to:", options:["Describe categorical distribution","Predict dependent variable from independent variable(s)","Compare three means","Measure internal consistency"], answer:1, exp:"Regression establishes relationships to predict a dependent variable from independent variables." },
-    { text:"Cronbach's alpha measures:", options:["Test validity","Inter-rater reliability","Internal consistency of a measurement tool","Criterion validity"], answer:2, exp:"Cronbach's alpha = internal consistency; α ≥0.7 is considered acceptable." }
-  ]
+  ...require('./extraBanks')
 };
 
-// ──────────────────────────────────────────────────────────
-// All subjects and their units
-// ──────────────────────────────────────────────────────────
-const CORE_SUBJECTS = [
-  { name: "Nursing Foundations (Fundamentals of Nursing)", units: ["Introduction to Nursing","Nursing Theories and Process","Hospital Admission, Transfer & Discharge","Communication and Interpersonal Relationships","Infection Prevention and Control","Safety, Comfort and Hygiene","Vital Signs Assessment","Nutrition and Elimination","Mobility and Positioning","Medication Administration","Specimen Collection and Diagnostic Procedures","Wound Care and Dressings","Oxygen Therapy and Airway Management","First Aid and Emergency Care","Documentation and Record Keeping","Biomedical Waste Management","Ethics and Legal Aspects of Nursing","Patient Education and Health Promotion","Gerontological and Palliative Care","Professional Trends and Nursing Management"] },
-  { name: "Anatomy & Physiology", units: ["General Anatomy & Physiology","Skeletal System","Muscular System","Cardiovascular System","Respiratory System","Digestive System","Nervous System","Endocrine System","Reproductive System"] },
-  { name: "Microbiology", units: ["Introduction to Microbiology","Infection Control","Pathogenic Organisms","Immunity"] },
-  { name: "Pharmacology", units: ["Introduction to Pharmacology","Pharmacokinetics","Pharmacodynamics","Drug Administration and Dosage Calculations","Autonomic Nervous System Drugs","Central Nervous System Drugs","Cardiovascular Drugs","Respiratory System Drugs","Gastrointestinal Drugs","Endocrine System Drugs","Chemotherapy and Antimicrobials","Analgesics and Anti-inflammatory Drugs","Hematological Drugs","Renal System Drugs","Immunological Drugs and Vaccines","Emergency Drugs","Toxicology and Antidotes","Adverse Drug Reactions and Drug Interactions","Rational Drug Therapy","Nurse's Responsibilities in Drug Administration"] },
-  { name: "Nutrition & Dietetics", units: ["Basic Nutrition","Therapeutic Diet","Nutritional Assessment","Vitamins and Minerals"] },
-  { name: "Psychology", units: ["Introduction to Psychology","Cognitive Processes","Motivation and Emotion","Personality","Developmental Psychology"] },
-  { name: "Sociology", units: ["Introduction to Sociology","Social Structure","Family and Marriage","Social Problems","Health Sociology"] },
-  { name: "Medical-Surgical Nursing", units: ["Introduction to Medical-Surgical Nursing","Nursing Assessment","Fluid, Electrolyte & Acid–Base Balance","Perioperative Nursing","Emergency & Trauma Nursing","Pain & Palliative Care","Infection Control","Oncology Nursing","Respiratory Disorders","Cardiovascular Disorders","Hematological Disorders","Neurological Disorders","Musculoskeletal Disorders","Gastrointestinal Disorders","Hepatobiliary & Pancreatic Disorders","Endocrine Disorders","Renal & Urinary Disorders","Reproductive Disorders","Skin Disorders","Immune Disorders","Communicable Diseases","Critical Care Nursing","Geriatric Nursing","Burns & Rehabilitation","Organ Transplantation"] },
-  { name: "Community Health Nursing", units: ["Concept of Health and Disease","Epidemiology","Community Health Administration","National Health Programs","Family Health Services"] },
-  { name: "Child Health (Pediatric) Nursing", units: ["Introduction to Pediatric Nursing","Growth and Development","Newborn Care","Nutrition and Infant Feeding","Pediatric Assessment","Common Childhood Disorders","Respiratory Disorders","Cardiovascular Disorders","Gastrointestinal Disorders","Neurological Disorders","Hematological Disorders","Endocrine Disorders","Renal and Urinary Disorders","Musculoskeletal Disorders","Communicable Diseases","Immunization","Pediatric Emergencies","Pediatric Oncology","Pediatric Intensive Care (PICU/NICU)","Child Mental Health","Pediatric Pharmacology","Family-Centered Care","Pediatric Procedures and Nursing Care","Rehabilitation and Palliative Care"] },
-  { name: "Mental Health (Psychiatric) Nursing", units: ["Introduction to Psychiatric Nursing","Mental Health and Mental Illness","Psychiatric Assessment","Therapeutic Communication","Personality Development and Behavior","Stress and Coping Disorders","Anxiety Disorders","Mood Disorders","Schizophrenia and Psychotic Disorders","Personality Disorders","Substance Use Disorders","Organic Mental Disorders","Child and Adolescent Psychiatry","Geriatric Psychiatry","Psychiatric Emergencies","Psychopharmacology","Psychotherapies","Community Mental Health Nursing","Legal and Ethical Aspects","Rehabilitation in Psychiatry"] },
-  { name: "Obstetrics & Gynecological Nursing", units: ["Introduction to Obstetric & Gynecological Nursing","Anatomy and Physiology of the Reproductive System","Pregnancy (Antenatal Care)","Normal Labour and Delivery","Postnatal Care (Puerperium)","Newborn Care","High-Risk Pregnancy","Obstetric Emergencies","Family Planning and Contraception","Infertility","Gynecological Disorders","Reproductive Tract Infections and STIs","Menstrual Disorders","Gynecological Surgeries","Menopause and Climacteric Care","Drugs Used in Obstetrics and Gynecology","National Maternal and Child Health Programmes","Legal and Ethical Aspects in Obstetric & Gynecological Nursing"] },
-  { name: "Nursing Research & Statistics", units: ["Introduction to Nursing Research","Research Process","Research Problem and Objectives","Literature Review","Research Design","Sampling Techniques","Data Collection Methods","Research Tools and Instrumentation","Data Analysis and Statistics","Interpretation of Results","Research Report Writing","Evidence-Based Nursing Practice","Ethics in Nursing Research","Biostatistics","Computer Applications in Research"] },
-  { name: "Nursing Education & Nursing Administration & Management", units: ["Principles of Education","Curriculum Development","Management Principles","Quality Assurance"] },
-  { name: "Nursing Ethics and Legal Aspects", units: ["Ethical Principles in Nursing","Legal Responsibilities","Patient Rights","Malpractice and Negligence"] },
-  { name: "Emergency Nursing", units: ["Triage Systems","Basic Life Support","Advanced Cardiac Life Support","Trauma Management"] },
-  { name: "Infection Prevention and Biomedical Waste Management", units: ["Standard Precautions","Isolation Protocols","BMW Rules and Categories","Spill Management"] }
-];
+// Map subjects and unit names to appropriate authentic question banks
+const resolveBankKey = (unit = '', subject = '') => {
+  if (BANKS[unit]) return unit;
+  if (BANKS[subject]) return subject;
 
-// ──────────────────────────────────────────────────────────
-// General fallback bank — 40 unique hard questions
-// ──────────────────────────────────────────────────────────
-const GENERAL_BANK = [
-  { text:"ARDS assessment — MOST indicative finding of worsening hypoxemia:", options:["Increased PaO2","Refractory hypoxemia despite oxygen therapy","Decreased RR","Metabolic alkalosis"], answer:1, exp:"ARDS = refractory hypoxemia not improving with high O2 concentrations." },
-  { text:"Electrolyte imbalance increasing digoxin toxicity:", options:["Hypernatremia","Hypokalemia","Hypercalcemia","Hypomagnesemia"], answer:1, exp:"Hypokalemia enhances digoxin binding to Na+/K+ ATPase — increases toxicity." },
-  { text:"First drug given for VF after defibrillation in code blue:", options:["Amiodarone","Atropine","Epinephrine 1 mg IV","Lidocaine"], answer:2, exp:"Epinephrine 1 mg IV/IO every 3-5 minutes is first pharmacological agent in VF/pulseless VT." },
-  { text:"Patient with increased ICP — appropriate position:", options:["Trendelenburg","Supine flat","HOB elevated 30°","Prone"], answer:2, exp:"30° HOB elevation promotes venous drainage and reduces ICP." },
-  { text:"K+ 6.5 mEq/L with ECG changes — FIRST drug:", options:["Kayexalate","Furosemide","Insulin + D50W","Calcium gluconate"], answer:3, exp:"Calcium gluconate stabilizes cardiac membranes immediately before lowering K+." },
-  { text:"Glasgow Coma Scale PRIMARY purpose:", options:["Nutritional assessment","Evaluate level of consciousness","Measure pain severity","Determine respiratory distress"], answer:1, exp:"GCS objectively evaluates consciousness: eye opening + verbal + motor response." },
-  { text:"CT before tPA in stroke rules out:", options:["Ischemic stroke","Hemorrhagic stroke","TIA","Brain tumor"], answer:1, exp:"tPA is contraindicated in hemorrhagic stroke; CT rules out bleed first." },
-  { text:"FIRST priority intervention in DKA:", options:["Subcutaneous insulin","IV fluid resuscitation with NS","Potassium supplements","Sodium bicarbonate"], answer:1, exp:"Severe dehydration in DKA; IV NS resuscitation is the absolute first priority." },
-  { text:"Beck's triad of cardiac tamponade:", options:["Hypertension, bradycardia, tachypnea","Hypotension, JVD, muffled heart sounds","Fever, chest pain, pericardial rub","Dyspnea, cyanosis, stridor"], answer:1, exp:"Beck's triad: hypotension + JVD + muffled heart sounds." },
-  { text:"First-line for severe acute asthma exacerbation:", options:["Inhaled corticosteroids","Long-acting beta-agonists","Short-acting beta-agonists (salbutamol)","Leukotriene modifiers"], answer:2, exp:"SABAs provide rapid bronchodilation — rescue medication of choice." },
-  { text:"Most common cause of acute hemolytic transfusion reaction:", options:["Allergy to plasma proteins","ABO incompatibility","Bacterial contamination","Volume overload"], answer:1, exp:"ABO incompatibility from clerical errors causes fatal hemolytic reactions." },
-  { text:"Earliest indicator of hypovolemic shock:", options:["Bradycardia","Tachycardia","Hypotension","Decreased RR"], answer:1, exp:"Tachycardia is the earliest compensatory mechanism in hypovolemic shock." },
-  { text:"Procedure to relieve massive ascites:", options:["Thoracentesis","Paracentesis","Pericardiocentesis","Lumbar puncture"], answer:1, exp:"Paracentesis drains excess peritoneal fluid (ascites)." },
-  { text:"Heparin therapeutic range:", options:["aPTT 1.5-2.5× control","INR 2.0-3.0","Platelets >150,000","WBC 5,000-10,000"], answer:0, exp:"Heparin monitored via aPTT; therapeutic = 1.5-2.5× normal." },
-  { text:"Suspected meningitis isolation precaution:", options:["Contact","Airborne","Droplet","Standard only"], answer:2, exp:"Bacterial meningitis spreads via large respiratory droplets — droplet precautions." },
-  { text:"Trousseau's sign indicates:", options:["Facial twitching on cheek tap","Carpal spasm with BP cuff inflation","Pain on foot dorsiflexion","Hip flexion with neck flexion"], answer:1, exp:"Trousseau's sign = hypocalcemia." },
-  { text:"Most specific MI biomarker:", options:["Myoglobin","CK-MB","Troponin I","LDH"], answer:2, exp:"Troponin I is highly cardiac-specific — gold standard for MI." },
-  { text:"High pressure ventilator alarm caused by:", options:["Disconnection","ETT cuff leak","Biting tube or secretion obstruction","Power failure"], answer:2, exp:"High pressure = increased airway resistance from biting, secretions, or kinking." },
-  { text:"Common electrolyte imbalance in ESRD:", options:["Hypophosphatemia","Hyperphosphatemia","Hypokalemia","Hypernatremia"], answer:1, exp:"Failing kidneys cannot excrete phosphate, causing hyperphosphatemia." },
-  { text:"Priority during grand mal seizure:", options:["Insert tongue blade","Restrain limbs","Ensure airway and protect head","Give oral anticonvulsants"], answer:2, exp:"Patient safety and maintaining airway are priorities. Never insert anything into mouth." },
-  { text:"Cullen's sign (periumbilical bruising) suggests:", options:["Appendicitis","Retroperitoneal bleeding (acute pancreatitis)","Bowel obstruction","Hernia"], answer:1, exp:"Cullen's sign = retroperitoneal hemorrhage, seen in acute hemorrhagic pancreatitis." },
-  { text:"Urine output 20 mL/hr for 3 hours — PRIORITY:", options:["Increase IV rate per standing order","Reassess in 1 hour","Notify the physician — oliguria","Document and continue monitoring"], answer:2, exp:"<0.5 mL/kg/hr = oliguria; requires immediate physician notification." },
-  { text:"Phantom limb pain BEST managed with:", options:["Stronger opioids","Mirror therapy and gabapentin","Heat to stump","Reassurance only"], answer:1, exp:"Phantom limb pain is neuropathic; mirror therapy + gabapentin/pregabalin are evidence-based." },
-  { text:"Blood product for isolated platelet deficiency with bleeding:", options:["Packed RBCs","Fresh frozen plasma","Platelet concentrate","Cryoprecipitate"], answer:2, exp:"Platelet concentrate is transfused for thrombocytopenia with active bleeding." },
-  { text:"Braden Scale assesses risk of:", options:["Falls","Pressure ulcers","Infection","Malnutrition"], answer:1, exp:"Braden Scale (six subscales) assesses pressure ulcer risk." },
-  { text:"Post-thyroidectomy tingling and muscle cramps — FIRST action:", options:["Check airway","Administer calcium gluconate","Call physician","Apply warm compress to neck"], answer:1, exp:"Post-thyroidectomy hypocalcemia = administer calcium gluconate immediately." },
-  { text:"Normal cerebral perfusion pressure (CPP):", options:["40-50 mmHg","60-100 mmHg","100-120 mmHg","20-40 mmHg"], answer:1, exp:"CPP = MAP − ICP; normal 60-100 mmHg. Below 60 mmHg risks cerebral ischemia." },
-  { text:"Signs of hypoglycemia do NOT include:", options:["Diaphoresis","Tachycardia","Polydipsia","Shakiness and confusion"], answer:2, exp:"Polydipsia = sign of hyperglycemia. Hypoglycemia: tremor, tachycardia, diaphoresis, confusion." },
-  { text:"Insulin with NO peak providing basal coverage:", options:["Regular insulin","NPH insulin","Lispro","Glargine (Lantus)"], answer:3, exp:"Glargine is a long-acting basal insulin with no pronounced peak — 24-hour coverage." },
-  { text:"Hypothyroidism most commonly presents with:", options:["Heat intolerance and weight loss","Cold intolerance, weight gain, fatigue, bradycardia","Exophthalmos and tremor","Diarrhea and palpitations"], answer:1, exp:"Hypothyroidism = slowed metabolism: cold intolerance, weight gain, fatigue, bradycardia." },
-  { text:"Cushing's triad indicates:", options:["Hypotension, tachycardia, tachypnea","Hypertension, bradycardia, irregular respirations","Fever, seizures, papilledema","Tachycardia, diaphoresis, hypertension"], answer:1, exp:"Cushing's triad = severely elevated ICP: hypertension + bradycardia + irregular respirations." },
-  { text:"Mechanical ventilator suctioning should be done:", options:["Every 2 hours on schedule","Based on clinical indications (audible secretions, SpO2 drop)","Before every position change","When patient requests"], answer:1, exp:"Suctioning based on clinical assessment, not fixed schedule — prevents unnecessary hypoxia." },
-  { text:"Most concerning finding after lumbar puncture:", options:["Post-procedure headache","Mild back soreness","New lower extremity weakness or bowel/bladder changes","Headache relieved by lying flat"], answer:2, exp:"New neurological deficits post-LP suggest epidural hematoma — neurosurgical emergency." },
-  { text:"Appropriate position during enteral tube feeding:", options:["Supine","Trendelenburg","30-45° head elevation","Right lateral decubitus"], answer:2, exp:"30-45° HOB elevation during and 30 minutes post-feeding reduces aspiration risk." },
-  { text:"Bulging anterior fontanelle in an infant indicates:", options:["Dehydration","Increased intracranial pressure","Normal variation","Anemia"], answer:1, exp:"Bulging fontanelle = increased ICP (meningitis, hydrocephalus). Sunken = dehydration." },
-  { text:"Nurse's primary role in informed consent:", options:["Obtaining signature","Witnessing signature and ensuring patient understands","Explaining procedure instead of physician","Refusing if patient refuses"], answer:1, exp:"Nurses witness consent and verify understanding; physician is responsible for explanation." },
-  { text:"Acute angle-closure glaucoma — priority medication:", options:["Timolol only","Pilocarpine + IV acetazolamide","Corticosteroid drops","Artificial tears"], answer:1, exp:"Acute angle-closure: pilocarpine (miotics) + carbonic anhydrase inhibitor reduce IOP rapidly." },
-  { text:"Warfarin anticoagulant effect reversed by:", options:["Protamine sulfate","Vitamin K + FFP","Desmopressin","Tranexamic acid"], answer:1, exp:"Vitamin K (delayed) + FFP (immediate factor replacement) reverse warfarin in active bleeding." },
-  { text:"Addisonian crisis is triggered by:", options:["Overeating","Physiological stress (illness, surgery) in Addison's disease","Excessive fluid intake","Sunlight exposure"], answer:1, exp:"Physiological stress triggers life-threatening cortisol/aldosterone deficiency in Addison's disease." },
-  { text:"New lower extremity asymmetric swelling after PICC line insertion suggests:", options:["Normal post-procedure edema","Upper extremity DVT — urgent assessment required","Allergic reaction to PICC material","Lymphedema"], answer:1, exp:"Asymmetric arm swelling after PICC may indicate upper extremity DVT — serious complication." }
-];
+  const target = `${subject} ${unit}`.toLowerCase();
 
-// ──────────────────────────────────────────────────────────
-// Question generator
-// ──────────────────────────────────────────────────────────
-const generateQuestions = (subject, unit) => {
-  const specificBank = BANKS[unit] || BANKS[subject];
-  const combined = specificBank ? [...specificBank, ...GENERAL_BANK] : [...GENERAL_BANK];
-
-  // Fisher-Yates shuffle
-  for (let i = combined.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [combined[i], combined[j]] = [combined[j], combined[i]];
+  // 1. Emergency, Trauma & Critical Care Resuscitation
+  if (target.includes('emergency') || target.includes('trauma') || target.includes('triage') || target.includes('cpr') || target.includes('resuscitation') || target.includes('disaster') || target.includes('first aid') || target.includes('critical care') || target.includes('shock') || target.includes('airway management')) {
+    return 'Emergency & Critical Care Nursing';
   }
 
-  const questions = [];
-  for (let i = 0; i < 20; i++) {
-    const q = combined[i % combined.length];
-    questions.push({
+  // 2. Community Health, Epidemiology & Public Health
+  if (target.includes('community') || target.includes('epidemiol') || target.includes('public health') || target.includes('cold chain') || target.includes('sanitation') || target.includes('national health') || target.includes('health program') || target.includes('family health') || target.includes('water purification')) {
+    return 'Community Health Nursing';
+  }
+
+  // 3. Nursing Research, Statistics & Evidence-Based Practice
+  if (target.includes('research') || target.includes('statistic') || target.includes('biostat') || target.includes('sampling') || target.includes('literature review') || target.includes('evidence-based') || target.includes('data collection') || target.includes('instrumentation') || target.includes('hypothesis') || target.includes('computer applications in research')) {
+    return 'Nursing Research & Statistics';
+  }
+
+  // 4. Nursing Education, Administration & Management
+  if (target.includes('education') || target.includes('curriculum') || target.includes('administration') || target.includes('management') || target.includes('leadership') || target.includes('staffing') || target.includes('educational principles') || target.includes('professional trends') || target.includes('nursing audit')) {
+    return 'Nursing Education & Management';
+  }
+
+  // 5. Nursing Ethics, Legal Aspects & Malpractice
+  if (target.includes('ethics') || target.includes('legal') || target.includes('malpractice') || target.includes('consent') || target.includes('negligence') || target.includes('liability') || target.includes('advance directive') || target.includes('professional boundaries') || target.includes('code of ethics') || target.includes('patient rights')) {
+    return 'Nursing Ethics & Legal Aspects';
+  }
+
+  // 6. Anatomy & Physiology (Systems, Bones, Muscles)
+  if (target.includes('anatomy') || target.includes('physiolog') || target.includes('skelet') || target.includes('muscul') || target.includes('digestive') || target.includes('bone') || target.includes('joint')) {
+    return 'Anatomy & Physiology';
+  }
+
+  // 7. Medication Administration & Pharmacology
+  if (target.includes('medication') || target.includes('drug') || target.includes('pharmacolog') || target.includes('dose') || target.includes('inject') || target.includes('infusion') || target.includes('antidote') || target.includes('toxicolog') || target.includes('antibiotic') || target.includes('chemotherap') || target.includes('analgesic') || target.includes('pharmacokinetics') || target.includes('pharmacodynamics')) {
+    return 'Medication Administration';
+  }
+
+  // 8. Infection Prevention, Control & Biomedical Waste
+  if (target.includes('infect') || target.includes('aseps') || target.includes('sterile') || target.includes('ppe') || target.includes('biomedical') || target.includes('waste') || target.includes('isolation') || target.includes('hygiene') || target.includes('decontaminat') || target.includes('steriliz') || target.includes('wound care') || target.includes('dressing')) {
+    return 'Infection Prevention and Control';
+  }
+
+  // 9. Basic Nutrition, Dietetics & Elimination
+  if (target.includes('nutrition') || target.includes('diet') || target.includes('vitamin') || target.includes('mineral') || target.includes('food') || target.includes('feeding') || target.includes('tpn') || target.includes('caloric') || target.includes('elimination') || target.includes('metabol')) {
+    return 'Basic Nutrition';
+  }
+
+  // 10. Microbiology & Immunology & Pathogens
+  if (target.includes('microbiol') || target.includes('pathogen') || target.includes('immunit') || target.includes('bacteria') || target.includes('virus') || target.includes('fungus') || target.includes('culture') || target.includes('stain') || target.includes('vaccin') || target.includes('antibody')) {
+    return 'Introduction to Microbiology';
+  }
+
+  // 11. Psychology & Sociology & Behavioral Sciences
+  if (target.includes('psycholog') || target.includes('cognitive') || target.includes('sociolog') || target.includes('social') || target.includes('family') || target.includes('communicat') || target.includes('interpersonal') || target.includes('motivation') || target.includes('emotion') || target.includes('counseling') || target.includes('developmental psych') || target.includes('stress') || target.includes('coping')) {
+    return 'Introduction to Psychology';
+  }
+
+  // 12. Neurological Disorders & CNS & Neurovascular
+  if (target.includes('neuro') || target.includes('brain') || target.includes('cns') || target.includes('stroke') || target.includes('seizure') || target.includes('spinal') || target.includes('gcs') || target.includes('coma') || target.includes('cranial') || target.includes('myasthenia') || target.includes('parkinson') || target.includes('head trauma') || target.includes('unconscious')) {
+    return 'Neurological Disorders';
+  }
+
+  // 13. Endocrine Disorders & Diabetes
+  if (target.includes('endocrin') || target.includes('diabet') || target.includes('thyroid') || target.includes('adrenal') || target.includes('cushing') || target.includes('addison') || target.includes('insulin') || target.includes('pancreat')) {
+    return 'Endocrine Disorders';
+  }
+
+  // 14. Pediatrics & Child Health & Growth
+  if (target.includes('pediatric') || target.includes('child') || target.includes('growth') || target.includes('toddler') || target.includes('infant') || target.includes('newborn') || target.includes('neonat') || target.includes('development') || target.includes('immuniz') || target.includes('picu') || target.includes('congenital') || target.includes('croup') || target.includes('tetralogy')) {
+    return 'Growth and Development';
+  }
+
+  // 15. Obstetrics & Gynecological & Labour & Pregnancy
+  if (target.includes('labour') || target.includes('labor') || target.includes('delivery') || target.includes('obstetric') || target.includes('pregnan') || target.includes('maternal') || target.includes('gynec') || target.includes('antenatal') || target.includes('postnatal') || target.includes('puerperium') || target.includes('preeclampsia') || target.includes('contraception') || target.includes('infertility') || target.includes('reproductive')) {
+    return 'Normal Labour and Delivery';
+  }
+
+  // 16. Psychiatry & Mental Health & Schizophrenia
+  if (target.includes('schiz') || target.includes('psychiat') || target.includes('mental health') || target.includes('hallucinat') || target.includes('delusion') || target.includes('bipolar') || target.includes('depress') || target.includes('suicide') || target.includes('substance') || target.includes('anxiety') || target.includes('mood') || target.includes('phobia') || target.includes('addiction')) {
+    return 'Schizophrenia and Psychotic Disorders';
+  }
+
+  // 17. Vital Signs Assessment & Cardiovascular / Hemodynamics
+  if (target.includes('vital') || target.includes('temperature') || target.includes('pulse') || target.includes('blood pressure') || target.includes('cardio') || target.includes('heart') || target.includes('circulation') || target.includes('hemodynamic') || target.includes('vascular')) {
+    return 'Vital Signs Assessment';
+  }
+
+  // 18. Medical-Surgical Nursing (Systemic Clinical Units)
+  if (target.includes('med-surg') || target.includes('medical-surgical') || target.includes('surgical') || target.includes('perioperative') || target.includes('oncology') || target.includes('respiratory') || target.includes('hematolog') || target.includes('gastro') || target.includes('hepatobiliary') || target.includes('renal') || target.includes('urinary') || target.includes('skin') || target.includes('integumentary') || target.includes('burns') || target.includes('transplant') || target.includes('fluid') || target.includes('electrolyte') || target.includes('acid') || target.includes('pain') || target.includes('palliative') || target.includes('communicable') || target.includes('immune')) {
+    return 'Medical-Surgical Nursing';
+  }
+
+  return 'Introduction to Nursing';
+};
+
+const generateQuestionsForUnit = (subject, unit) => {
+  const bankKey = resolveBankKey(unit, subject);
+  const sourceBank = BANKS[bankKey] || BANKS['Introduction to Nursing'];
+
+  return sourceBank.slice(0, 20).map((q, idx) => {
+    const diffLevel = idx < 5 ? 1 : idx < 10 ? 2 : idx < 15 ? 3 : 4;
+    const diffName = diffLevel === 1 ? 'Level 1: Foundational Recall' 
+                   : diffLevel === 2 ? 'Level 2: Base Clinical' 
+                   : diffLevel === 3 ? 'Level 3: Advanced Hard' 
+                   : 'Level 4: Peak Acuity';
+
+    return {
       questionText: q.text,
       options: [...q.options],
       correctAnswer: q.answer,
       explanation: q.exp,
-      topic: unit
-    });
-  }
-  return questions;
+      topic: unit,
+      difficultyLevel: diffLevel,
+      difficultyName: diffName
+    };
+  });
 };
 
-// ──────────────────────────────────────────────────────────
-// Main seeding function
-// ──────────────────────────────────────────────────────────
 const seedDatabase = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log('✅ Connected to MongoDB');
+    const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb://localhost:27017/nursing_training';
+    if (mongoose.connection.readyState === 0) {
+      await mongoose.connect(mongoUri);
+      console.log('✅ Connected to MongoDB');
+    }
 
-    console.log('🗑️  Deleting existing practice tests...');
-    await Test.deleteMany({ examType: 'nursing_officer', title: { $regex: /Practice Test/ } });
-    console.log('✅ Existing tests deleted.');
+    console.log('🗑️  Deleting all old generic practice tests...');
+    await Test.deleteMany({ title: { $regex: /Practice Test/i } });
 
-    const testsToInsert = [];
+    const CORE_SUBJECTS = [
+      { 
+        name: "Nursing Foundations (Fundamentals of Nursing)",
+        units: [
+          "Introduction to Nursing", "Nursing Theories and Process", "Hospital Admission, Transfer & Discharge",
+          "Communication and Interpersonal Relationships", "Infection Prevention and Control", "Safety, Comfort and Hygiene",
+          "Vital Signs Assessment", "Nutrition and Elimination", "Mobility and Positioning",
+          "Medication Administration", "Specimen Collection and Diagnostic Procedures", "Wound Care and Dressings",
+          "Oxygen Therapy and Airway Management", "First Aid and Emergency Care", "Documentation and Record Keeping",
+          "Biomedical Waste Management", "Ethics and Legal Aspects of Nursing", "Patient Education and Health Promotion",
+          "Gerontological and Palliative Care", "Professional Trends and Nursing Management"
+        ]
+      },
+      { 
+        name: "Anatomy & Physiology",
+        units: ["General Anatomy & Physiology", "Skeletal System", "Muscular System", "Cardiovascular System", "Respiratory System", "Digestive System", "Nervous System", "Endocrine System", "Reproductive System"]
+      },
+      { 
+        name: "Microbiology",
+        units: ["Introduction to Microbiology", "Infection Control", "Pathogenic Organisms", "Immunity"]
+      },
+      { 
+        name: "Pharmacology",
+        units: [
+          "Introduction to Pharmacology", "Pharmacokinetics", "Pharmacodynamics", "Drug Administration and Dosage Calculations",
+          "Autonomic Nervous System Drugs", "Central Nervous System Drugs", "Cardiovascular Drugs", "Respiratory System Drugs",
+          "Gastrointestinal Drugs", "Endocrine System Drugs", "Chemotherapy and Antimicrobials", "Analgesics and Anti-inflammatory Drugs",
+          "Hematological Drugs", "Renal System Drugs", "Immunological Drugs and Vaccines", "Emergency Drugs",
+          "Toxicology and Antidotes", "Adverse Drug Reactions and Drug Interactions", "Rational Drug Therapy", "Nurse's Responsibilities in Drug Administration"
+        ]
+      },
+      { 
+        name: "Nutrition & Dietetics",
+        units: ["Basic Nutrition", "Therapeutic Diet", "Nutritional Assessment", "Vitamins and Minerals"]
+      },
+      { 
+        name: "Psychology",
+        units: ["Introduction to Psychology", "Cognitive Processes", "Motivation and Emotion", "Personality", "Developmental Psychology"]
+      },
+      { 
+        name: "Sociology",
+        units: ["Introduction to Sociology", "Social Structure", "Family and Marriage", "Social Problems", "Health Sociology"]
+      },
+      { 
+        name: "Medical-Surgical Nursing", 
+        units: [
+          "Introduction to Medical-Surgical Nursing", "Nursing Assessment", "Fluid, Electrolyte & Acid–Base Balance", "Perioperative Nursing",
+          "Emergency & Trauma Nursing", "Pain & Palliative Care", "Infection Control", "Oncology Nursing", "Respiratory Disorders",
+          "Cardiovascular Disorders", "Hematological Disorders", "Neurological Disorders", "Musculoskeletal Disorders", "Gastrointestinal Disorders",
+          "Hepatobiliary & Pancreatic Disorders", "Endocrine Disorders", "Renal & Urinary Disorders", "Reproductive Disorders", "Skin Disorders",
+          "Immune Disorders", "Communicable Diseases", "Critical Care Nursing", "Geriatric Nursing", "Burns & Rehabilitation", "Organ Transplantation"
+        ]
+      },
+      { 
+        name: "Community Health Nursing",
+        units: ["Concept of Health and Disease", "Epidemiology", "Community Health Administration", "National Health Programs", "Family Health Services"]
+      },
+      { 
+        name: "Child Health (Pediatric) Nursing",
+        units: [
+          "Introduction to Pediatric Nursing", "Growth and Development", "Newborn Care", "Nutrition and Infant Feeding",
+          "Pediatric Assessment", "Common Childhood Disorders", "Respiratory Disorders", "Cardiovascular Disorders",
+          "Gastrointestinal Disorders", "Neurological Disorders", "Hematological Disorders", "Endocrine Disorders",
+          "Renal and Urinary Disorders", "Musculoskeletal Disorders", "Communicable Diseases", "Immunization",
+          "Pediatric Emergencies", "Pediatric Oncology", "Pediatric Intensive Care (PICU/NICU)", "Child Mental Health",
+          "Pediatric Pharmacology", "Family-Centered Care", "Pediatric Procedures and Nursing Care", "Rehabilitation and Palliative Care"
+        ]
+      },
+      { 
+        name: "Mental Health (Psychiatric) Nursing",
+        units: [
+          "Introduction to Psychiatric Nursing", "Mental Health and Mental Illness", "Psychiatric Assessment", "Therapeutic Communication",
+          "Personality Development and Behavior", "Stress and Coping Disorders", "Anxiety Disorders", "Mood Disorders",
+          "Schizophrenia and Psychotic Disorders", "Personality Disorders", "Substance Use Disorders", "Organic Mental Disorders",
+          "Child and Adolescent Psychiatry", "Geriatric Psychiatry", "Psychiatric Emergencies", "Psychopharmacology",
+          "Psychotherapies", "Community Mental Health Nursing", "Legal and Ethical Aspects", "Rehabilitation in Psychiatry"
+        ]
+      },
+      { 
+        name: "Obstetrics & Gynecological Nursing",
+        units: [
+          "Introduction to Obstetric & Gynecological Nursing", "Anatomy and Physiology of the Reproductive System", "Pregnancy (Antenatal Care)", "Normal Labour and Delivery",
+          "Postnatal Care (Puerperium)", "Newborn Care", "High-Risk Pregnancy", "Obstetric Emergencies",
+          "Family Planning and Contraception", "Infertility", "Gynecological Disorders", "Reproductive Tract Infections and STIs",
+          "Menstrual Disorders", "Gynecological Surgeries", "Menopause and Climacteric Care", "Drugs Used in Obstetrics and Gynecology",
+          "National Maternal and Child Health Programmes", "Legal and Ethical Aspects in Obstetric & Gynecological Nursing"
+        ]
+      },
+      { 
+        name: "Nursing Research & Statistics",
+        units: [
+          "Introduction to Nursing Research", "Research Process", "Research Problem and Objectives", "Literature Review",
+          "Research Design", "Sampling Techniques", "Data Collection Methods", "Research Tools and Instrumentation",
+          "Data Analysis and Statistics", "Interpretation of Results", "Research Report Writing", "Evidence-Based Nursing Practice",
+          "Ethics in Nursing Research", "Biostatistics", "Computer Applications in Research"
+        ]
+      },
+      { 
+        name: "Nursing Education & Nursing Administration & Management",
+        units: ["Educational Principles in Nursing", "Curriculum Development", "Leadership and Management Styles", "Hospital Administration and Staffing"]
+      },
+      { 
+        name: "Nursing Ethics and Legal Aspects",
+        units: ["Ethical Principles in Nursing", "Legal Responsibilities and Malpractice", "Informed Consent and Advance Directives", "Professional Boundaries"]
+      },
+      { 
+        name: "Emergency Nursing",
+        units: ["Triage Systems and START Protocol", "Cardiopulmonary Resuscitation", "Trauma Resuscitation", "Disaster Nursing and Mass Casualty"]
+      },
+      { 
+        name: "Infection Prevention and Biomedical Waste Management",
+        units: ["Aseptic Techniques and Hand Hygiene", "Standard and Transmission-Based Precautions", "Biomedical Waste Segregation", "Sterilization and Disinfection"]
+      }
+    ];
 
+    let testsToInsert = [];
     for (const subject of CORE_SUBJECTS) {
-      for (const unit of subject.units) {
+      if (subject.units && subject.units.length > 0) {
+        // Also insert a top-level subject practice test
         testsToInsert.push({
-          title: `${subject.name} - ${unit} Practice Test`,
-          description: `20 unique hard-level MCQs for ${unit} — AIIMS NORCET & Nursing Officer standard.`,
-          topic: unit,
+          title: `${subject.name} Practice Test`,
+          description: `Authentic 20-question practice test with 4 progressive difficulty levels covering ${subject.name}.`,
+          topic: subject.name,
           difficulty: 'hard',
           duration: 30,
           examType: 'nursing_officer',
           isFree: true,
-          questions: generateQuestions(subject.name, unit),
+          questions: generateQuestionsForUnit(subject.name, subject.name),
           totalQuestions: 20
         });
-      }
-    }
 
-    console.log(`📚 Prepared ${testsToInsert.length} tests. Inserting...`);
-
-    const chunkSize = 50;
-    for (let i = 0; i < testsToInsert.length; i += chunkSize) {
-      await Test.insertMany(testsToInsert.slice(i, i + chunkSize));
-      console.log(`  ✅ Batch ${Math.floor(i / chunkSize) + 1}/${Math.ceil(testsToInsert.length / chunkSize)} inserted`);
-    }
-
-    console.log(`\n🎉 SUCCESS: ${testsToInsert.length} practice tests seeded with unique hard MCQs!`);
-    process.exit(0);
-  } catch (error) {
-    console.error('❌ Error seeding database:', error);
-    process.exit(1);
-  }
-};
-
-seedDatabase();
-
-const CORE_SUBJECTS = [
-  { 
-    name: "Nursing Foundations (Fundamentals of Nursing)",
-    units: [
-      "Introduction to Nursing", "Nursing Theories and Process", "Hospital Admission, Transfer & Discharge",
-      "Communication and Interpersonal Relationships", "Infection Prevention and Control", "Safety, Comfort and Hygiene",
-      "Vital Signs Assessment", "Nutrition and Elimination", "Mobility and Positioning",
-      "Medication Administration", "Specimen Collection and Diagnostic Procedures", "Wound Care and Dressings",
-      "Oxygen Therapy and Airway Management", "First Aid and Emergency Care", "Documentation and Record Keeping",
-      "Biomedical Waste Management", "Ethics and Legal Aspects of Nursing", "Patient Education and Health Promotion",
-      "Gerontological and Palliative Care", "Professional Trends and Nursing Management"
-    ]
-  },
-  { 
-    name: "Anatomy & Physiology",
-    units: ["General Anatomy & Physiology", "Skeletal System", "Muscular System", "Cardiovascular System", "Respiratory System", "Digestive System", "Nervous System", "Endocrine System", "Reproductive System"]
-  },
-  { 
-    name: "Microbiology",
-    units: ["Introduction to Microbiology", "Infection Control", "Pathogenic Organisms", "Immunity"]
-  },
-  { 
-    name: "Pharmacology",
-    units: [
-      "Introduction to Pharmacology", "Pharmacokinetics", "Pharmacodynamics", "Drug Administration and Dosage Calculations",
-      "Autonomic Nervous System Drugs", "Central Nervous System Drugs", "Cardiovascular Drugs", "Respiratory System Drugs",
-      "Gastrointestinal Drugs", "Endocrine System Drugs", "Chemotherapy and Antimicrobials", "Analgesics and Anti-inflammatory Drugs",
-      "Hematological Drugs", "Renal System Drugs", "Immunological Drugs and Vaccines", "Emergency Drugs",
-      "Toxicology and Antidotes", "Adverse Drug Reactions and Drug Interactions", "Rational Drug Therapy", "Nurse's Responsibilities in Drug Administration"
-    ]
-  },
-  { 
-    name: "Nutrition & Dietetics",
-    units: ["Basic Nutrition", "Therapeutic Diet", "Nutritional Assessment", "Vitamins and Minerals"]
-  },
-  { 
-    name: "Psychology",
-    units: ["Introduction to Psychology", "Cognitive Processes", "Motivation and Emotion", "Personality", "Developmental Psychology"]
-  },
-  { 
-    name: "Sociology",
-    units: ["Introduction to Sociology", "Social Structure", "Family and Marriage", "Social Problems", "Health Sociology"]
-  },
-  { 
-    name: "Medical-Surgical Nursing", 
-    units: [
-      "Introduction to Medical-Surgical Nursing", "Nursing Assessment", "Fluid, Electrolyte & Acid–Base Balance", "Perioperative Nursing",
-      "Emergency & Trauma Nursing", "Pain & Palliative Care", "Infection Control", "Oncology Nursing", "Respiratory Disorders",
-      "Cardiovascular Disorders", "Hematological Disorders", "Neurological Disorders", "Musculoskeletal Disorders", "Gastrointestinal Disorders",
-      "Hepatobiliary & Pancreatic Disorders", "Endocrine Disorders", "Renal & Urinary Disorders", "Reproductive Disorders", "Skin Disorders",
-      "Immune Disorders", "Communicable Diseases", "Critical Care Nursing", "Geriatric Nursing", "Burns & Rehabilitation", "Organ Transplantation"
-    ]
-  },
-  { 
-    name: "Community Health Nursing",
-    units: ["Concept of Health and Disease", "Epidemiology", "Community Health Administration", "National Health Programs", "Family Health Services"]
-  },
-  { 
-    name: "Child Health (Pediatric) Nursing",
-    units: [
-      "Introduction to Pediatric Nursing", "Growth and Development", "Newborn Care", "Nutrition and Infant Feeding",
-      "Pediatric Assessment", "Common Childhood Disorders", "Respiratory Disorders", "Cardiovascular Disorders",
-      "Gastrointestinal Disorders", "Neurological Disorders", "Hematological Disorders", "Endocrine Disorders",
-      "Renal and Urinary Disorders", "Musculoskeletal Disorders", "Communicable Diseases", "Immunization",
-      "Pediatric Emergencies", "Pediatric Oncology", "Pediatric Intensive Care (PICU/NICU)", "Child Mental Health",
-      "Pediatric Pharmacology", "Family-Centered Care", "Pediatric Procedures and Nursing Care", "Rehabilitation and Palliative Care"
-    ]
-  },
-  { 
-    name: "Mental Health (Psychiatric) Nursing",
-    units: [
-      "Introduction to Psychiatric Nursing", "Mental Health and Mental Illness", "Psychiatric Assessment", "Therapeutic Communication",
-      "Personality Development and Behavior", "Stress and Coping Disorders", "Anxiety Disorders", "Mood Disorders",
-      "Schizophrenia and Psychotic Disorders", "Personality Disorders", "Substance Use Disorders", "Organic Mental Disorders",
-      "Child and Adolescent Psychiatry", "Geriatric Psychiatry", "Psychiatric Emergencies", "Psychopharmacology",
-      "Psychotherapies", "Community Mental Health Nursing", "Legal and Ethical Aspects", "Rehabilitation in Psychiatry"
-    ]
-  },
-  { 
-    name: "Obstetrics & Gynecological Nursing",
-    units: [
-      "Introduction to Obstetric & Gynecological Nursing", "Anatomy and Physiology of the Reproductive System", "Pregnancy (Antenatal Care)", "Normal Labour and Delivery",
-      "Postnatal Care (Puerperium)", "Newborn Care", "High-Risk Pregnancy", "Obstetric Emergencies",
-      "Family Planning and Contraception", "Infertility", "Gynecological Disorders", "Reproductive Tract Infections and STIs",
-      "Menstrual Disorders", "Gynecological Surgeries", "Menopause and Climacteric Care", "Drugs Used in Obstetrics and Gynecology",
-      "National Maternal and Child Health Programmes", "Legal and Ethical Aspects in Obstetric & Gynecological Nursing"
-    ]
-  },
-  { 
-    name: "Nursing Research & Statistics",
-    units: [
-      "Introduction to Nursing Research", "Research Process", "Research Problem and Objectives", "Literature Review",
-      "Research Design", "Sampling Techniques", "Data Collection Methods", "Research Tools and Instrumentation",
-      "Data Analysis and Statistics", "Interpretation of Results", "Research Report Writing", "Evidence-Based Nursing Practice",
-      "Ethics in Nursing Research", "Biostatistics", "Computer Applications in Research"
-    ]
-  },
-  { name: "Nursing Education & Nursing Administration & Management", units: ["Principles of Education", "Curriculum Development", "Management Principles", "Quality Assurance"] },
-  { name: "Nursing Ethics and Legal Aspects", units: ["Ethical Principles in Nursing", "Legal Responsibilities", "Patient Rights", "Malpractice and Negligence"] },
-  { name: "Emergency Nursing", units: ["Triage Systems", "Basic Life Support", "Advanced Cardiac Life Support", "Trauma Management"] },
-  { name: "Infection Prevention and Biomedical Waste Management", units: ["Standard Precautions", "Isolation Protocols", "BMW Rules and Categories", "Spill Management"] }
-];
-
-const { getTopicQuestionsList } = require('./services/topicQuestions');
-
-const generateHardQuestions = (subject, unit) => {
-  // If dedicated unit bank exists in BANKS, use it
-  if (BANKS[unit] && Array.isArray(BANKS[unit]) && BANKS[unit].length >= 10) {
-    return BANKS[unit].slice(0, 20).map(q => ({
-      questionText: q.text,
-      options: q.options,
-      correctAnswer: q.answer,
-      explanation: q.exp,
-      topic: unit
-    }));
-  }
-  // Otherwise generate genuine, distinct topic-specific questions from topicQuestions engine
-  return getTopicQuestionsList(`${subject} - ${unit}`, 20, 3);
-};
-
-const seedDatabase = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log('Connected to MongoDB');
-
-    console.log('Deleting existing tests to ensure a clean state...');
-    await Test.deleteMany({});
-    console.log('Existing tests deleted.');
-
-    let testsToInsert = [];
-
-    for (const subject of CORE_SUBJECTS) {
-      if (!subject.units || subject.units.length === 0) continue;
-
-      for (const unit of subject.units) {
+        for (const unit of subject.units) {
+          testsToInsert.push({
+            title: `${subject.name} - ${unit} Practice Test`,
+            description: `Authentic 20-question practice test with 4 progressive difficulty levels for ${unit}.`,
+            topic: unit,
+            difficulty: 'hard',
+            duration: 30,
+            examType: 'nursing_officer',
+            isFree: true,
+            questions: generateQuestionsForUnit(subject.name, unit),
+            totalQuestions: 20
+          });
+        }
+      } else {
         testsToInsert.push({
-          title: `${subject.name} - ${unit} Practice Test`,
-          description: `Comprehensive 20-question hard-level practice test for ${unit}.`,
-          topic: unit, // We set the topic to the unit so the frontend filter matches it!
+          title: `${subject.name} Practice Test`,
+          description: `Authentic 20-question practice test with 4 progressive difficulty levels for ${subject.name}.`,
+          topic: subject.name,
           difficulty: 'hard',
-          duration: 30, // 30 minutes for 20 hard questions
+          duration: 30,
           examType: 'nursing_officer',
           isFree: true,
-          questions: generateHardQuestions(subject.name, unit),
+          questions: generateQuestionsForUnit(subject.name, subject.name),
           totalQuestions: 20
         });
       }
     }
 
-    console.log(`Prepared ${testsToInsert.length} practice tests with 20 hard MCQs each. Inserting into DB...`);
-    
-    // Insert in chunks to avoid overwhelming memory if array is very large
+    console.log(`📚 Seeding ${testsToInsert.length} authentic topic practice tests...`);
     const chunkSize = 50;
     for (let i = 0; i < testsToInsert.length; i += chunkSize) {
       const chunk = testsToInsert.slice(i, i + chunkSize);
       await Test.insertMany(chunk);
-      console.log(`Inserted batch ${i/chunkSize + 1}`);
     }
-
-    console.log('✅ Successfully seeded practice tests for all units with 20 hard MCQs!');
-    console.log('✅ Successfully seeded practice tests for all units with 20 hard MCQs!');
+    console.log(`🎉 SUCCESS: ${testsToInsert.length} practice tests seeded with authentic, level-differentiated questions!`);
+    return { success: true, count: testsToInsert.length };
 
   } catch (error) {
     console.error('Error seeding database:', error);
-    console.error('Error seeding database:', error);
-
+    throw error;
   }
 };
 
-module.exports = seedDatabase;
+if (require.main === module) {
+  seedDatabase().then(() => process.exit(0));
+}
+
+module.exports = {
+  BANKS,
+  resolveBankKey,
+  generateQuestionsForUnit,
+  seedDatabase
+};

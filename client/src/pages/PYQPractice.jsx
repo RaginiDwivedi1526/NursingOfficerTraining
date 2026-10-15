@@ -34,13 +34,18 @@ export default function PYQPractice() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const handleStartPractice = async (topic) => {
+  const handleStartPractice = async (topic, difficulty = 'medium') => {
     if (loading) return;
     setLoading(true);
     try {
+      const diffMapped = String(difficulty || '').toLowerCase().includes('hard') 
+        ? 'hard' 
+        : String(difficulty || '').toLowerCase().includes('easy') 
+          ? 'easy' 
+          : 'medium';
       const res = await generateTest({
         topic: topic || 'Previous Year Questions',
-        difficulty: 'medium',
+        difficulty: diffMapped,
         numberOfQuestions: 10
       });
       navigate(`/test/${res.data._id}`);
@@ -97,8 +102,15 @@ export default function PYQPractice() {
           <select className="pyq-select"><option>All Years</option></select>
           <select className="pyq-select"><option>All Subjects</option></select>
           <select className="pyq-select"><option>All Chapters</option></select>
-          <select className="pyq-select"><option>All Difficulty Levels</option></select>
-          <button className="pyq-filter-btn"><SlidersHorizontal size={14}/> Filters</button>
+          <select 
+            className="pyq-select"
+            value={selectedDifficulty}
+            onChange={(e) => setSelectedDifficulty(e.target.value)}
+          >
+            <option value="easy">Easy (Level 1: Foundational)</option>
+            <option value="medium">Medium (Level 2: Base Clinical)</option>
+            <option value="hard">Hard (Level 3/4: High Acuity)</option>
+          </select>
         </div>
 
         {/* Papers Table */}
@@ -132,7 +144,7 @@ export default function PYQPractice() {
                 }
               </div>
               <div className="pyq-action-cell">
-                <button className="pyq-action-btn" onClick={() => handleStartPractice(p.name)} disabled={loading}>
+                <button className="pyq-action-btn" onClick={() => handleStartPractice(p.name, selectedDifficulty)} disabled={loading}>
                   {loading ? '...' : 'Start Practice'}
                 </button>
                 <button className="pyq-more-btn"><MoreVertical size={16}/></button>

@@ -23,20 +23,10 @@ router.post('/start', protect, async (req, res) => {
       maxQuestions = 20
     } = req.body;
 
-    // Resolve starting difficulty (Default Level 2: Base)
-    let initialDifficulty = 2;
-    const diffStr = String(startingDifficulty || '').toLowerCase();
-    if (diffStr === '3' || diffStr.includes('hard') || diffStr === '1' && diffStr !== 'below') {
-      initialDifficulty = 3; // Start at Hard (Level 3)
-    } else if (diffStr === '4' || diffStr.includes('peak')) {
-      initialDifficulty = 4; // Start at Peak (Level 4)
-    } else if (diffStr === '1' || diffStr.includes('easy') || diffStr.includes('below')) {
-      initialDifficulty = 1; // Start at Below Base (Level 1)
-    } else {
-      initialDifficulty = 2; // Default Base (Level 2)
-    }
+    // In Computer Adaptive Testing, every exam strictly begins at Level 2 (Base Level)
+    const initialDifficulty = 2;
 
-    // Select initial subject (honors specific topic if chosen, otherwise uses subject percentage weighting)
+    // Select initial subject (honors specific topic if chosen, otherwise balances subject percentage weighting)
     const initialSubject = selectNextSubject({}, topic);
 
     console.log(`[CAT Engine] Initializing CAT test for user ${req.user._id}. Title: "${title}", Topic: "${topic}", Starting at Level ${initialDifficulty} (${DIFFICULTY_LEVELS[initialDifficulty].name}) - Initial Subject: "${initialSubject}"`);
@@ -140,12 +130,26 @@ router.post('/submit-answer', protect, async (req, res) => {
       newConsecutiveIncorrect
     );
 
+    // Determine adaptive transition direction
+    let transition = 'same';
+    if (nextDifficultyLevel > session.currentDifficultyLevel) {
+      transition = 'up';
+    } else if (nextDifficultyLevel < session.currentDifficultyLevel) {
+      transition = 'down';
+    }
+
     // Update ability theta
     const newTheta = updateAbilityTheta(session.abilityTheta, isCorrect, session.currentDifficultyLevel);
 
-    // Update subject quota
-    const currentSubjectCount = (session.subjectQuotas.get(currentQ.topic) || 0) + 1;
-    session.subjectQuotas.set(currentQ.topic, currentSubjectCount);
+    // Update subject quota safely
+    const currentSubjectCount = (session.subjectQuotas && session.subjectQuotas.get 
+      ? (session.subjectQuotas.get(currentQ.topic) || 0) 
+      : ((session.subjectQuotas && session.subjectQuotas[currentQ.topic]) || 0)) + 1;
+    if (session.subjectQuotas && session.subjectQuotas.set) {
+      session.subjectQuotas.set(currentQ.topic, currentSubjectCount);
+    } else if (session.subjectQuotas) {
+      session.subjectQuotas[currentQ.topic] = currentSubjectCount;
+    }
 
     // Push answered question to history
     const answeredItem = {
@@ -187,8 +191,10 @@ router.post('/submit-answer', protect, async (req, res) => {
         stoppingReason: stopping.reason,
         feedback: {
           ...answeredFeedback,
+          previousDifficultyLevel: session.currentDifficultyLevel,
           nextDifficultyLevel: session.currentDifficultyLevel,
           nextDifficultyName: session.currentDifficultyName,
+          transition,
           abilityTheta: newTheta
         },
         session
@@ -196,7 +202,11 @@ router.post('/submit-answer', protect, async (req, res) => {
     }
 
     // Select next subject & generate next question at target adaptive level
-    const nextSubject = selectNextSubject(Object.fromEntries(session.subjectQuotas), session.topic);
+    const quotasObj = session.subjectQuotas instanceof Map 
+      ? Object.fromEntries(session.subjectQuotas) 
+      : (session.subjectQuotas || {});
+    const nextSubject = selectNextSubject(quotasObj, session.topic);
+    const prevDifficultyLevel = session.currentDifficultyLevel;
     session.currentDifficultyLevel = nextDifficultyLevel;
     session.currentDifficultyName = DIFFICULTY_LEVELS[nextDifficultyLevel].name;
 
@@ -210,8 +220,10 @@ router.post('/submit-answer', protect, async (req, res) => {
       isCompleted: false,
       feedback: {
         ...answeredFeedback,
+        previousDifficultyLevel: prevDifficultyLevel,
         nextDifficultyLevel,
         nextDifficultyName: DIFFICULTY_LEVELS[nextDifficultyLevel].name,
+        transition,
         abilityTheta: newTheta
       },
       nextQuestion: {
@@ -221,8 +233,10 @@ router.post('/submit-answer', protect, async (req, res) => {
         difficultyLevel: nextQ.difficultyLevel,
         difficultyName: nextQ.difficultyName
       },
+      previousDifficultyLevel: prevDifficultyLevel,
       currentDifficultyLevel: nextDifficultyLevel,
       difficultyName: DIFFICULTY_LEVELS[nextDifficultyLevel].name,
+      transition,
       abilityTheta: newTheta,
       totalQuestionsAnswered: session.questionsAnswered.length
     });
