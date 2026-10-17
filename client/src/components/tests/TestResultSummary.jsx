@@ -1,114 +1,343 @@
-import { useState, useEffect, useRef } from 'react';
-import { Award, CheckCircle2, XCircle, Timer, ClipboardList, Brain, BarChart3, RotateCcw, Microscope, Pill, HeartPulse, Stethoscope, BookOpen, AlertTriangle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { 
+  Award, CheckCircle2, XCircle, Timer, ClipboardList, Brain, BarChart3, 
+  RotateCcw, Microscope, Pill, HeartPulse, Stethoscope, BookOpen, 
+  AlertTriangle, Check, ShieldCheck, TrendingUp, HelpCircle, Target, Percent
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import './TestResultSummary.css';
 
 const topicIcons = {
   'Microbiology': <Microscope size={16} color="#059669" />,
   'Pharmacology': <Pill size={16} color="#0284c7" />,
-  'Anatomy': <HeartPulse size={16} color="var(--crimson)" />,
-  'Nursing Procedures': <Stethoscope size={16} color="var(--navy)" />,
+  'Anatomy': <HeartPulse size={16} color="#dc2626" />,
+  'Nursing Procedures': <Stethoscope size={16} color="#0d2b5e" />,
+  'Obstetrics & Gynecological Nursing': <HeartPulse size={16} color="#ec4899" />,
+  'Mental Health (Psychiatric) Nursing': <Brain size={16} color="#7c3aed" />,
+  'Medical-Surgical Nursing': <Stethoscope size={16} color="#0284c7" />
 };
 
-function TestResultSummary({ result, testId }) {
-  const [animatedScore, setAnimatedScore] = useState(0);
-  const scoreRef = useRef(null);
-
-  const score = result?.score || 0;
-  const circumference = 2 * Math.PI * 45;
-  const offset = circumference - (animatedScore / 100) * circumference;
-
-  useEffect(() => {
-    let current = 0;
-    const interval = setInterval(() => {
-      current += 1;
-      if (current >= score) { setAnimatedScore(score); clearInterval(interval); }
-      else setAnimatedScore(current);
-    }, 15);
-    return () => clearInterval(interval);
-  }, [score]);
-
+export default function TestResultSummary({ result, testId, testTitle }) {
   if (!result) return null;
 
-  const totalTime = result.timeTaken ? Math.round(result.timeTaken / 60) : 0;
-  const accColor = (acc) => acc >= 70 ? 'var(--success)' : acc >= 50 ? 'var(--gold)' : 'var(--crimson)';
-  const accIcon = (acc) => acc >= 70 ? <CheckCircle2 size={14} color="var(--success)" /> : acc >= 50 ? <AlertTriangle size={14} color="var(--gold)" /> : <XCircle size={14} color="var(--crimson)" />;
+  // 1. Precise Quantitative Scoring
+  const totalQuestions = result.totalQuestions || 25;
+  const totalMarks = result.totalMarks || (totalQuestions * 1.0);
+  const correctCount = result.correctAnswers || 0;
+  const incorrectCount = result.incorrectAnswers || 0;
+  const unattemptedCount = result.unattemptedAnswers !== undefined ? result.unattemptedAnswers : Math.max(0, totalQuestions - (correctCount + incorrectCount));
+  
+  const positiveMarks = result.positiveMarks !== undefined ? Number(result.positiveMarks) : Number((correctCount * 1.0).toFixed(2));
+  const negativeMarksDeducted = result.negativeMarksDeducted !== undefined ? Number(result.negativeMarksDeducted) : Number((incorrectCount * (1 / 3)).toFixed(2));
+  
+  const marksObtained = result.marksObtained !== undefined ? Number(result.marksObtained) : Math.max(0, Number((positiveMarks - negativeMarksDeducted).toFixed(2)));
+  const attemptedCount = correctCount + incorrectCount;
+  const accuracy = result.accuracy !== undefined ? result.accuracy : (attemptedCount > 0 ? Math.round((correctCount / attemptedCount) * 100) : 0);
+  const scorePercentage = result.score !== undefined ? result.score : Math.round((marksObtained / totalMarks) * 100);
+  
+  const minPassPercentage = result.minPassPercentage || 50.0;
+  const passingMarksRequired = result.passingMarksRequired !== undefined ? Number(result.passingMarksRequired) : Number((totalMarks * (minPassPercentage / 100)).toFixed(2));
+  const isPassed = result.isPassed !== undefined ? result.isPassed : (marksObtained >= passingMarksRequired);
+
+  // 2. Question Status Summary (Matching Screenshot 2 & 3)
+  const statusSummary = result.statusSummary || {
+    answered: correctCount + incorrectCount,
+    answeredMarked: 0,
+    visitedUnanswered: 0,
+    marked: 0,
+    notVisited: unattemptedCount,
+    total: totalQuestions
+  };
+
+  // 3. CAT Adaptive Telemetry
+  const catTelemetry = result.catTelemetry || null;
+
+  // 4. Time
+  const timeTakenSec = result.timeTaken || 0;
+  const minutes = Math.floor(timeTakenSec / 60);
+  const seconds = timeTakenSec % 60;
+  const formattedTime = `${minutes} min ${seconds} sec`;
 
   return (
-    <div className="trs-card">
-      <div className="trs-header">
-        <h2>TEST COMPLETE</h2>
-        <Award size={48} color="var(--gold)" />
+    <div className="trs-scorecard-container">
+      
+      {/* ─── 1. TOP RESULT BANNER & QUALIFICATION BADGE ─── */}
+      <div className={`trs-banner ${isPassed ? 'passed' : 'failed'}`}>
+        <div className="trs-banner-badge">
+          {isPassed ? <CheckCircle2 size={24} /> : <AlertTriangle size={24} />}
+          <span>{isPassed ? 'QUALIFIED / PASSED' : 'DID NOT QUALIFY (BELOW CUTOFF)'}</span>
+        </div>
+        <h2 className="trs-banner-title">
+          {isPassed ? 'Congratulations on Clearing the Standard!' : 'Exam Result: Needs Improvement'}
+        </h2>
+        <p className="trs-banner-sub">
+          Passing Cutoff Benchmark: <strong>{minPassPercentage}% ({passingMarksRequired.toFixed(2)} / {totalMarks.toFixed(2)} Marks)</strong>
+        </p>
       </div>
 
-      <div className="trs-ring-wrap" ref={scoreRef}>
-        <svg width="120" height="120" viewBox="0 0 120 120">
-          <circle cx="60" cy="60" r="45" stroke="var(--light-gray)" strokeWidth="10" fill="none" />
-          <circle cx="60" cy="60" r="45" stroke="url(#trsGrad)" strokeWidth="10" fill="none"
-            strokeDasharray={circumference} strokeDashoffset={offset}
-            strokeLinecap="round" style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%', transition: 'stroke-dashoffset 0.5s ease' }} />
-          <defs>
-            <linearGradient id="trsGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="var(--crimson)" />
-              <stop offset="100%" stopColor="var(--gold)" />
-            </linearGradient>
-          </defs>
-        </svg>
-        <div className="trs-ring-center">
-          <div className="trs-ring-num">{animatedScore}%</div>
-          <div className="trs-ring-label">Overall Score</div>
+      {/* ─── 2. HERO METRIC CARDS ─── */}
+      <div className="trs-hero-grid">
+        
+        {/* Card 1: Marks Scored */}
+        <div className="trs-hcard primary">
+          <div className="trs-hcard-header">
+            <Award size={20} color="#0284c7" />
+            <span>Marks Obtained</span>
+          </div>
+          <div className="trs-hcard-num">
+            {marksObtained.toFixed(2)} <span className="trs-hcard-denom">/ {totalMarks.toFixed(2)}</span>
+          </div>
+          <div className="trs-hcard-sub">Net Marks after -1/3 Negative Marking</div>
+        </div>
+
+        {/* Card 2: Accuracy Rate */}
+        <div className="trs-hcard">
+          <div className="trs-hcard-header">
+            <Target size={20} color="#16a34a" />
+            <span>Accuracy Rate</span>
+          </div>
+          <div className="trs-hcard-num" style={{ color: accuracy >= 70 ? '#16a34a' : accuracy >= 50 ? '#d97706' : '#dc2626' }}>
+            {accuracy}%
+          </div>
+          <div className="trs-hcard-sub">{correctCount} Correct of {attemptedCount} Attempted</div>
+        </div>
+
+        {/* Card 3: Overall Percentage */}
+        <div className="trs-hcard">
+          <div className="trs-hcard-header">
+            <Percent size={20} color="#9333ea" />
+            <span>Percentage Score</span>
+          </div>
+          <div className="trs-hcard-num" style={{ color: '#9333ea' }}>
+            {scorePercentage}%
+          </div>
+          <div className="trs-hcard-sub">Calculated out of {totalMarks} Total Marks</div>
+        </div>
+
+        {/* Card 4: Total Time */}
+        <div className="trs-hcard">
+          <div className="trs-hcard-header">
+            <Timer size={20} color="#f59e0b" />
+            <span>Time Taken</span>
+          </div>
+          <div className="trs-hcard-num" style={{ color: '#f59e0b' }}>
+            {formattedTime}
+          </div>
+          <div className="trs-hcard-sub">Allocated Duration: 30 minutes</div>
+        </div>
+
+      </div>
+
+      {/* ─── 3. DETAILED MARKS CALCULATION BREAKDOWN ─── */}
+      <div className="trs-calc-card">
+        <div className="trs-card-title">
+          <ClipboardList size={18} color="#0284c7" />
+          <span>Official Marks Calculation Breakdown</span>
+        </div>
+
+        <div className="trs-calc-grid">
+          
+          <div className="trs-calc-item">
+            <span className="trs-c-label">Total Questions</span>
+            <span className="trs-c-val">{totalQuestions} Questions</span>
+          </div>
+
+          <div className="trs-calc-item">
+            <span className="trs-c-label">Maximum Marks</span>
+            <span className="trs-c-val">{totalMarks.toFixed(2)} Marks (1.0 per Q)</span>
+          </div>
+
+          <div className="trs-calc-item">
+            <span className="trs-c-label">Positive Marks Earned</span>
+            <span className="trs-c-val green">+{positiveMarks.toFixed(2)} Marks ({correctCount} Correct)</span>
+          </div>
+
+          <div className="trs-calc-item">
+            <span className="trs-c-label">Negative Marking Penalty</span>
+            <span className="trs-c-val red">-{negativeMarksDeducted.toFixed(2)} Marks ({incorrectCount} Wrong × 1/3)</span>
+          </div>
+
+          <div className="trs-calc-item highlight">
+            <span className="trs-c-label"><strong>Net Marks Scored</strong></span>
+            <span className="trs-c-val blue"><strong>{marksObtained.toFixed(2)} / {totalMarks.toFixed(2)} Marks</strong></span>
+          </div>
+
+          <div className="trs-calc-item highlight">
+            <span className="trs-c-label"><strong>Passing Status</strong></span>
+            <span className={`trs-c-val ${isPassed ? 'green' : 'red'}`}>
+              <strong>{isPassed ? 'PASSED (Qualified)' : 'FAILED (Below 50% Cutoff)'}</strong>
+            </span>
+          </div>
+
         </div>
       </div>
 
-      <div className="trs-stats">
-        <div className="trs-stat"><CheckCircle2 size={20} color="var(--success)" /><span className="trs-stat-num">{result.correctAnswers}</span><span className="trs-stat-label">Correct</span></div>
-        <div className="trs-stat"><XCircle size={20} color="var(--crimson)" /><span className="trs-stat-num">{result.incorrectAnswers}</span><span className="trs-stat-label">Wrong</span></div>
-        <div className="trs-stat"><ClipboardList size={20} color="var(--gray)" /><span className="trs-stat-num">{result.unattemptedAnswers || 0}</span><span className="trs-stat-label">Skipped</span></div>
-        <div className="trs-stat"><Timer size={20} color="var(--gold)" /><span className="trs-stat-num">{totalTime} min</span><span className="trs-stat-label">Time</span></div>
-      </div>
-
-      {result.negativeMarksDeducted > 0 && (
-        <div style={{ background: 'rgba(192, 57, 43, 0.1)', border: '1px solid var(--crimson)', borderRadius: '12px', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', marginTop: '-12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--crimson)', fontWeight: '600' }}>
-            <AlertTriangle size={18} /> Negative Marking Deducted (-1/3 per wrong answer)
-          </div>
-          <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--crimson)' }}>
-            -{result.negativeMarksDeducted} Marks
-          </div>
+      {/* ─── 4. OFFICIAL CBT "QUESTION STATUS SUMMARY" TABLE ─── */}
+      {/* (Directly reproduces the 5-status categories from User's Screenshot 2 & 3) */}
+      <div className="trs-summary-table-card">
+        <div className="trs-card-title">
+          <ShieldCheck size={18} color="#16a34a" />
+          <span>Official Question Status Summary</span>
         </div>
-      )}
+        <p className="trs-card-sub">
+          Summary of candidate responses recorded during the Computer-Based Examination:
+        </p>
 
-      {result.topicPerformance?.length > 0 && (
-        <div className="trs-topics">
-          <h3>TOPIC BREAKDOWN</h3>
-          {result.topicPerformance.map((t, i) => (
-            <div className="trs-topic-row" key={i}>
-              <span className="trs-topic-icon">{topicIcons[t.topic] || <BookOpen size={16} color="var(--navy)" />}</span>
-              <span className="trs-topic-name">{t.topic}</span>
-              <span className="trs-topic-score">{t.correctAnswers}/{t.totalQuestions}</span>
-              <span className="trs-topic-pct" style={{ color: accColor(t.accuracy) }}>{t.accuracy}%</span>
-              {accIcon(t.accuracy)}
+        <div className="trs-qsummary-list">
+          
+          {/* Row 1: Answered */}
+          <div className="trs-qs-row">
+            <div className="trs-qs-left">
+              <div className="trs-sbadge answered">1</div>
+              <div className="trs-qs-text">
+                <strong className="trs-qs-name">Answered</strong>
+                <span className="trs-qs-desc">Questions attempted and marked for evaluation</span>
+              </div>
             </div>
-          ))}
-        </div>
-      )}
-
-      {result.aiSuggestion && (
-        <div className="trs-ai-box">
-          <div className="trs-ai-header">
-            <Brain size={18} className="brain-spin-icon" color="var(--purple)" />
-            <span>AI Analysis</span>
+            <div className="trs-qs-count green">{statusSummary.answered}</div>
           </div>
-          <p>{result.aiSuggestion}</p>
+
+          {/* Row 2: Answered and Marked for Review */}
+          <div className="trs-qs-row">
+            <div className="trs-qs-left">
+              <div className="trs-sbadge answered-marked">2</div>
+              <div className="trs-qs-text">
+                <strong className="trs-qs-name">Answered and Marked for Review</strong>
+                <span className="trs-qs-desc">Attempted with review flag (Considered for evaluation)</span>
+              </div>
+            </div>
+            <div className="trs-qs-count purple">{statusSummary.answeredMarked}</div>
+          </div>
+
+          {/* Row 3: Visited but Not Answered */}
+          <div className="trs-qs-row">
+            <div className="trs-qs-left">
+              <div className="trs-sbadge visited-unanswered">3</div>
+              <div className="trs-qs-text">
+                <strong className="trs-qs-name">Visited but Not Answered</strong>
+                <span className="trs-qs-desc">Candidate opened but did not choose an option</span>
+              </div>
+            </div>
+            <div className="trs-qs-count red">{statusSummary.visitedUnanswered}</div>
+          </div>
+
+          {/* Row 4: Marked for Review */}
+          <div className="trs-qs-row">
+            <div className="trs-qs-left">
+              <div className="trs-sbadge marked">4</div>
+              <div className="trs-qs-text">
+                <strong className="trs-qs-name">Marked for Review (Unanswered)</strong>
+                <span className="trs-qs-desc">Flagged for review without selecting an answer</span>
+              </div>
+            </div>
+            <div className="trs-qs-count violet">{statusSummary.marked}</div>
+          </div>
+
+          {/* Row 5: Not Visited */}
+          <div className="trs-qs-row">
+            <div className="trs-qs-left">
+              <div className="trs-sbadge not-visited">5</div>
+              <div className="trs-qs-text">
+                <strong className="trs-qs-name">Not Visited</strong>
+                <span className="trs-qs-desc">Questions candidate did not open during the exam</span>
+              </div>
+            </div>
+            <div className="trs-qs-count gray">{statusSummary.notVisited}</div>
+          </div>
+
+          {/* Total Row */}
+          <div className="trs-qs-total-row">
+            <span>Total Questions in Test</span>
+            <span className="trs-total-num">{statusSummary.total}</span>
+          </div>
+
+        </div>
+
+        <div className="trs-rule-callout">
+          <ShieldCheck size={16} />
+          <span>
+            <strong>Official Evaluation Standard:</strong> As specified in test instructions, only questions in category <strong>1 (Answered)</strong> and <strong>2 (Answered and Marked for Review)</strong> were evaluated. Negative marking of <strong>-0.33 Marks (-1/3)</strong> was applied for each incorrect response.
+          </span>
+        </div>
+      </div>
+
+      {/* ─── 5. COMPUTER ADAPTIVE TESTING (CAT) TELEMETRY ─── */}
+      {catTelemetry && (
+        <div className="trs-cat-card">
+          <div className="trs-card-title">
+            <TrendingUp size={18} color="#7c3aed" />
+            <span>Computer Adaptive Testing (CAT) Telemetry</span>
+          </div>
+
+          <div className="trs-cat-grid">
+            <div className="trs-cat-item">
+              <span className="trs-cat-label">Candidate Ability (θ Theta)</span>
+              <span className="trs-cat-val" style={{ color: catTelemetry.abilityTheta >= 0 ? '#16a34a' : '#dc2626' }}>
+                {catTelemetry.abilityTheta >= 0 ? `+${catTelemetry.abilityTheta}` : catTelemetry.abilityTheta}
+              </span>
+            </div>
+            <div className="trs-cat-item">
+              <span className="trs-cat-label">Final Difficulty Tier Reached</span>
+              <span className="trs-cat-val purple">
+                {catTelemetry.finalDifficultyName || `Level ${catTelemetry.finalDifficultyLevel || 2}`}
+              </span>
+            </div>
+            <div className="trs-cat-item full">
+              <span className="trs-cat-label">Passing Standard Decision</span>
+              <span className="trs-cat-val">
+                {catTelemetry.catDecision || (catTelemetry.abilityTheta >= 0.20 ? 'Above Passing Standard (Met Criteria)' : 'Below Passing Standard')}
+              </span>
+            </div>
+          </div>
         </div>
       )}
 
-      <div className="trs-actions">
-        {testId && <Link to={`/test/${testId}`} className="trs-action-btn"><RotateCcw size={16} /> Retry Test</Link>}
-        <Link to="/dashboard" className="trs-action-btn trs-action-secondary"><BarChart3 size={16} /> Full Analytics</Link>
+      {/* ─── 6. TOPIC PERFORMANCE BREAKDOWN ─── */}
+      {result.topicPerformance?.length > 0 && (
+        <div className="trs-topics-card">
+          <div className="trs-card-title">
+            <BarChart3 size={18} color="#0284c7" />
+            <span>Subject & Topic Wise Performance</span>
+          </div>
+          <div className="trs-topics-list">
+            {result.topicPerformance.map((t, i) => (
+              <div className="trs-topic-row" key={i}>
+                <span className="trs-topic-icon">{topicIcons[t.topic] || <BookOpen size={16} color="#0284c7" />}</span>
+                <span className="trs-topic-name">{t.topic}</span>
+                <span className="trs-topic-score">{t.correctAnswers}/{t.totalQuestions} Correct</span>
+                <div className="trs-topic-bar-wrap">
+                  <div className="trs-topic-bar" style={{ width: `${t.accuracy}%`, background: t.accuracy >= 70 ? '#16a34a' : t.accuracy >= 50 ? '#f59e0b' : '#dc2626' }} />
+                </div>
+                <span className="trs-topic-pct" style={{ color: t.accuracy >= 70 ? '#16a34a' : t.accuracy >= 50 ? '#f59e0b' : '#dc2626' }}>
+                  {t.accuracy}%
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ─── 7. AI CLINICAL FEEDBACK & SUGGESTIONS ─── */}
+      {result.aiSuggestion && (
+        <div className="trs-ai-card">
+          <div className="trs-ai-header">
+            <Brain size={18} color="#7c3aed" />
+            <span>AI Examination Insight & Clinical Recommendation</span>
+          </div>
+          <p className="trs-ai-text">{result.aiSuggestion}</p>
+        </div>
+      )}
+
+      {/* ─── 8. ACTIONS ─── */}
+      <div className="trs-action-row">
+        <Link to={testId ? `/test/${testId}/take` : '/tests'} className="trs-btn trs-btn-primary">
+          <RotateCcw size={16} /> Retake Test
+        </Link>
+        <Link to="/dashboard" className="trs-btn trs-btn-outline">
+          <BarChart3 size={16} /> Student Dashboard
+        </Link>
       </div>
+
     </div>
   );
 }
-
-export default TestResultSummary;

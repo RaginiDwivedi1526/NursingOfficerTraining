@@ -732,28 +732,72 @@
   line-height: 1.5;
 }
 
-.cbt-confirm-stats {
+.cbt-confirm-stats-card {
   background: #f8fafc;
   border-radius: 10px;
   border: 1px solid #e2e8f0;
-  padding: 16px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-bottom: 24px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
   text-align: left;
 }
 
-.cbt-cs-item {
+.cbt-confirm-table-header {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #cbd5e1;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #64748b;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.cbt-confirm-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 13px;
-  color: #334155;
+  padding: 6px 0;
+  border-bottom: 1px solid #f1f5f9;
 }
 
-.cbt-cs-val {
+.cbt-crow-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.cbt-crow-val {
+  font-size: 14px;
   font-weight: 800;
+}
+
+.cbt-confirm-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  margin-top: 6px;
+  border-top: 2px solid #cbd5e1;
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.cbt-confirm-evaluation-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #047857;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 20px;
+  text-align: left;
 }
 
 .cbt-confirm-actions {
@@ -762,3 +806,134 @@
   justify-content: center;
   gap: 14px;
 }
+
+/* ─── 6. LIVE CAT ADAPTIVE TELEMETRY STRIP ─── */
+.cbt-cat-strip {
+  background: #ffffff;
+  border-bottom: 1px solid #cbd5e1;
+  padding: 8px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.cbt-cat-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cbt-cat-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #7c3aed;
+  background: #f3e8ff;
+  padding: 3px 10px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cbt-cat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  border: 1px solid transparent;
+}
+
+.cbt-cat-badge.level-1 {
+  background: #fef3c7;
+  color: #b45309;
+  border-color: #fde68a;
+}
+
+.cbt-cat-badge.level-2 {
+  background: #e0e7ff;
+  color: #4338ca;
+  border-color: #c7d2fe;
+}
+
+.cbt-cat-badge.level-3 {
+  background: #f3e8ff;
+  color: #7e22ce;
+  border-color: #e9d5ff;
+}
+
+.cbt-cat-badge.level-4 {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+
+.cbt-cat-transition {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.cbt-cat-transition.up {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.cbt-cat-transition.down {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.cbt-cat-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.cbt-theta-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.cbt-theta-val {
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.cbt-theta-badge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.cbt-theta-badge.passing {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.cbt-theta-badge.borderline {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.cbt-theta-badge.below {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+

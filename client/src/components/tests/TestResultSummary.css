@@ -1,27 +1,463 @@
-.trs-card { background: var(--white); border-radius: 20px; padding: 40px; max-width: 600px; margin: 0 auto; border: 1px solid var(--light-gray); box-shadow: 0 8px 40px rgba(13,43,94,0.1); animation: fadeUp 0.5s ease; }
-.trs-header { text-align: center; margin-bottom: 28px; }
-.trs-header h2 { font-family: var(--font-display); font-size: 24px; color: var(--navy); margin-bottom: 12px; }
-.trs-ring-wrap { position: relative; display: flex; justify-content: center; margin-bottom: 28px; }
-.trs-ring-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
-.trs-ring-num { font-family: var(--font-display); font-size: 28px; font-weight: 900; color: var(--navy); }
-.trs-ring-label { font-size: 11px; color: var(--gray); }
-.trs-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
-.trs-stat { text-align: center; padding: 12px; background: var(--off-white); border-radius: 12px; }
-.trs-stat-num { display: block; font-weight: 900; font-size: 18px; color: var(--navy); margin-top: 4px; }
-.trs-stat-label { display: block; font-size: 11px; color: var(--gray); }
-.trs-topics { margin-bottom: 24px; }
-.trs-topics h3 { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 12px; letter-spacing: 0.5px; }
-.trs-topic-row { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 8px; background: var(--off-white); margin-bottom: 6px; }
+/* ─── CBT EXAMINATION SCORECARD STYLES ─── */
+.trs-scorecard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* 1. Qualification Result Banner */
+.trs-banner {
+  border-radius: 14px;
+  padding: 24px 28px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.trs-banner.passed {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border: 2px solid #10b981;
+  color: #065f46;
+}
+
+.trs-banner.failed {
+  background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
+  border: 2px solid #f43f5e;
+  color: #9f1239;
+}
+
+.trs-banner-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  border-radius: 20px;
+}
+
+.trs-banner.passed .trs-banner-badge {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.trs-banner.failed .trs-banner-badge {
+  background: #f43f5e;
+  color: #ffffff;
+}
+
+.trs-banner-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.trs-banner-sub {
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.9;
+}
+
+/* 2. Hero Metric Cards Grid */
+.trs-hero-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.trs-hcard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.trs-hcard.primary {
+  border-color: #38bdf8;
+  background: linear-gradient(to bottom, #ffffff, #f0f9ff);
+}
+
+.trs-hcard-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.trs-hcard-num {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.5px;
+}
+
+.trs-hcard-denom {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.trs-hcard-sub {
+  font-size: 11px;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+/* Card titles across sections */
+.trs-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 14px;
+}
+
+.trs-card-sub {
+  font-size: 13px;
+  color: #64748b;
+  margin: -6px 0 16px 0;
+}
+
+/* 3. Detailed Marks Calculation Card */
+.trs-calc-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 22px 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.trs-calc-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.trs-calc-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #edf2f7;
+}
+
+.trs-calc-item.highlight {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.trs-c-label {
+  font-size: 13px;
+  color: #475569;
+}
+
+.trs-c-val {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.trs-c-val.green { color: #16a34a; }
+.trs-c-val.red { color: #dc2626; }
+.trs-c-val.blue { color: #0284c7; }
+
+/* 4. Question Status Summary Table */
+.trs-summary-table-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 22px 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.trs-qsummary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.trs-qs-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.trs-qs-row:hover {
+  background: #f1f5f9;
+}
+
+.trs-qs-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.trs-qs-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.trs-qs-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.trs-qs-desc {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.trs-qs-count {
+  font-size: 17px;
+  font-weight: 800;
+  padding: 4px 14px;
+  border-radius: 6px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.trs-qs-count.green { color: #16a34a; border-color: #bbf7d0; background: #f0fdf4; }
+.trs-qs-count.purple { color: #9333ea; border-color: #e9d5ff; background: #faf5ff; }
+.trs-qs-count.red { color: #dc2626; border-color: #fecaca; background: #fef2f2; }
+.trs-qs-count.violet { color: #7c3aed; border-color: #ddd6fe; background: #f5f3ff; }
+.trs-qs-count.gray { color: #64748b; border-color: #e2e8f0; background: #f8fafc; }
+
+/* Status Badges */
+.trs-sbadge {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.trs-sbadge.answered { background: #22c55e; color: #ffffff; }
+.trs-sbadge.answered-marked { background: #a855f7; color: #ffffff; }
+.trs-sbadge.answered-marked::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  border: 1px solid #ffffff;
+}
+.trs-sbadge.visited-unanswered { background: #ef4444; color: #ffffff; }
+.trs-sbadge.marked { background: #a855f7; color: #ffffff; }
+.trs-sbadge.not-visited { background: #ffffff; border: 1.5px solid #94a3b8; color: #475569; }
+
+.trs-qs-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: #0f172a;
+  color: #ffffff;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 15px;
+}
+
+.trs-total-num {
+  font-size: 18px;
+  color: #38bdf8;
+}
+
+.trs-rule-callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #0369a1;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+/* 5. CAT Adaptive Telemetry Card */
+.trs-cat-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 22px 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.trs-cat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.trs-cat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  background: #faf5ff;
+  border: 1px solid #f3e8ff;
+  border-radius: 8px;
+}
+
+.trs-cat-item.full {
+  grid-column: 1 / -1;
+}
+
+.trs-cat-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b21a8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.trs-cat-val {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.trs-cat-val.purple { color: #7c3aed; }
+
+/* 6. Topic Performance */
+.trs-topics-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 22px 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.trs-topics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.trs-topic-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
 .trs-topic-icon { flex-shrink: 0; }
-.trs-topic-name { flex: 1; font-size: 14px; font-weight: 600; color: var(--dark); }
-.trs-topic-score { font-size: 13px; color: var(--gray); }
-.trs-topic-pct { font-size: 13px; font-weight: 700; min-width: 36px; text-align: right; }
-.trs-ai-box { border: 1px solid rgba(124,58,237,0.3); background: rgba(124,58,237,0.06); border-radius: 12px; padding: 16px; margin-bottom: 24px; }
-.trs-ai-header { display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--purple); margin-bottom: 8px; }
-.brain-spin-icon { animation: brain-spin 8s linear infinite; }
-.trs-ai-box p { font-size: 14px; color: var(--dark); line-height: 1.6; }
-.trs-actions { display: flex; gap: 12px; }
-.trs-action-btn { display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center; padding: 12px; border-radius: 10px; font-weight: 600; font-size: 14px; text-decoration: none; transition: all 0.2s; background: var(--navy); color: white; }
-.trs-action-btn:hover { transform: translateY(-2px); }
-.trs-action-secondary { background: var(--off-white); color: var(--navy); border: 1px solid var(--light-gray); }
-@media (max-width: 480px) { .trs-stats { grid-template-columns: 1fr 1fr; } .trs-actions { flex-direction: column; } }
+.trs-topic-name { flex: 1; font-size: 13px; font-weight: 600; color: #1e293b; }
+.trs-topic-score { font-size: 12px; color: #64748b; font-weight: 600; }
+.trs-topic-bar-wrap { width: 100px; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; }
+.trs-topic-bar { height: 100%; border-radius: 3px; }
+.trs-topic-pct { font-size: 13px; font-weight: 800; min-width: 40px; text-align: right; }
+
+/* 7. AI Clinical Insight */
+.trs-ai-card {
+  background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+  border: 1px solid #d8b4fe;
+  border-radius: 12px;
+  padding: 18px 22px;
+}
+
+.trs-ai-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #6b21a8;
+  margin-bottom: 8px;
+}
+
+.trs-ai-text {
+  font-size: 13px;
+  color: #3b0764;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* 8. Action Row */
+.trs-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.trs-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 8px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.trs-btn-primary {
+  background: #22c55e;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.25);
+}
+
+.trs-btn-primary:hover {
+  background: #16a34a;
+  transform: translateY(-1px);
+}
+
+.trs-btn-outline {
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+
+.trs-btn-outline:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+@media (max-width: 768px) {
+  .trs-hero-grid { grid-template-columns: repeat(2, 1fr); }
+  .trs-calc-grid { grid-template-columns: 1fr; }
+  .trs-action-row { flex-direction: column; }
+  .trs-btn { width: 100%; }
+}

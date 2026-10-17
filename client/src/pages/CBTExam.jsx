@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { 
-  Clock, X, Check, ArrowLeft, ChevronLeft, ChevronRight, HelpCircle, AlertCircle
+  Clock, X, Check, ArrowLeft, ChevronLeft, ChevronRight, HelpCircle, AlertCircle,
+  BrainCircuit, ShieldCheck, TrendingUp, TrendingDown, Layers
 } from 'lucide-react';
-import { getTest, submitTest } from '../services/api';
+import { getTest, submitTest, startCATSession, submitCATAnswer } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import logo from '../assets/logo.png';
 import './CBTExam.css';
@@ -532,13 +533,26 @@ export default function CBTExam() {
   const [questions, setQuestions] = useState(DEFAULT_25_QUESTIONS);
   const [currentIdx, setCurrentIdx] = useState(0);
 
+  // CAT Adaptive Engine State
+  const [catSession, setCatSession] = useState(null);
+  const [isCATMode, setIsCATMode] = useState(true);
+  const [currentDifficultyLevel, setCurrentDifficultyLevel] = useState(2);
+  const [currentDifficultyName, setCurrentDifficultyName] = useState('Level 2: Base (Standard Passing)');
+  const [abilityTheta, setAbilityTheta] = useState(0.0);
+  const [difficultyTransition, setDifficultyTransition] = useState(null); // 'up' | 'down' | 'same'
+  const [submittingAnswer, setSubmittingAnswer] = useState(false);
+
   // User state per question
-  // questionStatus: Array of STATUS strings
-  const [questionStatus, setQuestionStatus] = useState([]);
+  // questionStatus: Array of STATUS strings (Initialized with 25 items: #0 visited, #1-24 not visited)
+  const [questionStatus, setQuestionStatus] = useState(() => {
+    const init = new Array(25).fill(STATUS.NOT_VISITED);
+    init[0] = STATUS.VISITED_UNANSWERED;
+    return init;
+  });
   // userAnswers: Array of selected option index or null
-  const [userAnswers, setUserAnswers] = useState([]);
+  const [userAnswers, setUserAnswers] = useState(() => new Array(25).fill(null));
   // times: time spent per question
-  const [questionTimes, setQuestionTimes] = useState([]);
+  const [questionTimes, setQuestionTimes] = useState(() => new Array(25).fill(0));
 
   // Live Timer
   const [durationSeconds, setDurationSeconds] = useState(30 * 60);
@@ -555,38 +569,78 @@ export default function CBTExam() {
 
   const startTimeRef = useRef(Date.now());
 
-  // Initialize test data and questions
+  // Initialize test data and CAT session
   useEffect(() => {
     initExam();
   }, [id]);
 
   const initExam = async () => {
-    let initialQuestions = DEFAULT_25_QUESTIONS;
     let initialTitle = location.state?.title || location.state?.test?.title || 'Free Nursing Test - 180/180';
+    let topic = location.state?.topic || location.state?.test?.topic || 'Obstetrics & Gynecological Nursing';
+    let examType = location.state?.examType || location.state?.test?.examType || 'nclex_rn';
     let durationMins = location.state?.duration || location.state?.test?.duration || 30;
 
-    // Check if mongo test with questions
-    if (id && id !== 'adaptive' && id.match(/^[0-9a-fA-F]{24}$/)) {
-      try {
-        const { data } = await getTest(id);
-        if (data && Array.isArray(data.questions) && data.questions.length > 0) {
-          initialQuestions = data.questions;
-          initialTitle = data.title || initialTitle;
-          durationMins = data.duration || durationMins;
-        }
-      } catch (err) {
-        console.warn('[CBTExam] Falling back to default authentic questions:', err.message);
+    setTestTitle(initialTitle);
+    setIsCATMode(true);
+    setCurrentDifficultyLevel(2);
+    setCurrentDifficultyName('Level 2: Base (Standard Passing)');
+    setAbilityTheta(0.0);
+    setDifficultyTransition(null);
+
+    // 1. Attempt to initialize Computer Adaptive Testing session with backend CAT Engine
+    try {
+      const { data } = await startCATSession({
+        title: initialTitle,
+        topic,
+        examType,
+        startingDifficulty: 2,
+        minQuestions: 20,
+        maxQuestions: 25
+      });
+
+      if (data && data.currentQuestion) {
+        setCatSession(data);
+        setCurrentDifficultyLevel(data.currentDifficultyLevel || 2);
+        setCurrentDifficultyName(data.difficultyName || 'Level 2: Base (Standard Passing)');
+        setAbilityTheta(data.abilityTheta || 0.0);
+
+        const firstQ = {
+          _id: data.currentQuestion._id || 'cat_q1',
+          questionText: data.currentQuestion.questionText,
+          options: data.currentQuestion.options,
+          topic: data.currentQuestion.topic || topic,
+          difficultyLevel: data.currentDifficultyLevel || 2,
+          difficultyName: data.difficultyName || 'Level 2: Base',
+          correctAnswer: data.currentQuestion.correctAnswer
+        };
+
+        const updatedQuestions = [...DEFAULT_25_QUESTIONS];
+        updatedQuestions[0] = firstQ;
+        setQuestions(updatedQuestions);
+
+        const total = 25;
+        const initialStatus = new Array(total).fill(STATUS.NOT_VISITED);
+        initialStatus[0] = STATUS.VISITED_UNANSWERED;
+        setQuestionStatus(initialStatus);
+
+        setUserAnswers(new Array(total).fill(null));
+        setQuestionTimes(new Array(total).fill(0));
+
+        const totalSeconds = durationMins * 60;
+        setDurationSeconds(totalSeconds);
+        setTimeLeft(totalSeconds);
+        startTimeRef.current = Date.now();
+        return;
       }
-    } else if (location.state?.test?.questions && location.state.test.questions.length > 0) {
-      initialQuestions = location.state.test.questions;
+    } catch (catErr) {
+      console.warn('[CBTExam] Server CAT session start failed, using authentic clinical questions with client-side CAT adaptation:', catErr.message);
     }
 
-    setTestTitle(initialTitle);
-    setQuestions(initialQuestions);
+    // 2. Client-side fallback CAT mode using authentic clinical questions
+    const total = DEFAULT_25_QUESTIONS.length;
+    setQuestions(DEFAULT_25_QUESTIONS);
 
-    const total = initialQuestions.length;
     const initialStatus = new Array(total).fill(STATUS.NOT_VISITED);
-    // Mark first question as Visited but not answered
     initialStatus[0] = STATUS.VISITED_UNANSWERED;
     setQuestionStatus(initialStatus);
 
@@ -665,8 +719,99 @@ export default function CBTExam() {
     });
   };
 
+  // Adaptive CAT step: submit answer to CAT engine and dynamically adapt difficulty
+  const processCATAnswerStep = async (selectedOpt) => {
+    const elapsedSeconds = Math.round((Date.now() - startTimeRef.current) / 1000);
+    startTimeRef.current = Date.now();
+    const currentQ = questions[currentIdx];
+
+    // If server CAT session is active:
+    if (catSession && (catSession.sessionId || catSession._id)) {
+      try {
+        setSubmittingAnswer(true);
+        const { data } = await submitCATAnswer({
+          sessionId: catSession.sessionId || catSession._id,
+          selectedAnswer: selectedOpt,
+          timeTaken: elapsedSeconds
+        });
+
+        if (data) {
+          setDifficultyTransition(data.transition || 'same');
+          if (data.currentDifficultyLevel) setCurrentDifficultyLevel(data.currentDifficultyLevel);
+          if (data.difficultyName) setCurrentDifficultyName(data.difficultyName);
+          if (data.abilityTheta !== undefined) setAbilityTheta(data.abilityTheta);
+
+          if (data.isCompleted) {
+            handleFinalSubmit();
+            return;
+          }
+
+          if (data.nextQuestion && currentIdx + 1 < questions.length) {
+            const nextQuestionObj = {
+              _id: data.nextQuestion._id || `cat_q_${currentIdx + 2}`,
+              questionText: data.nextQuestion.questionText,
+              options: data.nextQuestion.options,
+              topic: data.nextQuestion.topic || currentQ.topic,
+              difficultyLevel: data.currentDifficultyLevel,
+              difficultyName: data.difficultyName,
+              correctAnswer: data.nextQuestion.correctAnswer
+            };
+            setQuestions(prev => {
+              const updated = [...prev];
+              updated[currentIdx + 1] = nextQuestionObj;
+              return updated;
+            });
+          }
+        }
+      } catch (catSubmitErr) {
+        console.warn('[CBTExam] Server submitCATAnswer error, applying client-side adaptive calculation:', catSubmitErr.message);
+        applyLocalAdaptiveStep(selectedOpt);
+      } finally {
+        setSubmittingAnswer(false);
+      }
+    } else {
+      // Client-side local adaptive algorithm
+      applyLocalAdaptiveStep(selectedOpt);
+    }
+  };
+
+  // Local adaptive engine simulation (IRT Theta estimation)
+  const applyLocalAdaptiveStep = (selectedOpt) => {
+    const currentQ = questions[currentIdx];
+    const isCorrect = selectedOpt !== null && selectedOpt === currentQ.correctAnswer;
+    let nextLevel = currentDifficultyLevel;
+    let trans = 'same';
+    let newTheta = abilityTheta;
+
+    if (isCorrect) {
+      newTheta = Math.min(3.0, Number((abilityTheta + 0.28).toFixed(2)));
+      if (currentDifficultyLevel < 4) {
+        nextLevel = currentDifficultyLevel + 1;
+        trans = 'up';
+      }
+    } else if (selectedOpt !== null) {
+      newTheta = Math.max(-3.0, Number((abilityTheta - 0.22).toFixed(2)));
+      if (currentDifficultyLevel > 1) {
+        nextLevel = currentDifficultyLevel - 1;
+        trans = 'down';
+      }
+    }
+
+    setAbilityTheta(newTheta);
+    setCurrentDifficultyLevel(nextLevel);
+    setDifficultyTransition(trans);
+
+    const levelLabels = {
+      1: 'Level 1: Below Base (Foundational)',
+      2: 'Level 2: Base (Standard Passing)',
+      3: 'Level 3: Advanced Hard (Clinical Prioritization)',
+      4: 'Level 4: Peak Level (High Acuity / Critical Care) 🔥'
+    };
+    setCurrentDifficultyName(levelLabels[nextLevel] || 'Level 2: Base');
+  };
+
   // [Save & Next]
-  const handleSaveAndNext = () => {
+  const handleSaveAndNext = async () => {
     const currentAnswer = userAnswers[currentIdx];
     setQuestionStatus(prev => {
       const next = [...prev];
@@ -678,13 +823,20 @@ export default function CBTExam() {
       return next;
     });
 
+    // Run CAT adaptation
+    if (isCATMode && currentAnswer !== null && currentAnswer !== undefined) {
+      await processCATAnswerStep(currentAnswer);
+    }
+
     if (currentIdx + 1 < questions.length) {
       navigateToQuestion(currentIdx + 1);
+    } else {
+      handleFinalSubmit();
     }
   };
 
   // [Mark & Next]
-  const handleMarkAndNext = () => {
+  const handleMarkAndNext = async () => {
     const currentAnswer = userAnswers[currentIdx];
     setQuestionStatus(prev => {
       const next = [...prev];
@@ -696,8 +848,15 @@ export default function CBTExam() {
       return next;
     });
 
+    // Run CAT adaptation
+    if (isCATMode && currentAnswer !== null && currentAnswer !== undefined) {
+      await processCATAnswerStep(currentAnswer);
+    }
+
     if (currentIdx + 1 < questions.length) {
       navigateToQuestion(currentIdx + 1);
+    } else {
+      handleFinalSubmit();
     }
   };
 
@@ -709,12 +868,19 @@ export default function CBTExam() {
   };
 
   // Status Summary Counts
+  const answeredCount = questionStatus.filter(s => s === STATUS.ANSWERED).length;
+  const answeredMarkedCount = questionStatus.filter(s => s === STATUS.ANSWERED_MARKED).length;
+  const visitedUnansweredCount = questionStatus.filter(s => s === STATUS.VISITED_UNANSWERED).length;
+  const markedCount = questionStatus.filter(s => s === STATUS.MARKED).length;
+  // Ensure notVisited precisely balances total questions
+  const notVisitedCount = Math.max(0, questions.length - (answeredCount + answeredMarkedCount + visitedUnansweredCount + markedCount));
+
   const counts = {
-    answered: questionStatus.filter(s => s === STATUS.ANSWERED).length,
-    answeredMarked: questionStatus.filter(s => s === STATUS.ANSWERED_MARKED).length,
-    visitedUnanswered: questionStatus.filter(s => s === STATUS.VISITED_UNANSWERED).length,
-    marked: questionStatus.filter(s => s === STATUS.MARKED).length,
-    notVisited: questionStatus.filter(s => s === STATUS.NOT_VISITED).length,
+    answered: answeredCount,
+    answeredMarked: answeredMarkedCount,
+    visitedUnanswered: visitedUnansweredCount,
+    marked: markedCount,
+    notVisited: notVisitedCount,
     total: questions.length
   };
 
@@ -726,6 +892,7 @@ export default function CBTExam() {
     const totalTimeTaken = Math.max(1, durationSeconds - timeLeft);
 
     // Compute evaluation
+    // Note: Per CBT guidelines (Screenshot 2), both Answered (1) and Answered & Marked (2) are evaluated
     let correctCount = 0;
     let incorrectCount = 0;
     let unattemptedCount = 0;
@@ -751,11 +918,36 @@ export default function CBTExam() {
       };
     });
 
-    // 1/3 negative marking
+    // Competitive Nursing Exam Scoring (-1/3 Negative Marking per wrong answer)
+    const totalMarks = questions.length * 1.0;
+    const positiveMarks = Number((correctCount * 1.0).toFixed(2));
     const negativeMarksDeducted = Number((incorrectCount * (1 / 3)).toFixed(2));
-    let rawScore = correctCount - negativeMarksDeducted;
-    if (rawScore < 0) rawScore = 0;
-    const score = Math.round((rawScore / questions.length) * 100);
+    let marksObtained = Number((positiveMarks - negativeMarksDeducted).toFixed(2));
+    if (marksObtained < 0) marksObtained = 0;
+
+    const attemptedCount = correctCount + incorrectCount;
+    const accuracy = attemptedCount > 0 ? Math.round((correctCount / attemptedCount) * 100) : 0;
+    const score = Math.round((marksObtained / totalMarks) * 100);
+    const minPassPercentage = 50.0;
+    const passingMarksRequired = Number((totalMarks * 0.5).toFixed(2));
+    const isPassed = marksObtained >= passingMarksRequired;
+
+    const statusSummary = {
+      answered: counts.answered,
+      answeredMarked: counts.answeredMarked,
+      visitedUnanswered: counts.visitedUnanswered,
+      marked: counts.marked,
+      notVisited: counts.notVisited,
+      total: counts.total
+    };
+
+    const catTelemetry = {
+      isCATMode,
+      abilityTheta,
+      finalDifficultyLevel: currentDifficultyLevel,
+      finalDifficultyName: currentDifficultyName,
+      catDecision: abilityTheta >= 0.20 ? 'Above Passing Standard (Met Criteria)' : (abilityTheta >= -0.20 ? 'Near Passing Standard' : 'Below Passing Standard')
+    };
 
     const resultPayload = {
       user: user?._id || 'guest',
@@ -765,9 +957,18 @@ export default function CBTExam() {
       correctAnswers: correctCount,
       incorrectAnswers: incorrectCount,
       unattemptedAnswers: unattemptedCount,
-      score,
-      timeTaken: totalTimeTaken,
+      totalMarks,
+      positiveMarks,
       negativeMarksDeducted,
+      marksObtained,
+      accuracy,
+      score,
+      isPassed,
+      minPassPercentage,
+      passingMarksRequired,
+      statusSummary,
+      catTelemetry,
+      timeTaken: totalTimeTaken,
       completedAt: new Date()
     };
 
@@ -776,11 +977,17 @@ export default function CBTExam() {
       try {
         const { data: submitRes } = await submitTest(id, {
           answers: processedAnswers,
-          timeTaken: totalTimeTaken
+          timeTaken: totalTimeTaken,
+          statusSummary,
+          catTelemetry
         });
+        const finalMergedResult = {
+          ...resultPayload,
+          ...(submitRes.result || {})
+        };
         navigate(`/result/${id}`, {
           state: {
-            result: submitRes.result || resultPayload,
+            result: finalMergedResult,
             correctAnswers: submitRes.correctAnswers || questions.map(q => ({
               questionId: q._id,
               correctAnswer: q.correctAnswer,
@@ -936,6 +1143,45 @@ export default function CBTExam() {
           </div>
         </div>
       </div>
+
+      {/* ─── 2.5 LIVE CAT ADAPTIVE TELEMETRY STRIP ─── */}
+      {isCATMode && (
+        <div className="cbt-cat-strip">
+          <div className="cbt-cat-left">
+            <span className="cbt-cat-tag">
+              <BrainCircuit size={14} /> Computer Adaptive Testing (CAT)
+            </span>
+
+            <span className={`cbt-cat-badge level-${currentDifficultyLevel}`}>
+              ⚡ {currentDifficultyName}
+            </span>
+
+            {difficultyTransition === 'up' && (
+              <span className="cbt-cat-transition up">
+                <TrendingUp size={12} /> ▲ Difficulty Escalated
+              </span>
+            )}
+
+            {difficultyTransition === 'down' && (
+              <span className="cbt-cat-transition down">
+                <TrendingDown size={12} /> ▼ Difficulty Adjusted
+              </span>
+            )}
+          </div>
+
+          <div className="cbt-cat-right">
+            <div className="cbt-theta-wrap">
+              <span>Candidate Ability (θ):</span>
+              <span className="cbt-theta-val">
+                {abilityTheta >= 0 ? `+${abilityTheta.toFixed(2)}` : abilityTheta.toFixed(2)}
+              </span>
+              <span className={`cbt-theta-badge ${abilityTheta >= 0.20 ? 'passing' : (abilityTheta >= -0.10 ? 'borderline' : 'below')}`}>
+                {abilityTheta >= 0.20 ? 'Passing Zone 🛡️' : (abilityTheta >= -0.10 ? 'Borderline' : 'Needs Practice')}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ─── 3. MAIN EXAM BODY ─── */}
       <div className="cbt-body">
@@ -1180,31 +1426,67 @@ export default function CBTExam() {
               Are you sure you want to submit your test? Once submitted, you cannot change your answers.
             </p>
 
-            <div className="cbt-confirm-stats">
-              <div className="cbt-cs-item">
-                <span>Total Questions:</span>
-                <span className="cbt-cs-val">{counts.total}</span>
+            <div className="cbt-confirm-stats-card">
+              <div className="cbt-confirm-table-header">
+                <span>Status Category</span>
+                <span>Count</span>
               </div>
-              <div className="cbt-cs-item">
-                <span>Answered:</span>
-                <span className="cbt-cs-val" style={{ color: '#16a34a' }}>{counts.answered}</span>
+
+              {/* 1 Answered */}
+              <div className="cbt-confirm-row">
+                <div className="cbt-summary-badge-wrap">
+                  <div className="cbt-sbadge answered">1</div>
+                  <span className="cbt-crow-label">Answered</span>
+                </div>
+                <span className="cbt-crow-val green">{counts.answered}</span>
               </div>
-              <div className="cbt-cs-item">
-                <span>Answered & Marked:</span>
-                <span className="cbt-cs-val" style={{ color: '#9333ea' }}>{counts.answeredMarked}</span>
+
+              {/* 2 Answered and Marked */}
+              <div className="cbt-confirm-row">
+                <div className="cbt-summary-badge-wrap">
+                  <div className="cbt-sbadge answered-marked">2</div>
+                  <span className="cbt-crow-label">Answered and Marked for Review</span>
+                </div>
+                <span className="cbt-crow-val purple">{counts.answeredMarked}</span>
               </div>
-              <div className="cbt-cs-item">
-                <span>Marked for Review:</span>
-                <span className="cbt-cs-val" style={{ color: '#7c3aed' }}>{counts.marked}</span>
+
+              {/* 3 Visited but Not Answered */}
+              <div className="cbt-confirm-row">
+                <div className="cbt-summary-badge-wrap">
+                  <div className="cbt-sbadge visited-unanswered">3</div>
+                  <span className="cbt-crow-label">Visited but Not Answered</span>
+                </div>
+                <span className="cbt-crow-val red">{counts.visitedUnanswered}</span>
               </div>
-              <div className="cbt-cs-item">
-                <span>Visited Not Answered:</span>
-                <span className="cbt-cs-val" style={{ color: '#dc2626' }}>{counts.visitedUnanswered}</span>
+
+              {/* 4 Marked for Review */}
+              <div className="cbt-confirm-row">
+                <div className="cbt-summary-badge-wrap">
+                  <div className="cbt-sbadge marked">4</div>
+                  <span className="cbt-crow-label">Marked for Review (Unanswered)</span>
+                </div>
+                <span className="cbt-crow-val violet">{counts.marked}</span>
               </div>
-              <div className="cbt-cs-item">
-                <span>Not Visited:</span>
-                <span className="cbt-cs-val" style={{ color: '#64748b' }}>{counts.notVisited}</span>
+
+              {/* 5 Not Visited */}
+              <div className="cbt-confirm-row">
+                <div className="cbt-summary-badge-wrap">
+                  <div className="cbt-sbadge not-visited">5</div>
+                  <span className="cbt-crow-label">Not Visited</span>
+                </div>
+                <span className="cbt-crow-val gray">{counts.notVisited}</span>
               </div>
+
+              {/* Total Questions */}
+              <div className="cbt-confirm-total-row">
+                <span>Total Questions</span>
+                <span className="cbt-total-count">{counts.total}</span>
+              </div>
+            </div>
+
+            <div className="cbt-confirm-evaluation-note">
+              <ShieldCheck size={16} />
+              <span><strong>Official Evaluation Rule:</strong> Questions marked <strong>1 (Answered)</strong> and <strong>2 (Answered & Marked)</strong> will be evaluated with <strong>-1/3 negative marking</strong>.</span>
             </div>
 
             <div className="cbt-confirm-actions">

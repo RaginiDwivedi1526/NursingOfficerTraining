@@ -113,7 +113,8 @@ function AppRoutes() {
         <Route path="/test/:id/take" element={<ExamRoute><CBTExam /></ExamRoute>} />
         <Route path="/test/:id" element={<ExamRoute><TestDetail /></ExamRoute>} />
         
-        <Route path="/result/:id" element={<ProtectedRoute><TestResult /></ProtectedRoute>} />
+        <Route path="/result/:id" element={<ExamRoute><TestResult /></ExamRoute>} />
+        <Route path="/test/:id/result" element={<ExamRoute><TestResult /></ExamRoute>} />
         <Route path="/cat-test" element={<ProtectedRoute><Navigate to="/mock-tests" replace /></ProtectedRoute>} />
         <Route path="/cat-test/live" element={<ProtectedRoute><Navigate to="/tests" replace /></ProtectedRoute>} />
         <Route path="/live-classes" element={<ProtectedRoute><LiveClasses /></ProtectedRoute>} />

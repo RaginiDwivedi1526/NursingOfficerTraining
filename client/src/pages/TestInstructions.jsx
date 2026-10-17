@@ -137,6 +137,7 @@ export default function TestInstructions() {
             <li>To mark the question for review, click on the Mark for Review & Next button.</li>
             <li>In case of doubt on the option chosen for a question, the question can be marked for review by clicking Mark for Review & Next button. In case the marked question is not reviewed, the originally marked option shall be considered for evaluation.</li>
             <li>To navigate between questions, click on the question number from the question palette on the right.</li>
+            <li><strong>Computer Adaptive Testing (CAT):</strong> Questions adapt dynamically to your responses. Every test begins at Level 2 (Base Passing Standard). Correct answers escalate the difficulty, while incorrect answers adjust the difficulty to re-evaluate clinical competency.</li>
           </ol>
 
           {/* Section C: Declaration by User */}

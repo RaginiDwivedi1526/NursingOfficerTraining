@@ -136,6 +136,7 @@ export default function TestDetail() {
               <div className="td-badges">
                 {currentTest.isFree && <span className="td-badge-free">FREE</span>}
                 <span className="td-badge-negative">-{currentTest.negativeMarking}</span>
+                <span style={{ background: '#ede9fe', color: '#6d28d9', fontSize: 11, fontWeight: 800, padding: '3px 10px', borderRadius: 12 }}>⚡ COMPUTER ADAPTIVE (CAT)</span>
                 {currentTest.topic && <span className="td-badge-topic">{currentTest.topic}</span>}
               </div>
             </div>

@@ -24,6 +24,19 @@ const testResultSchema = new mongoose.Schema({
   incorrectAnswers: { type: Number, default: 0 },
   unattemptedAnswers: { type: Number, default: 0 },
   negativeMarksDeducted: { type: Number, default: 0 },
+  marksObtained: { type: Number, default: 0 },
+  totalMarks: { type: Number, default: 0 },
+  accuracy: { type: Number, default: 0 },
+  isPassed: { type: Boolean, default: false },
+  statusSummary: {
+    answered: { type: Number, default: 0 },
+    answeredMarked: { type: Number, default: 0 },
+    visitedUnanswered: { type: Number, default: 0 },
+    marked: { type: Number, default: 0 },
+    notVisited: { type: Number, default: 0 },
+    total: { type: Number, default: 0 }
+  },
+  catTelemetry: { type: mongoose.Schema.Types.Mixed },
   score: { type: Number, default: 0 }, // percentage
   timeTaken: { type: Number, default: 0 }, // total seconds
   topicPerformance: [topicPerformanceSchema],

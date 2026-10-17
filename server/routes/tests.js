@@ -296,15 +296,28 @@ router.post('/:id/submit', protect, async (req, res) => {
     }));
 
     const isMock = test.title.toLowerCase().includes('mock') || 
-                   ['AIIMS', 'ESIC', 'RRB', 'DSSSB', 'PGIMER', 'SGPGI', 'PARAMILITARY'].some(exam => test.topic.includes(exam) || test.title.includes(exam));
+                   ['AIIMS', 'ESIC', 'RRB', 'DSSSB', 'PGIMER', 'SGPGI', 'PARAMILITARY', 'FREE NURSING'].some(exam => test.topic.toUpperCase().includes(exam) || test.title.toUpperCase().includes(exam));
     
-    // Calculate Score with Negative Marking (1/3 for mock tests)
-    const negativeMarking = isMock ? (1/3) : 0;
+    // Calculate Score with Negative Marking (1/3 for mock tests and CBT exams)
+    const negativeMarking = 1 / 3;
     const negativeMarksDeducted = Number((incorrectCount * negativeMarking).toFixed(2));
-    let rawScore = correctCount - negativeMarksDeducted;
-    if (rawScore < 0) rawScore = 0; // Prevent negative total scores
+    const totalMarks = test.questions.length * 1.0;
+    let marksObtained = Number((correctCount - negativeMarksDeducted).toFixed(2));
+    if (marksObtained < 0) marksObtained = 0; // Prevent negative total scores
     
-    const score = Math.round((rawScore / test.questions.length) * 100);
+    const attemptedCount = correctCount + incorrectCount;
+    const accuracy = attemptedCount > 0 ? Math.round((correctCount / attemptedCount) * 100) : 0;
+    const score = Math.round((marksObtained / totalMarks) * 100);
+    const isPassed = marksObtained >= (totalMarks * 0.5);
+
+    const defaultStatusSummary = req.body.statusSummary || {
+      answered: correctCount + incorrectCount,
+      answeredMarked: 0,
+      visitedUnanswered: 0,
+      marked: 0,
+      notVisited: test.questions.length - (correctCount + incorrectCount),
+      total: test.questions.length
+    };
 
     const result = await TestResult.create({
       user: req.user._id,
@@ -314,10 +327,16 @@ router.post('/:id/submit', protect, async (req, res) => {
       correctAnswers: correctCount,
       incorrectAnswers: incorrectCount,
       unattemptedAnswers: test.questions.length - (correctCount + incorrectCount),
+      negativeMarksDeducted,
+      marksObtained,
+      totalMarks,
+      accuracy,
+      isPassed,
+      statusSummary: defaultStatusSummary,
+      catTelemetry: req.body.catTelemetry || null,
       score,
       timeTaken: timeTaken || 0,
-      topicPerformance,
-      negativeMarksDeducted
+      topicPerformance
     });
 
     // Update user's weekly scores (guard against missing createdAt)
