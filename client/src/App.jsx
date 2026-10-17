@@ -9,6 +9,9 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import Dashboard from './pages/Dashboard';
 import TestList from './pages/TestList';
 import TakeTest from './pages/TakeTest';
+import TestDetail from './pages/TestDetail';
+import TestInstructions from './pages/TestInstructions';
+import CBTExam from './pages/CBTExam';
 import TestResult from './pages/TestResult';
 import LiveClasses from './pages/LiveClasses';
 import RecordedClasses from './pages/RecordedClasses';
@@ -72,6 +75,11 @@ const ProtectedRoute = ({ children }) => {
   return user ? <StudentLayout>{children}</StudentLayout> : <Navigate to="/login" />;
 };
 
+const ExamRoute = ({ children }) => {
+  const { user } = useAuth();
+  return user ? children : <Navigate to="/login" />;
+};
+
 const AdminRoute = ({ children }) => {
   const { user } = useAuth();
   return user && user.role === 'admin' ? (
@@ -85,7 +93,7 @@ function AppRoutes() {
   const { user } = useAuth();
   const location = useLocation();
   const hideNav = location.pathname.startsWith('/admin') || 
-                  ['/dashboard', '/tests', '/test/', '/result/', '/live-classes', '/recorded', '/ai-learning', '/study-material', '/notes', '/test-series', '/mock-tests', '/pyq-practice', '/question-bank', '/performance', '/mistakes', '/insights', '/my-plan', '/bookmarks', '/downloads', '/certificates', '/free-tests', '/skill-lab', '/clinical-cases', '/library', '/cat-test'].some(p => location.pathname.startsWith(p));
+                  ['/dashboard', '/tests', '/test/', '/result/', '/free-tests', '/live-classes', '/recorded', '/ai-learning', '/study-material', '/notes', '/test-series', '/mock-tests', '/pyq-practice', '/question-bank', '/performance', '/mistakes', '/insights', '/my-plan', '/bookmarks', '/downloads', '/certificates', '/skill-lab', '/clinical-cases', '/library', '/cat-test'].some(p => location.pathname.startsWith(p));
   return (
     <>
       {!hideNav && <Navbar />}
@@ -97,7 +105,14 @@ function AppRoutes() {
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/tests" element={<ProtectedRoute><TestList /></ProtectedRoute>} />
-        <Route path="/test/:id" element={<ProtectedRoute><TakeTest /></ProtectedRoute>} />
+        
+        {/* CBT Exam Experience Routes */}
+        <Route path="/free-tests/detail/:id" element={<ExamRoute><TestDetail /></ExamRoute>} />
+        <Route path="/test/:id/detail" element={<ExamRoute><TestDetail /></ExamRoute>} />
+        <Route path="/test/:id/instructions" element={<ExamRoute><TestInstructions /></ExamRoute>} />
+        <Route path="/test/:id/take" element={<ExamRoute><CBTExam /></ExamRoute>} />
+        <Route path="/test/:id" element={<ExamRoute><TestDetail /></ExamRoute>} />
+        
         <Route path="/result/:id" element={<ProtectedRoute><TestResult /></ProtectedRoute>} />
         <Route path="/cat-test" element={<ProtectedRoute><Navigate to="/mock-tests" replace /></ProtectedRoute>} />
         <Route path="/cat-test/live" element={<ProtectedRoute><Navigate to="/tests" replace /></ProtectedRoute>} />
@@ -153,8 +168,8 @@ function AppRoutes() {
         <Route path="/admin/reviews" element={<AdminRoute><AdminReviews /></AdminRoute>} />
         <Route path="/admin/reports" element={<AdminRoute><AdminReports /></AdminRoute>} />
       </Routes>
-      {user && <AIDoubtSolver />}
-      <WhatsAppFloat />
+      {user && !location.pathname.includes('/test/') && !location.pathname.includes('/free-tests/detail') && <AIDoubtSolver />}
+      {!location.pathname.includes('/test/') && !location.pathname.includes('/free-tests/detail') && <WhatsAppFloat />}
     </>
   );
 }

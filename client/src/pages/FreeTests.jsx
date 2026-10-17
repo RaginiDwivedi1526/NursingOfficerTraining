@@ -8,15 +8,27 @@ export default function FreeTests() {
   const [activeTab, setActiveTab] = useState('All Tests');
   const TABS = ['All Tests', 'Full Length Tests', 'Subject Wise Tests', 'Sectional Tests', 'Topic Tests'];
 
-  const handleStartAdaptiveTest = (test) => {
+  const handleStartAdaptiveTest = (test, index = 571) => {
     const topic = test.sub.includes('Subject') ? test.title.split(' - ')[0] : 'All Subjects';
-    navigate('/test/adaptive', {
+    const durationNum = parseInt(test.t) || 30;
+    navigate(`/free-tests/detail/${index}`, {
       state: {
+        test: {
+          title: test.title,
+          topic,
+          duration: durationNum,
+          totalQuestions: test.q || 25,
+          totalMarks: test.q || 25,
+          negativeMarking: '1/3',
+          isFree: true,
+          description: 'This is a free practice test designed to help you assess your knowledge and prepare for exams. Take your time and answer all questions to the best of your ability.'
+        },
         title: test.title,
         topic,
-        startingDifficulty: 2,
-        difficultyLevel: 2,
-        difficultyName: 'Standard'
+        duration: durationNum,
+        totalQuestions: test.q || 25,
+        totalMarks: test.q || 25,
+        negativeMarking: '1/3'
       }
     });
   };
@@ -101,10 +113,10 @@ export default function FreeTests() {
               <div className="ft-item-actions">
                 <button 
                   className="ft-btn-start" 
-                  onClick={() => handleStartAdaptiveTest(t)}
-                  style={{ background: '#4f46e5', color: '#fff', fontWeight: 700, cursor: 'pointer' }}
+                  onClick={() => handleStartAdaptiveTest(t, 571 + i)}
+                  style={{ background: '#22c55e', color: '#fff', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
                 >
-                  Start CAT Test
+                  <Play size={14} fill="#fff" /> Start Test
                 </button>
                 <button className="ft-btn-more"><MoreVertical size={16}/></button>
               </div>

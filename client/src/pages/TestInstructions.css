@@ -1,0 +1,260 @@
+/* ─── TEST INSTRUCTIONS PAGE (Screenshot 2 Theme) ─── */
+.ti-wrapper {
+  min-height: 100vh;
+  background-color: #f8fafc;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #1e293b;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header Navbar */
+.ti-nav {
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 12px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.ti-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+}
+
+.ti-logo {
+  height: 42px;
+  width: auto;
+  object-fit: contain;
+}
+
+.ti-brand-name {
+  font-size: 17px;
+  font-weight: 800;
+  color: #0d2b5e;
+  text-transform: uppercase;
+}
+
+.ti-brand-sub {
+  font-size: 11px;
+  color: #0284c7;
+  font-weight: 600;
+}
+
+/* Main Container */
+.ti-main {
+  flex: 1;
+  max-width: 1180px;
+  width: 100%;
+  margin: 20px auto 40px auto;
+  padding: 0 20px;
+}
+
+.ti-card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  padding: 28px 32px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.ti-heading {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 16px 0;
+  letter-spacing: -0.2px;
+}
+
+/* Test Parameters Table */
+.ti-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 28px;
+  font-size: 13px;
+  border: 1px solid #e2e8f0;
+}
+
+.ti-table td {
+  padding: 10px 16px;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+}
+
+.ti-table td.ti-col-lbl {
+  font-weight: 700;
+  color: #1e293b;
+  width: 25%;
+  background: #f8fafc;
+}
+
+.ti-table td.ti-col-val {
+  font-weight: 500;
+  color: #0f172a;
+}
+
+/* General Instructions Section */
+.ti-section-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 24px 0 14px 0;
+}
+
+.ti-sub-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 16px 0 10px 0;
+}
+
+/* Question Color Coding List */
+.ti-color-coding {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.ti-cc-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 13px;
+  color: #334155;
+}
+
+.ti-cc-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.ti-cc-badge.not-visited {
+  background: #ffffff;
+  border: 1px solid #94a3b8;
+  color: #475569;
+}
+
+.ti-cc-badge.not-answered {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.ti-cc-badge.answered {
+  background: #22c55e;
+  color: #ffffff;
+}
+
+.ti-cc-badge.marked {
+  background: #a855f7;
+  color: #ffffff;
+}
+
+.ti-cc-badge.answered-marked {
+  background: #a855f7;
+  color: #ffffff;
+}
+
+.ti-cc-badge.answered-marked::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #22c55e;
+  border: 1.5px solid #ffffff;
+}
+
+/* Answering Rules List */
+.ti-rules-list {
+  padding-left: 20px;
+  margin: 0 0 24px 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #475569;
+}
+
+.ti-rules-list li {
+  margin-bottom: 6px;
+}
+
+/* Language Warning Note */
+.ti-lang-note {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+
+/* User Declaration */
+.ti-declaration {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 28px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #334155;
+  cursor: pointer;
+}
+
+.ti-declaration input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  cursor: pointer;
+  accent-color: #0d2b5e;
+}
+
+/* Bottom Action Bar */
+.ti-bottom-bar {
+  margin-top: 24px;
+}
+
+.ti-btn-proceed {
+  width: 100%;
+  padding: 15px 28px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.2px;
+}
+
+.ti-btn-proceed.disabled {
+  background: #94a3b8;
+  color: #ffffff;
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+.ti-btn-proceed.active {
+  background: #0d2b5e;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(13, 43, 94, 0.35);
+}
+
+.ti-btn-proceed.active:hover {
+  background: #163a7a;
+  transform: translateY(-1px);
+}

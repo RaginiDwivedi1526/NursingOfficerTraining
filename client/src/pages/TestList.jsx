@@ -222,13 +222,17 @@ function TestList({ defaultTab }) {
   const handleStartTestClick = (test) => {
     const topicToUse = test?.topic || (activeTab === 'practice' && selectedSubject !== 'All Subjects' ? selectedSubject : 'All Subjects');
     const examTypeToUse = activeTab === 'mock' ? 'nursing_officer' : 'nclex_rn';
-    const testId = test?._id || 'adaptive';
+    const testId = test?._id || '571';
 
-    navigate(`/test/${testId}`, {
+    navigate(`/test/${testId}/detail`, {
       state: {
         test,
         title: test?.title || `${topicToUse} - Practice Test`,
         topic: topicToUse,
+        duration: test?.duration || 30,
+        totalQuestions: test?.questions?.length || test?.totalQuestions || 25,
+        totalMarks: (test?.questions?.length || test?.totalQuestions || 25) * 1,
+        negativeMarking: '1/3',
         startingDifficulty: 2,
         examType: examTypeToUse
       }
