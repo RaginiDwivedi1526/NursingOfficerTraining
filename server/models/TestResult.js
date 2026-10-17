@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const answerSchema = new mongoose.Schema({
-  questionId: { type: mongoose.Schema.Types.ObjectId },
+  questionId: { type: mongoose.Schema.Types.Mixed },
   selectedAnswer: { type: Number },
   isCorrect: { type: Boolean },
   topic: { type: String },
@@ -23,6 +23,7 @@ const testResultSchema = new mongoose.Schema({
   correctAnswers: { type: Number, default: 0 },
   incorrectAnswers: { type: Number, default: 0 },
   unattemptedAnswers: { type: Number, default: 0 },
+  positiveMarks: { type: Number, default: 0 },
   negativeMarksDeducted: { type: Number, default: 0 },
   marksObtained: { type: Number, default: 0 },
   totalMarks: { type: Number, default: 0 },

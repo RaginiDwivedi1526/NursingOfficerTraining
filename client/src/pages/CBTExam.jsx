@@ -581,44 +581,49 @@ export default function CBTExam() {
     let durationMins = location.state?.duration || location.state?.test?.duration || 30;
 
     setTestTitle(initialTitle);
-    setIsCATMode(true);
     setCurrentDifficultyLevel(2);
     setCurrentDifficultyName('Level 2: Base (Standard Passing)');
     setAbilityTheta(0.0);
     setDifficultyTransition(null);
 
-    // 1. Attempt to initialize Computer Adaptive Testing session with backend CAT Engine
-    try {
-      const { data } = await startCATSession({
-        title: initialTitle,
-        topic,
-        examType,
-        startingDifficulty: 2,
-        minQuestions: 20,
-        maxQuestions: 25
-      });
+    const isMongoId = Boolean(id && id !== 'adaptive' && id !== '571' && /^[0-9a-fA-F]{24}$/.test(id));
 
-      if (data && data.currentQuestion) {
-        setCatSession(data);
-        setCurrentDifficultyLevel(data.currentDifficultyLevel || 2);
-        setCurrentDifficultyName(data.difficultyName || 'Level 2: Base (Standard Passing)');
-        setAbilityTheta(data.abilityTheta || 0.0);
+    // 1. If taking a database test (Mock test, Test Series, AI Generated Test, PYQ):
+    if (isMongoId) {
+      setIsCATMode(false);
+      try {
+        const { data } = await getTest(id);
+        if (data && data.questions && data.questions.length > 0) {
+          const testQs = data.questions;
+          const total = testQs.length;
+          const mins = data.duration || durationMins || 30;
 
-        const firstQ = {
-          _id: data.currentQuestion._id || 'cat_q1',
-          questionText: data.currentQuestion.questionText,
-          options: data.currentQuestion.options,
-          topic: data.currentQuestion.topic || topic,
-          difficultyLevel: data.currentDifficultyLevel || 2,
-          difficultyName: data.difficultyName || 'Level 2: Base',
-          correctAnswer: data.currentQuestion.correctAnswer
-        };
+          setTestTitle(data.title || initialTitle);
+          setQuestions(testQs);
 
-        const updatedQuestions = [...DEFAULT_25_QUESTIONS];
-        updatedQuestions[0] = firstQ;
-        setQuestions(updatedQuestions);
+          const initialStatus = new Array(total).fill(STATUS.NOT_VISITED);
+          initialStatus[0] = STATUS.VISITED_UNANSWERED;
+          setQuestionStatus(initialStatus);
 
-        const total = 25;
+          setUserAnswers(new Array(total).fill(null));
+          setQuestionTimes(new Array(total).fill(0));
+
+          const totalSeconds = mins * 60;
+          setDurationSeconds(totalSeconds);
+          setTimeLeft(totalSeconds);
+          startTimeRef.current = Date.now();
+          return;
+        }
+      } catch (fetchErr) {
+        console.warn('[CBTExam] Could not fetch test by ID from backend, checking state:', fetchErr.message);
+      }
+
+      // Check if questions were passed via navigation state
+      if (location.state?.test?.questions && location.state.test.questions.length > 0) {
+        const testQs = location.state.test.questions;
+        const total = testQs.length;
+        setQuestions(testQs);
+
         const initialStatus = new Array(total).fill(STATUS.NOT_VISITED);
         initialStatus[0] = STATUS.VISITED_UNANSWERED;
         setQuestionStatus(initialStatus);
@@ -632,11 +637,62 @@ export default function CBTExam() {
         startTimeRef.current = Date.now();
         return;
       }
-    } catch (catErr) {
-      console.warn('[CBTExam] Server CAT session start failed, using authentic clinical questions with client-side CAT adaptation:', catErr.message);
     }
 
-    // 2. Client-side fallback CAT mode using authentic clinical questions
+    // 2. If explicitly adaptive mode:
+    if (id === 'adaptive' || location.state?.isCAT) {
+      setIsCATMode(true);
+      try {
+        const { data } = await startCATSession({
+          title: initialTitle,
+          topic,
+          examType,
+          startingDifficulty: 2,
+          minQuestions: 20,
+          maxQuestions: 25
+        });
+
+        if (data && data.currentQuestion) {
+          setCatSession(data);
+          setCurrentDifficultyLevel(data.currentDifficultyLevel || 2);
+          setCurrentDifficultyName(data.difficultyName || 'Level 2: Base (Standard Passing)');
+          setAbilityTheta(data.abilityTheta || 0.0);
+
+          const firstQ = {
+            _id: data.currentQuestion._id || 'cat_q1',
+            questionText: data.currentQuestion.questionText,
+            options: data.currentQuestion.options,
+            topic: data.currentQuestion.topic || topic,
+            difficultyLevel: data.currentDifficultyLevel || 2,
+            difficultyName: data.difficultyName || 'Level 2: Base',
+            correctAnswer: data.currentQuestion.correctAnswer
+          };
+
+          const updatedQuestions = [...DEFAULT_25_QUESTIONS];
+          updatedQuestions[0] = firstQ;
+          setQuestions(updatedQuestions);
+
+          const total = 25;
+          const initialStatus = new Array(total).fill(STATUS.NOT_VISITED);
+          initialStatus[0] = STATUS.VISITED_UNANSWERED;
+          setQuestionStatus(initialStatus);
+
+          setUserAnswers(new Array(total).fill(null));
+          setQuestionTimes(new Array(total).fill(0));
+
+          const totalSeconds = durationMins * 60;
+          setDurationSeconds(totalSeconds);
+          setTimeLeft(totalSeconds);
+          startTimeRef.current = Date.now();
+          return;
+        }
+      } catch (catErr) {
+        console.warn('[CBTExam] CAT start failed, falling back to clinical questions:', catErr.message);
+      }
+    }
+
+    // 3. Fallback for Free Practice Test (id === '571' or local default)
+    setIsCATMode(false);
     const total = DEFAULT_25_QUESTIONS.length;
     setQuestions(DEFAULT_25_QUESTIONS);
 
@@ -899,22 +955,24 @@ export default function CBTExam() {
 
     const processedAnswers = questions.map((q, i) => {
       const chosen = userAnswers[i];
-      const isAttempted = chosen !== null && chosen !== undefined;
-      const isCorrect = isAttempted && chosen === q.correctAnswer;
+      const isAttempted = chosen !== null && chosen !== undefined && chosen !== -1;
+      const hasAnswerKey = q.correctAnswer !== undefined && q.correctAnswer !== null;
+      const isCorrect = isAttempted && hasAnswerKey && Number(chosen) === Number(q.correctAnswer);
 
       if (isAttempted) {
         if (isCorrect) correctCount++;
-        else incorrectCount++;
+        else if (hasAnswerKey) incorrectCount++;
       } else {
         unattemptedCount++;
       }
 
       return {
         questionId: q._id,
-        selectedAnswer: isAttempted ? chosen : -1,
+        questionIndex: i,
+        selectedAnswer: isAttempted ? Number(chosen) : -1,
         isCorrect,
         topic: q.topic || 'Nursing',
-        timeTaken: Math.round(totalTimeTaken / questions.length)
+        timeTaken: questionTimes[i] || Math.round(totalTimeTaken / Math.max(1, questions.length))
       };
     });
 
@@ -927,7 +985,7 @@ export default function CBTExam() {
 
     const attemptedCount = correctCount + incorrectCount;
     const accuracy = attemptedCount > 0 ? Math.round((correctCount / attemptedCount) * 100) : 0;
-    const score = Math.round((marksObtained / totalMarks) * 100);
+    const score = totalMarks > 0 ? Math.round((marksObtained / totalMarks) * 100) : 0;
     const minPassPercentage = 50.0;
     const passingMarksRequired = Number((totalMarks * 0.5).toFixed(2));
     const isPassed = marksObtained >= passingMarksRequired;
@@ -938,7 +996,7 @@ export default function CBTExam() {
       visitedUnanswered: counts.visitedUnanswered,
       marked: counts.marked,
       notVisited: counts.notVisited,
-      total: counts.total
+      total: questions.length
     };
 
     const catTelemetry = {
@@ -973,7 +1031,7 @@ export default function CBTExam() {
     };
 
     // Try posting to backend if mongo ID
-    if (id && id !== 'adaptive' && id.match(/^[0-9a-fA-F]{24}$/)) {
+    if (id && id !== 'adaptive' && id !== '571' && /^[0-9a-fA-F]{24}$/.test(id)) {
       try {
         const { data: submitRes } = await submitTest(id, {
           answers: processedAnswers,
@@ -981,9 +1039,16 @@ export default function CBTExam() {
           statusSummary,
           catTelemetry
         });
+        const backendResult = submitRes?.result || {};
         const finalMergedResult = {
           ...resultPayload,
-          ...(submitRes.result || {})
+          ...backendResult,
+          positiveMarks: backendResult.positiveMarks !== undefined ? backendResult.positiveMarks : resultPayload.positiveMarks,
+          marksObtained: backendResult.marksObtained !== undefined ? backendResult.marksObtained : resultPayload.marksObtained,
+          score: backendResult.score !== undefined ? backendResult.score : resultPayload.score,
+          accuracy: backendResult.accuracy !== undefined ? backendResult.accuracy : resultPayload.accuracy,
+          statusSummary: backendResult.statusSummary || statusSummary,
+          answers: (backendResult.answers && backendResult.answers.length > 0) ? backendResult.answers : processedAnswers
         };
         navigate(`/result/${id}`, {
           state: {

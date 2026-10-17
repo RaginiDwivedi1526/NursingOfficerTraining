@@ -1,20 +1,75 @@
-import React, { useState } from 'react';
-import { useLocation, Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useLocation, Link, useNavigate, useParams } from 'react-router-dom';
 import { 
   Award, Trophy, Heart, BookOpen, CheckCircle2, XCircle, Lightbulb, 
-  BarChart3, ClipboardList, ArrowLeft, Filter, ShieldCheck, Home
+  BarChart3, ClipboardList, ArrowLeft, Filter, ShieldCheck, Home, Loader2
 } from 'lucide-react';
 import TestResultSummary from '../components/tests/TestResultSummary';
 import FormattedExplanation from '../components/tests/FormattedExplanation';
+import { getMyResults, getTest } from '../services/api';
 import logo from '../assets/logo.png';
 import './TestResult.css';
 
 export default function TestResult() {
+  const { id } = useParams();
   const { state } = useLocation();
   const navigate = useNavigate();
   const [filterMode, setFilterMode] = useState('all'); // 'all' | 'correct' | 'incorrect' | 'unattempted'
+  const [loadedState, setLoadedState] = useState(state);
+  const [loading, setLoading] = useState(false);
 
-  if (!state?.result) {
+  // Auto-restore test result from backend if state was lost on page refresh
+  useEffect(() => {
+    if (!loadedState?.result && id && id !== 'adaptive' && id !== '571' && /^[0-9a-fA-F]{24}$/.test(id)) {
+      setLoading(true);
+      (async () => {
+        try {
+          const [resResp, testResp] = await Promise.allSettled([
+            getMyResults(),
+            getTest(id)
+          ]);
+
+          const results = resResp.status === 'fulfilled' ? resResp.value?.data : [];
+          const testData = testResp.status === 'fulfilled' ? testResp.value?.data : null;
+
+          const matchingResult = Array.isArray(results) 
+            ? results.find(r => String(r.test?._id || r.test) === String(id)) 
+            : null;
+
+          if (matchingResult) {
+            setLoadedState({
+              result: matchingResult,
+              test: testData || { _id: id, title: matchingResult.test?.title || 'Nursing Examination', questions: testData?.questions || [] },
+              correctAnswers: testData?.questions?.map(q => ({
+                questionId: q._id,
+                correctAnswer: q.correctAnswer,
+                explanation: q.explanation
+              })) || []
+            });
+          }
+        } catch (err) {
+          console.warn('[TestResult] Auto-restore result error:', err);
+        } finally {
+          setLoading(false);
+        }
+      })();
+    }
+  }, [id, loadedState]);
+
+  if (loading) {
+    return (
+      <div className="trs-page-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+        <div style={{ textAlign: 'center', color: '#0284c7' }}>
+          <Loader2 size={36} className="animate-spin" style={{ margin: '0 auto 12px' }} />
+          <p style={{ fontWeight: 600 }}>Loading Examination Scorecard & Analysis...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const activeData = loadedState || state;
+
+  if (!activeData?.result) {
     return (
       <div className="trs-page-wrapper">
         <div className="trs-empty-state">
@@ -28,22 +83,47 @@ export default function TestResult() {
     );
   }
 
-  const { result, correctAnswers, test } = state;
+  const { result, correctAnswers, test } = activeData;
   const testTitle = test?.title || result?.test?.title || 'Free Nursing Test - 180/180';
   const questions = test?.questions || [];
 
   // Filter questions for review
   const filteredQuestions = questions.map((q, i) => {
-    const userAnswer = result.answers ? result.answers[i] : null;
-    const correct = correctAnswers ? correctAnswers.find(ca => ca.questionId === q._id) : null;
-    const isAttempted = userAnswer?.selectedAnswer !== undefined && userAnswer?.selectedAnswer !== null && userAnswer?.selectedAnswer !== -1;
-    const isCorrect = isAttempted && (userAnswer?.isCorrect || userAnswer?.selectedAnswer === correct?.correctAnswer);
+    // 1. Find user's answer: by questionId or by index
+    const userAnswer = result.answers
+      ? (result.answers.find(a => String(a.questionId) === String(q._id)) || result.answers[i])
+      : null;
+
+    // 2. Find correct answer: from correctAnswers payload or fallback to question itself
+    const correctObj = correctAnswers
+      ? correctAnswers.find(ca => String(ca.questionId) === String(q._id))
+      : null;
+
+    const correctAnswerIndex = (correctObj && correctObj.correctAnswer !== undefined)
+      ? correctObj.correctAnswer
+      : q.correctAnswer;
+
+    const explanationText = (correctObj && correctObj.explanation)
+      ? correctObj.explanation
+      : q.explanation;
+
+    const isAttempted = userAnswer?.selectedAnswer !== undefined && 
+                        userAnswer?.selectedAnswer !== null && 
+                        Number(userAnswer?.selectedAnswer) !== -1;
+
+    const isCorrect = isAttempted && (
+      userAnswer?.isCorrect === true || 
+      (correctAnswerIndex !== undefined && Number(userAnswer?.selectedAnswer) === Number(correctAnswerIndex))
+    );
     
     return {
       q,
       originalIndex: i,
       userAnswer,
-      correct,
+      correct: {
+        correctAnswer: correctAnswerIndex,
+        explanation: explanationText
+      },
       isAttempted,
       isCorrect
     };
@@ -54,12 +134,25 @@ export default function TestResult() {
     return true;
   });
 
-  const correctTotal = questions.filter((_, i) => result.answers?.[i]?.isCorrect).length;
-  const incorrectTotal = questions.filter((_, i) => {
-    const a = result.answers?.[i];
-    return a && a.selectedAnswer !== -1 && a.selectedAnswer !== null && !a.isCorrect;
-  }).length;
-  const unattemptedTotal = questions.length - (correctTotal + incorrectTotal);
+  const correctTotal = result.correctAnswers !== undefined
+    ? result.correctAnswers
+    : questions.filter((q, i) => {
+        const u = result.answers?.find(a => String(a.questionId) === String(q._id)) || result.answers?.[i];
+        const c = correctAnswers?.find(ca => String(ca.questionId) === String(q._id))?.correctAnswer ?? q.correctAnswer;
+        return u && Number(u.selectedAnswer) !== -1 && u.selectedAnswer !== undefined && (u.isCorrect || Number(u.selectedAnswer) === Number(c));
+      }).length;
+
+  const incorrectTotal = result.incorrectAnswers !== undefined
+    ? result.incorrectAnswers
+    : questions.filter((q, i) => {
+        const u = result.answers?.find(a => String(a.questionId) === String(q._id)) || result.answers?.[i];
+        const c = correctAnswers?.find(ca => String(ca.questionId) === String(q._id))?.correctAnswer ?? q.correctAnswer;
+        return u && Number(u.selectedAnswer) !== -1 && u.selectedAnswer !== undefined && !u.isCorrect && Number(u.selectedAnswer) !== Number(c);
+      }).length;
+
+  const unattemptedTotal = result.unattemptedAnswers !== undefined
+    ? result.unattemptedAnswers
+    : Math.max(0, questions.length - (correctTotal + incorrectTotal));
 
   return (
     <div className="cbt-result-shell">
@@ -93,7 +186,7 @@ export default function TestResult() {
         <TestResultSummary result={result} testId={test?._id} testTitle={testTitle} />
 
         {/* ─── 3. ANSWER REVIEW SECTION ─── */}
-        {questions.length > 0 && correctAnswers && (
+        {questions.length > 0 && (
           <div className="cbt-review-card">
             
             <div className="cbt-review-header">
@@ -161,8 +254,8 @@ export default function TestResult() {
 
                     <div className="cbt-qr-options">
                       {q.options.map((opt, optIdx) => {
-                        const isUserChoice = isAttempted && userAnswer?.selectedAnswer === optIdx;
-                        const isCorrectOption = correct?.correctAnswer === optIdx;
+                        const isUserChoice = isAttempted && Number(userAnswer?.selectedAnswer) === optIdx;
+                        const isCorrectOption = correct?.correctAnswer !== undefined && Number(correct.correctAnswer) === optIdx;
 
                         let optClass = 'cbt-opt-normal';
                         if (isCorrectOption) optClass = 'cbt-opt-correct';
@@ -180,6 +273,11 @@ export default function TestResult() {
                             {isUserChoice && !isCorrect && (
                               <span className="cbt-opt-status-tag red">
                                 <XCircle size={14} /> Your Choice
+                              </span>
+                            )}
+                            {isUserChoice && isCorrect && (
+                              <span className="cbt-opt-status-tag green">
+                                <CheckCircle2 size={14} /> Your Correct Choice
                               </span>
                             )}
                           </div>

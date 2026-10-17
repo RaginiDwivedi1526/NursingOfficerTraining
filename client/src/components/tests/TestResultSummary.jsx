@@ -21,23 +21,39 @@ export default function TestResultSummary({ result, testId, testTitle }) {
   if (!result) return null;
 
   // 1. Precise Quantitative Scoring
-  const totalQuestions = result.totalQuestions || 25;
-  const totalMarks = result.totalMarks || (totalQuestions * 1.0);
-  const correctCount = result.correctAnswers || 0;
-  const incorrectCount = result.incorrectAnswers || 0;
-  const unattemptedCount = result.unattemptedAnswers !== undefined ? result.unattemptedAnswers : Math.max(0, totalQuestions - (correctCount + incorrectCount));
+  const totalQuestions = Number(result.totalQuestions || (result.answers ? result.answers.length : 25));
+  const totalMarks = Number(result.totalMarks || (totalQuestions * 1.0));
+  const correctCount = Number(result.correctAnswers || 0);
+  const incorrectCount = Number(result.incorrectAnswers || 0);
+  const unattemptedCount = result.unattemptedAnswers !== undefined 
+    ? Number(result.unattemptedAnswers) 
+    : Math.max(0, totalQuestions - (correctCount + incorrectCount));
   
-  const positiveMarks = result.positiveMarks !== undefined ? Number(result.positiveMarks) : Number((correctCount * 1.0).toFixed(2));
-  const negativeMarksDeducted = result.negativeMarksDeducted !== undefined ? Number(result.negativeMarksDeducted) : Number((incorrectCount * (1 / 3)).toFixed(2));
+  const positiveMarks = result.positiveMarks !== undefined 
+    ? Number(result.positiveMarks) 
+    : Number((correctCount * 1.0).toFixed(2));
+  const negativeMarksDeducted = result.negativeMarksDeducted !== undefined 
+    ? Number(result.negativeMarksDeducted) 
+    : Number((incorrectCount * (1 / 3)).toFixed(2));
   
-  const marksObtained = result.marksObtained !== undefined ? Number(result.marksObtained) : Math.max(0, Number((positiveMarks - negativeMarksDeducted).toFixed(2)));
+  const marksObtained = result.marksObtained !== undefined 
+    ? Number(result.marksObtained) 
+    : Math.max(0, Number((positiveMarks - negativeMarksDeducted).toFixed(2)));
   const attemptedCount = correctCount + incorrectCount;
-  const accuracy = result.accuracy !== undefined ? result.accuracy : (attemptedCount > 0 ? Math.round((correctCount / attemptedCount) * 100) : 0);
-  const scorePercentage = result.score !== undefined ? result.score : Math.round((marksObtained / totalMarks) * 100);
+  const accuracy = result.accuracy !== undefined 
+    ? Number(result.accuracy) 
+    : (attemptedCount > 0 ? Math.round((correctCount / attemptedCount) * 100) : 0);
+  const scorePercentage = result.score !== undefined 
+    ? Number(result.score) 
+    : (totalMarks > 0 ? Math.round((marksObtained / totalMarks) * 100) : 0);
   
-  const minPassPercentage = result.minPassPercentage || 50.0;
-  const passingMarksRequired = result.passingMarksRequired !== undefined ? Number(result.passingMarksRequired) : Number((totalMarks * (minPassPercentage / 100)).toFixed(2));
-  const isPassed = result.isPassed !== undefined ? result.isPassed : (marksObtained >= passingMarksRequired);
+  const minPassPercentage = Number(result.minPassPercentage || 50.0);
+  const passingMarksRequired = result.passingMarksRequired !== undefined 
+    ? Number(result.passingMarksRequired) 
+    : Number((totalMarks * (minPassPercentage / 100)).toFixed(2));
+  const isPassed = result.isPassed !== undefined 
+    ? Boolean(result.isPassed) 
+    : (marksObtained >= passingMarksRequired);
 
   // 2. Question Status Summary (Matching Screenshot 2 & 3)
   const statusSummary = result.statusSummary || {

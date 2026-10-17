@@ -248,9 +248,11 @@ router.get('/:id', protect, async (req, res) => {
 // POST /api/tests/:id/submit - Submit test answers
 router.post('/:id/submit', protect, async (req, res) => {
   try {
-    const { answers, timeTaken } = req.body; // answers: [{ questionId, selectedAnswer, timeTaken }]
+    const { answers, timeTaken } = req.body; // answers: [{ questionId, questionIndex, selectedAnswer, timeTaken }]
     const test = await Test.findById(req.params.id);
     if (!test) return res.status(404).json({ message: 'Test not found' });
+
+    const mongoose = require('mongoose');
 
     // Process answers
     let correctCount = 0;
@@ -258,12 +260,34 @@ router.post('/:id/submit', protect, async (req, res) => {
     const topicMap = {};
     const processedAnswers = [];
 
-    for (const ans of answers) {
-      const question = test.questions.id(ans.questionId);
+    const answerList = Array.isArray(answers) ? answers : [];
+
+    for (let i = 0; i < answerList.length; i++) {
+      const ans = answerList[i];
+      let question = null;
+
+      // 1. Try matching by ObjectId if valid
+      if (ans.questionId) {
+        if (test.questions.id && mongoose.Types.ObjectId.isValid(ans.questionId)) {
+          question = test.questions.id(ans.questionId);
+        }
+        if (!question) {
+          question = test.questions.find(q => String(q._id) === String(ans.questionId));
+        }
+      }
+
+      // 2. If not matched by ID, try matching by questionIndex or array index i
+      if (!question) {
+        const targetIndex = ans.questionIndex !== undefined ? ans.questionIndex : i;
+        if (targetIndex >= 0 && targetIndex < test.questions.length) {
+          question = test.questions[targetIndex];
+        }
+      }
+
       if (!question) continue;
 
-      const isCorrect = question.correctAnswer === ans.selectedAnswer;
       const isAttempted = ans.selectedAnswer !== -1 && ans.selectedAnswer !== undefined && ans.selectedAnswer !== null;
+      const isCorrect = isAttempted && Number(question.correctAnswer) === Number(ans.selectedAnswer);
 
       if (isCorrect) {
         correctCount++;
@@ -272,17 +296,18 @@ router.post('/:id/submit', protect, async (req, res) => {
       }
 
       // Track topic performance
-      if (!topicMap[question.topic]) {
-        topicMap[question.topic] = { total: 0, correct: 0 };
+      const topicName = question.topic || test.topic || 'General Nursing';
+      if (!topicMap[topicName]) {
+        topicMap[topicName] = { total: 0, correct: 0 };
       }
-      topicMap[question.topic].total++;
-      if (isCorrect) topicMap[question.topic].correct++;
+      topicMap[topicName].total++;
+      if (isCorrect) topicMap[topicName].correct++;
 
       processedAnswers.push({
-        questionId: ans.questionId,
-        selectedAnswer: ans.selectedAnswer,
+        questionId: question._id,
+        selectedAnswer: isAttempted ? Number(ans.selectedAnswer) : -1,
         isCorrect,
-        topic: question.topic,
+        topic: topicName,
         timeTaken: ans.timeTaken || 0
       });
     }
@@ -292,22 +317,20 @@ router.post('/:id/submit', protect, async (req, res) => {
       topic,
       totalQuestions: data.total,
       correctAnswers: data.correct,
-      accuracy: Math.round((data.correct / data.total) * 100)
+      accuracy: data.total > 0 ? Math.round((data.correct / data.total) * 100) : 0
     }));
 
-    const isMock = test.title.toLowerCase().includes('mock') || 
-                   ['AIIMS', 'ESIC', 'RRB', 'DSSSB', 'PGIMER', 'SGPGI', 'PARAMILITARY', 'FREE NURSING'].some(exam => test.topic.toUpperCase().includes(exam) || test.title.toUpperCase().includes(exam));
-    
-    // Calculate Score with Negative Marking (1/3 for mock tests and CBT exams)
+    // Calculate Score with -1/3 Negative Marking per wrong answer
     const negativeMarking = 1 / 3;
     const negativeMarksDeducted = Number((incorrectCount * negativeMarking).toFixed(2));
     const totalMarks = test.questions.length * 1.0;
-    let marksObtained = Number((correctCount - negativeMarksDeducted).toFixed(2));
+    const positiveMarks = Number((correctCount * 1.0).toFixed(2));
+    let marksObtained = Number((positiveMarks - negativeMarksDeducted).toFixed(2));
     if (marksObtained < 0) marksObtained = 0; // Prevent negative total scores
     
     const attemptedCount = correctCount + incorrectCount;
     const accuracy = attemptedCount > 0 ? Math.round((correctCount / attemptedCount) * 100) : 0;
-    const score = Math.round((marksObtained / totalMarks) * 100);
+    const score = totalMarks > 0 ? Math.round((marksObtained / totalMarks) * 100) : 0;
     const isPassed = marksObtained >= (totalMarks * 0.5);
 
     const defaultStatusSummary = req.body.statusSummary || {
@@ -315,7 +338,7 @@ router.post('/:id/submit', protect, async (req, res) => {
       answeredMarked: 0,
       visitedUnanswered: 0,
       marked: 0,
-      notVisited: test.questions.length - (correctCount + incorrectCount),
+      notVisited: Math.max(0, test.questions.length - (correctCount + incorrectCount)),
       total: test.questions.length
     };
 
@@ -326,7 +349,8 @@ router.post('/:id/submit', protect, async (req, res) => {
       totalQuestions: test.questions.length,
       correctAnswers: correctCount,
       incorrectAnswers: incorrectCount,
-      unattemptedAnswers: test.questions.length - (correctCount + incorrectCount),
+      unattemptedAnswers: Math.max(0, test.questions.length - (correctCount + incorrectCount)),
+      positiveMarks,
       negativeMarksDeducted,
       marksObtained,
       totalMarks,
@@ -346,9 +370,12 @@ router.post('/:id/submit', protect, async (req, res) => {
       $push: { weeklyScores: { week: currentWeek, score, date: new Date() } }
     });
 
-    // Return result with correct answers for review (reuse already-fetched test)
+    // Return result with correct answers and explanations for comprehensive review
+    const resultObj = result.toObject();
+    resultObj.positiveMarks = positiveMarks;
+
     res.status(201).json({
-      result,
+      result: resultObj,
       correctAnswers: test.questions.map(q => ({
         questionId: q._id,
         correctAnswer: q.correctAnswer,
