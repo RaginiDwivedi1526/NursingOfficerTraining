@@ -388,39 +388,39 @@ const resolveBankKey = (unit = '', subject = '') => {
     return 'Emergency & Critical Care Nursing';
   }
 
-  // 2. Community Health, Epidemiology & Public Health
+  // 2. Infection Prevention, Control & Biomedical Waste (MUST be before generic Management)
+  if (target.includes('infect') || target.includes('aseps') || target.includes('sterile') || target.includes('ppe') || target.includes('biomedical') || target.includes('waste') || target.includes('isolation') || target.includes('hygiene') || target.includes('decontaminat') || target.includes('steriliz') || target.includes('wound care') || target.includes('dressing')) {
+    return 'Infection Prevention and Control';
+  }
+
+  // 3. Community Health, Epidemiology & Public Health
   if (target.includes('community') || target.includes('epidemiol') || target.includes('public health') || target.includes('cold chain') || target.includes('sanitation') || target.includes('national health') || target.includes('health program') || target.includes('family health') || target.includes('water purification')) {
     return 'Community Health Nursing';
   }
 
-  // 3. Nursing Research, Statistics & Evidence-Based Practice
+  // 4. Nursing Research, Statistics & Evidence-Based Practice
   if (target.includes('research') || target.includes('statistic') || target.includes('biostat') || target.includes('sampling') || target.includes('literature review') || target.includes('evidence-based') || target.includes('data collection') || target.includes('instrumentation') || target.includes('hypothesis') || target.includes('computer applications in research')) {
     return 'Nursing Research & Statistics';
   }
 
-  // 4. Nursing Education, Administration & Management
-  if (target.includes('education') || target.includes('curriculum') || target.includes('administration') || target.includes('management') || target.includes('leadership') || target.includes('staffing') || target.includes('educational principles') || target.includes('professional trends') || target.includes('nursing audit')) {
+  // 5. Nursing Education, Administration & Management
+  if (target.includes('education') || target.includes('curriculum') || target.includes('administration') || target.includes('leadership') || target.includes('staffing') || target.includes('educational principles') || target.includes('professional trends') || target.includes('nursing audit') || target.includes('hospital administration') || target.includes('management styles')) {
     return 'Nursing Education & Management';
   }
 
-  // 5. Nursing Ethics, Legal Aspects & Malpractice
+  // 6. Nursing Ethics, Legal Aspects & Malpractice
   if (target.includes('ethics') || target.includes('legal') || target.includes('malpractice') || target.includes('consent') || target.includes('negligence') || target.includes('liability') || target.includes('advance directive') || target.includes('professional boundaries') || target.includes('code of ethics') || target.includes('patient rights')) {
     return 'Nursing Ethics & Legal Aspects';
   }
 
-  // 6. Anatomy & Physiology (Systems, Bones, Muscles)
+  // 7. Anatomy & Physiology (Systems, Bones, Muscles)
   if (target.includes('anatomy') || target.includes('physiolog') || target.includes('skelet') || target.includes('muscul') || target.includes('digestive') || target.includes('bone') || target.includes('joint')) {
     return 'Anatomy & Physiology';
   }
 
-  // 7. Medication Administration & Pharmacology
+  // 8. Medication Administration & Pharmacology
   if (target.includes('medication') || target.includes('drug') || target.includes('pharmacolog') || target.includes('dose') || target.includes('inject') || target.includes('infusion') || target.includes('antidote') || target.includes('toxicolog') || target.includes('antibiotic') || target.includes('chemotherap') || target.includes('analgesic') || target.includes('pharmacokinetics') || target.includes('pharmacodynamics')) {
     return 'Medication Administration';
-  }
-
-  // 8. Infection Prevention, Control & Biomedical Waste
-  if (target.includes('infect') || target.includes('aseps') || target.includes('sterile') || target.includes('ppe') || target.includes('biomedical') || target.includes('waste') || target.includes('isolation') || target.includes('hygiene') || target.includes('decontaminat') || target.includes('steriliz') || target.includes('wound care') || target.includes('dressing')) {
-    return 'Infection Prevention and Control';
   }
 
   // 9. Basic Nutrition, Dietetics & Elimination
@@ -669,7 +669,78 @@ const seedDatabase = async () => {
       }
     }
 
-    console.log(`📚 Seeding ${testsToInsert.length} authentic topic practice tests...`);
+    // Official CAT Approved Practice Tests (Archer & UWorld Computer Adaptive System)
+    const catApprovedTests = [
+      {
+        title: "NCLEX-RN Official Comprehensive Simulator (CAT Approved)",
+        description: "Official Archer & UWorld Computer Adaptive System (CAT). Starts at Base Level (Level 2), dynamically scales to Peak Level on correct answers, offers tough question buffer chances before stepping down, adheres strictly to core nursing subject percentage quotas, and terminates early once uncertainty is eliminated with 95% confidence.",
+        topic: "All Subjects",
+        difficulty: "hard",
+        duration: 45,
+        examType: "nclex_rn",
+        isFree: true,
+        isCAT: true,
+        isCATApproved: true,
+        questions: generateQuestionsForUnit("Medical-Surgical Nursing", "Comprehensive NCLEX CAT"),
+        totalQuestions: 25
+      },
+      {
+        title: "AIIMS NORCET Nursing Officer Adaptive Benchmark (CAT Approved)",
+        description: "Adaptive computer-based test for Nursing Officer exams. Real-time difficulty calibration following the Archer CAT escalation ladder across Med-Surg, Pharmacology, OB/GYN, Pediatrics, Psychiatry, Foundations, and Community Health.",
+        topic: "All Subjects",
+        difficulty: "hard",
+        duration: 45,
+        examType: "nursing_officer",
+        isFree: true,
+        isCAT: true,
+        isCATApproved: true,
+        questions: generateQuestionsForUnit("Pharmacology & Therapeutics", "Nursing Officer Adaptive"),
+        totalQuestions: 25
+      },
+      {
+        title: "Medical-Surgical & Pharmacology High-Yield CAT (CAT Approved)",
+        description: "Computer Adaptive Practice Test focused on the highest-weighted domains: Medical-Surgical Nursing (25%) and Pharmacology & Therapeutics (20%). Difficulty adapts in real time.",
+        topic: "Medical-Surgical Nursing",
+        difficulty: "hard",
+        duration: 35,
+        examType: "nclex_rn",
+        isFree: true,
+        isCAT: true,
+        isCATApproved: true,
+        questions: generateQuestionsForUnit("Medical-Surgical Nursing", "High-Yield MedSurg CAT"),
+        totalQuestions: 20
+      },
+      {
+        title: "Maternal-Child & Pediatric Health Adaptive Test (CAT Approved)",
+        description: "Computer Adaptive Practice Test balancing Obstetrics & Gynecological Nursing (15%) and Pediatric Nursing (15%) with dynamic clinical judgment difficulty escalation.",
+        topic: "Obstetrics & Gynecological Nursing",
+        difficulty: "hard",
+        duration: 35,
+        examType: "nclex_rn",
+        isFree: true,
+        isCAT: true,
+        isCATApproved: true,
+        questions: generateQuestionsForUnit("Obstetrics & Gynecological Nursing", "Maternal-Child CAT"),
+        totalQuestions: 20
+      },
+      {
+        title: "Foundations & Mental Health Clinical CAT (CAT Approved)",
+        description: "Computer Adaptive Practice Test covering Nursing Foundations (10%), Mental Health (10%), and Community Health (5%) with progressive difficulty and uncertainty elimination.",
+        topic: "Mental Health (Psychiatric) Nursing",
+        difficulty: "hard",
+        duration: 30,
+        examType: "nclex_rn",
+        isFree: true,
+        isCAT: true,
+        isCATApproved: true,
+        questions: generateQuestionsForUnit("Mental Health (Psychiatric) Nursing", "Mental Health CAT"),
+        totalQuestions: 20
+      }
+    ];
+
+    testsToInsert.unshift(...catApprovedTests);
+
+    console.log(`📚 Seeding ${testsToInsert.length} authentic topic practice tests (including ${catApprovedTests.length} CAT Approved Adaptive Tests)...`);
     const chunkSize = 50;
     for (let i = 0; i < testsToInsert.length; i += chunkSize) {
       const chunk = testsToInsert.slice(i, i + chunkSize);

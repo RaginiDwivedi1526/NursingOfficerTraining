@@ -953,7 +953,8 @@ function findUnitBankQuestions(topicName) {
 
 /**
  * Procedural variation generator: ensures repeat tests within the same topic
- * create plausible clinical parameter variations without cross-contaminating subjects or difficulty.
+ * create plausible clinical parameter variations with shuffled option choices
+ * so questions never look identical or have the same answer keys.
  */
 function createProceduralVariant(baseQuestion, variantIndex = 1, targetDifficulty = 2) {
   const diffName = targetDifficulty === 1 ? 'Level 1: Foundational Recall' 
@@ -961,20 +962,49 @@ function createProceduralVariant(baseQuestion, variantIndex = 1, targetDifficult
                  : targetDifficulty === 3 ? 'Level 3: Advanced Hard' 
                  : 'Level 4: Peak Acuity';
 
+  const CLINICAL_CONTEXT_PREFIXES = [
+    "CLINICAL CASE: During clinical evaluation on the nursing unit, the nursing officer observes: ",
+    "INPATIENT ENCOUNTER: A client presents for clinical assessment and management. The nurse reviews: ",
+    "CASE EVALUATION: In standard medical-surgical clinical care, the nurse determines: ",
+    "URGENT CARE PROTOCOL: A client is evaluated in the acute care setting. The priority focus is: ",
+    "BEDSIDE ASSESSMENT: During comprehensive patient rounds, the nurse verifies: "
+  ];
+
   let newScenario = baseQuestion.scenario;
+  let newQuestionText = baseQuestion.questionText || baseQuestion.text || '';
+
   if (newScenario) {
     const ageMatch = newScenario.match(/A (\d+)-year-old/);
-    const newAge = ageMatch ? (parseInt(ageMatch[1]) + (variantIndex * 2)) : 52;
+    const newAge = ageMatch ? (parseInt(ageMatch[1]) + ((variantIndex % 7) * 3) + 1) : (45 + (variantIndex % 20));
     newScenario = newScenario.replace(/A \d+-year-old/, `A ${newAge}-year-old`);
+  } else {
+    const prefix = CLINICAL_CONTEXT_PREFIXES[variantIndex % CLINICAL_CONTEXT_PREFIXES.length];
+    newScenario = `${prefix}${newQuestionText}`;
   }
 
-  const fullText = newScenario ? `${newScenario}\n\n${baseQuestion.questionText}` : baseQuestion.questionText;
+  // Shuffle options and recalculate correct answer index dynamically
+  const originalOptions = Array.isArray(baseQuestion.options) ? [...baseQuestion.options] : [];
+  const originalCorrectIndex = typeof baseQuestion.correctAnswer === 'number' ? baseQuestion.correctAnswer : (baseQuestion.answer || 0);
+  const correctOptionText = originalOptions[originalCorrectIndex] || originalOptions[0];
+
+  let shuffledOptions = originalOptions.slice();
+  if (shuffledOptions.length >= 2) {
+    // Deterministic or randomized shuffle
+    shuffledOptions.sort(() => Math.random() - 0.5);
+  }
+  const newCorrectAnswerIndex = shuffledOptions.indexOf(correctOptionText) !== -1 
+    ? shuffledOptions.indexOf(correctOptionText) 
+    : 0;
+
+  const fullText = newScenario ? `${newScenario}\n\n${baseQuestion.questionText || newQuestionText}` : newQuestionText;
 
   return {
     ...baseQuestion,
     scenario: newScenario,
     questionText: fullText,
-    id: `${baseQuestion.id || 'q'}-v${variantIndex}`,
+    options: shuffledOptions,
+    correctAnswer: newCorrectAnswerIndex,
+    id: `${baseQuestion.id || 'q'}-v${variantIndex}-${Math.random().toString(36).substring(7)}`,
     difficultyLevel: targetDifficulty,
     difficultyName: diffName
   };
@@ -982,11 +1012,16 @@ function createProceduralVariant(baseQuestion, variantIndex = 1, targetDifficult
 
 /**
  * Returns a unique question for a given topic and difficulty level,
- * guaranteeing STRICT TOPIC & DIFFICULTY ADHERENCE.
+ * guaranteeing STRICT DEDUPLICATION & DIVERSITY.
  */
 function getTopicQuestion(topicName, difficultyLevel = 2, alreadyAskedStems = []) {
-  // Normalize alreadyAskedStems for robust matching
-  const askedTexts = alreadyAskedStems.map(s => String(s || '').toLowerCase().substring(0, 40));
+  // Normalize alreadyAskedStems for robust matching (alphanumeric only, 35 chars)
+  const askedTexts = alreadyAskedStems.map(s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 35));
+  const isAsked = (text) => {
+    if (!text) return false;
+    const clean = String(text).toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 35);
+    return askedTexts.some(asked => asked && (asked.includes(clean) || clean.includes(asked)));
+  };
 
   const targetDiff = (typeof difficultyLevel === 'number' && difficultyLevel >= 1 && difficultyLevel <= 4)
     ? difficultyLevel 
@@ -1006,13 +1041,14 @@ function getTopicQuestion(topicName, difficultyLevel = 2, alreadyAskedStems = []
                       topicName.toLowerCase().includes('mixed') ||
                       topicName.toLowerCase().includes('challenge') ||
                       topicName.toLowerCase().includes('general') ||
-                      topicName.toLowerCase().includes('pyq');
+                      topicName.toLowerCase().includes('pyq') ||
+                      topicName.toLowerCase().includes('random');
 
   let bank = [];
 
   if (isBroadExam && UNIT_BANKS) {
-    // Round-robin across all 12 authentic banks to ensure topic variety
-    const bankKeys = Object.keys(UNIT_BANKS);
+    // Pick from all banks in randomized order
+    const bankKeys = Object.keys(UNIT_BANKS).sort(() => Math.random() - 0.5);
     const chosenBankKey = bankKeys[alreadyAskedStems.length % bankKeys.length] || 'Introduction to Nursing';
     bank = findUnitBankQuestions(chosenBankKey);
   } else {
@@ -1025,11 +1061,13 @@ function getTopicQuestion(topicName, difficultyLevel = 2, alreadyAskedStems = []
     bank = TOPIC_BANKS[key] || TOPIC_BANKS['medsurg'];
   }
 
+  // Shuffle bank candidates to guarantee non-deterministic order
+  const shuffledBank = bank.slice().sort(() => Math.random() - 0.5);
+
   // 1. Try to find an unused question matching the exact requested difficulty level
-  const exactLevelMatches = bank.filter(q => {
+  const exactLevelMatches = shuffledBank.filter(q => {
     if (q.difficultyLevel !== targetDiff) return false;
-    const qStem = String(q.scenario || q.questionText || '').toLowerCase().substring(0, 40);
-    return !askedTexts.some(asked => asked && (asked.includes(qStem) || qStem.includes(asked)));
+    return !isAsked(q.scenario || q.questionText);
   });
 
   if (exactLevelMatches.length > 0) {
@@ -1046,12 +1084,11 @@ function getTopicQuestion(topicName, difficultyLevel = 2, alreadyAskedStems = []
 
   // 2. If broad exam and current bank exhausted at this level, check other banks at SAME difficulty level
   if (isBroadExam && UNIT_BANKS) {
-    const bankKeys = Object.keys(UNIT_BANKS);
+    const bankKeys = Object.keys(UNIT_BANKS).sort(() => Math.random() - 0.5);
     for (const altKey of bankKeys) {
       const altQuestions = findUnitBankQuestions(altKey).filter(q => {
         if (q.difficultyLevel !== targetDiff) return false;
-        const qStem = String(q.scenario || q.questionText || '').toLowerCase().substring(0, 40);
-        return !askedTexts.some(asked => asked && (asked.includes(qStem) || qStem.includes(asked)));
+        return !isAsked(q.scenario || q.questionText);
       });
       if (altQuestions.length > 0) {
         const selected = altQuestions[Math.floor(Math.random() * altQuestions.length)];
@@ -1067,14 +1104,10 @@ function getTopicQuestion(topicName, difficultyLevel = 2, alreadyAskedStems = []
     }
   }
 
-  // 3. For specific topics: find unused question in this topic and calibrate strictly to target difficulty
-  const availableInTopic = bank.filter(q => {
-    const qStem = String(q.scenario || q.questionText || '').toLowerCase().substring(0, 40);
-    return !askedTexts.some(asked => asked && (asked.includes(qStem) || qStem.includes(asked)));
-  });
-
-  if (availableInTopic.length > 0) {
-    const selected = availableInTopic[0];
+  // 3. For specific topics: check adjacent difficulty levels in this bank
+  const adjacentMatches = shuffledBank.filter(q => !isAsked(q.scenario || q.questionText));
+  if (adjacentMatches.length > 0) {
+    const selected = adjacentMatches[Math.floor(Math.random() * adjacentMatches.length)];
     const fullText = selected.scenario ? `${selected.scenario}\n\n${selected.questionText}` : selected.questionText;
     return {
       ...selected,
@@ -1085,19 +1118,39 @@ function getTopicQuestion(topicName, difficultyLevel = 2, alreadyAskedStems = []
     };
   }
 
-  // 4. If all questions in this bank are completely exhausted, create a procedural variant strictly at target difficulty
-  const base = bank[alreadyAskedStems.length % bank.length] || bank[0];
-  return createProceduralVariant(base, alreadyAskedStems.length + 1, targetDiff);
+  // 4. If current topic bank is exhausted, draw from related clinical banks without repetition
+  if (UNIT_BANKS) {
+    const allBankKeys = Object.keys(UNIT_BANKS).sort(() => Math.random() - 0.5);
+    for (const altKey of allBankKeys) {
+      const altQuestions = findUnitBankQuestions(altKey).filter(q => !isAsked(q.scenario || q.questionText));
+      if (altQuestions.length > 0) {
+        const selected = altQuestions[Math.floor(Math.random() * altQuestions.length)];
+        const fullText = selected.scenario ? `${selected.scenario}\n\n${selected.questionText}` : selected.questionText;
+        return {
+          ...selected,
+          questionText: fullText,
+          topic: topicName || selected.topic,
+          difficultyLevel: targetDiff,
+          difficultyName: diffName
+        };
+      }
+    }
+  }
+
+  // 5. As a final fallback when all questions are exhausted: create a procedural variant with shuffled options
+  const randomBase = bank[Math.floor(Math.random() * bank.length)] || bank[0];
+  return createProceduralVariant(randomBase, alreadyAskedStems.length + 1, targetDiff);
 }
 
 /**
  * Returns a list of N distinct questions for a topic (used for test initialization).
  * If specific difficultyLevel (1-4) is passed, prioritizes that level strictly.
  * If null/undefined, distributes evenly across all 4 levels (Foundational -> Base -> Hard -> Peak).
+ * Accepts initialExcludedStems to avoid repeating previously attempted questions.
  */
-function getTopicQuestionsList(topicName, count = 20, difficultyLevel = null) {
+function getTopicQuestionsList(topicName, count = 20, difficultyLevel = null, initialExcludedStems = []) {
   const results = [];
-  const askedStems = [];
+  const askedStems = [...(initialExcludedStems || [])];
 
   for (let i = 0; i < count; i++) {
     // If specific difficultyLevel is requested, use it strictly; otherwise distribute across 4 levels progressively

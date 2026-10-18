@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { startCATSession, submitCATAnswer } from '../services/api';
-import { 
-  BrainCircuit, ShieldCheck, AlertTriangle, CheckCircle, XCircle, 
+import {
+  BrainCircuit, ShieldCheck, AlertTriangle, CheckCircle, XCircle,
   ChevronRight, Award, RotateCcw, Activity, BarChart2, Layers, HelpCircle, Clock, X
 } from 'lucide-react';
 import AskAIButton from '../components/tests/AskAIButton';
@@ -85,7 +85,7 @@ export default function TakeCATTest() {
   const initCAT = async () => {
     setLoading(true);
     try {
-      const { data } = await startCATSession({ 
+      const { data } = await startCATSession({
         examType: 'nclex_rn',
         minQuestions: TOTAL_TEST_QUESTIONS,
         maxQuestions: TOTAL_TEST_QUESTIONS
@@ -111,7 +111,7 @@ export default function TakeCATTest() {
   const handleSubmitAnswer = async () => {
     if (selectedOption === null || submitting) return;
     setSubmitting(true);
-    
+
     const elapsedSeconds = Math.round((Date.now() - startTime) / 1000);
 
     try {
@@ -159,11 +159,11 @@ export default function TakeCATTest() {
 
   const getThetaStatus = (theta) => {
     if (theta >= 0.20) {
-      return { text: 'Passing Zone', color: '#16a34a', bg: '#dcfce7', icon: <ShieldCheck size={16}/> };
+      return { text: 'Passing Zone', color: '#16a34a', bg: '#dcfce7', icon: <ShieldCheck size={16} /> };
     } else if (theta >= -0.10) {
-      return { text: 'Borderline Zone', color: '#d97706', bg: '#fef3c7', icon: <Activity size={16}/> };
+      return { text: 'Borderline Zone', color: '#d97706', bg: '#fef3c7', icon: <Activity size={16} /> };
     } else {
-      return { text: 'Below Passing Standard', color: '#dc2626', bg: '#fee2e2', icon: <AlertTriangle size={16}/> };
+      return { text: 'Below Passing Standard', color: '#dc2626', bg: '#fee2e2', icon: <AlertTriangle size={16} /> };
     }
   };
 
@@ -193,7 +193,7 @@ export default function TakeCATTest() {
             </div>
             <h1>{isPass ? 'CONGRATULATIONS! YOU PASSED' : 'TEST COMPLETED - DID NOT MEET STANDARD'}</h1>
             <p className="cat-report-sub">
-              {isPass 
+              {isPass
                 ? 'Your adaptive performance met and maintained >95% statistical confidence above the passing standard.'
                 : 'Your ability score remained below the required passing line for this adaptive exam.'}
             </p>
@@ -263,13 +263,13 @@ export default function TakeCATTest() {
                       {idx > 0 && (
                         <line x1={prevX} y1={prevY} x2={stepX} y2={stepY} stroke="#4f46e5" strokeWidth="2.5" />
                       )}
-                      <circle 
-                        cx={stepX} 
-                        cy={stepY} 
-                        r="5" 
-                        fill={q.isCorrect ? '#16a34a' : '#dc2626'} 
-                        stroke="#ffffff" 
-                        strokeWidth="1.5" 
+                      <circle
+                        cx={stepX}
+                        cy={stepY}
+                        r="5"
+                        fill={q.isCorrect ? '#16a34a' : '#dc2626'}
+                        stroke="#ffffff"
+                        strokeWidth="1.5"
                       />
                     </g>
                   );
@@ -296,11 +296,11 @@ export default function TakeCATTest() {
                   </div>
                   <p className="q-text-body">{stripEmbeddedOptions(q.questionText)}</p>
                   <div style={{ marginTop: 12 }}>
-                    <FormattedExplanation 
-                      explanation={q.explanation} 
-                      correctAnswer={q.correctAnswer} 
-                      selectedAnswer={q.selectedAnswer} 
-                      optionsList={(q.options || []).map(stripOptionPrefix)} 
+                    <FormattedExplanation
+                      explanation={q.explanation}
+                      correctAnswer={q.correctAnswer}
+                      selectedAnswer={q.selectedAnswer}
+                      optionsList={(q.options || []).map(stripOptionPrefix)}
                     />
                   </div>
                 </div>
@@ -351,8 +351,8 @@ export default function TakeCATTest() {
           </div>
 
           {/* Cancel Test Button */}
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="cat-cancel-btn"
             onClick={() => setShowCancelModal(true)}
           >
@@ -385,10 +385,10 @@ export default function TakeCATTest() {
         </div>
 
         <div className="cat-footer-bar">
-          <AskAIButton 
-            question={currentQ?.questionText} 
-            options={currentQ?.options} 
-            correctAnswer={currentQ?.correctAnswer} 
+          <AskAIButton
+            question={currentQ?.questionText}
+            options={currentQ?.options}
+            correctAnswer={currentQ?.correctAnswer}
           />
 
           <button
@@ -396,8 +396,8 @@ export default function TakeCATTest() {
             onClick={handleSubmitAnswer}
             disabled={selectedOption === null || submitting}
           >
-            {submitting 
-              ? (currentQuestionNumber >= TOTAL_TEST_QUESTIONS ? 'Submitting Final Answer...' : 'Submitting Answer...') 
+            {submitting
+              ? (currentQuestionNumber >= TOTAL_TEST_QUESTIONS ? 'Submitting Final Answer...' : 'Submitting Answer...')
               : (currentQuestionNumber >= TOTAL_TEST_QUESTIONS ? 'Submit & Finish Test ✓' : 'Submit & Next Question →')}
           </button>
         </div>
@@ -427,7 +427,7 @@ export default function TakeCATTest() {
               Are you sure you want to cancel? Your test session will end and unsubmitted answers will not be recorded.
             </p>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-              <button 
+              <button
                 type="button"
                 onClick={() => setShowCancelModal(false)}
                 style={{
@@ -443,7 +443,7 @@ export default function TakeCATTest() {
               >
                 Resume Test
               </button>
-              <button 
+              <button
                 type="button"
                 onClick={() => navigate('/tests')}
                 style={{

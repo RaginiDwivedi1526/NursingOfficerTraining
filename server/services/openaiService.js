@@ -1,11 +1,12 @@
 const axios = require('axios');
 
-const chat = async (messages, maxTokens = 300) => {
-  const apiKey = process.env.OPENAI_API_KEY;
+const chat = async (messages, maxTokens = 300, options = {}) => {
+  const apiKey = process.env.OPENAI_API_KEY || process.env.GEMINI_API_KEY;
   if (!apiKey || apiKey === 'your_openai_api_key_here') {
     return 'AI analysis unavailable. Please configure your API key.';
   }
   
+  const temperature = typeof options === 'object' && options.temperature !== undefined ? options.temperature : 0.7;
   const isGeminiKey = apiKey.startsWith('AIza');
   
   if (isGeminiKey) {
@@ -36,7 +37,7 @@ const chat = async (messages, maxTokens = 300) => {
     const payload = {
       contents,
       generationConfig: {
-        temperature: 0.7,
+        temperature,
         maxOutputTokens: maxTokens
       }
     };
@@ -49,14 +50,15 @@ const chat = async (messages, maxTokens = 300) => {
 
     for (const endpoint of endpointsToTry) {
       try {
-        console.log(`[AI] Trying Gemini model: ${endpoint.name}, maxTokens: ${maxTokens}`);
+        console.log(`[AI] Trying Gemini model: ${endpoint.name}, maxTokens: ${maxTokens}, temp: ${temperature}`);
         const response = await axios.post(
           endpoint.url,
           payload,
           {
             headers: {
               'Content-Type': 'application/json'
-            }
+            },
+            timeout: 50000
           }
         );
         const text = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -73,16 +75,16 @@ const chat = async (messages, maxTokens = 300) => {
     }
   } else {
     const { OpenAI } = require('openai');
-    const openai = new OpenAI({ apiKey });
+    const openai = new OpenAI({ apiKey, timeout: 50000 });
     const openAiModels = ['gpt-4o-mini', 'gpt-3.5-turbo'];
     
     for (const model of openAiModels) {
       try {
-        console.log(`[AI] Trying OpenAI model: ${model}`);
+        console.log(`[AI] Trying OpenAI model: ${model}, maxTokens: ${maxTokens}, temp: ${temperature}`);
         const response = await openai.chat.completions.create({
           model,
           messages,
-          temperature: 0.7,
+          temperature,
           max_tokens: maxTokens
         });
         return response.choices[0].message.content;
@@ -96,8 +98,8 @@ const chat = async (messages, maxTokens = 300) => {
   }
 };
 
-const complete = async (prompt, maxTokens = 200) => {
-  return chat([{ role: 'user', content: prompt }], maxTokens);
+const complete = async (prompt, maxTokens = 200, options = {}) => {
+  return chat([{ role: 'user', content: prompt }], maxTokens, options);
 };
 
 module.exports = { chat, complete };

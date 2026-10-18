@@ -41,22 +41,35 @@ const resolveDiffConfig = (diff) => {
   return DIFFICULTY_CONFIGS[2]; // Default to Moderate (Level 2)
 };
 
-const getNclexPrompt = (topic, number = 10, difficulty = 'hard') => {
+const getNclexPrompt = (topic, number = 10, difficulty = 'hard', avoidTopicsOrStems = [], focusSubdomain = '') => {
   const cfg = resolveDiffConfig(difficulty);
   const randomSeed = Math.random().toString(36).substring(7);
+  const timestamp = Date.now();
+  
+  const avoidSection = Array.isArray(avoidTopicsOrStems) && avoidTopicsOrStems.length > 0
+    ? `\nCRITICAL ANTI-REPETITION MANDATE:
+The student has ALREADY recently practiced questions on these specific clinical scenarios:
+${avoidTopicsOrStems.slice(0, 8).map(s => `- ${s}`).join('\n')}
+You MUST NOT repeat any of the scenarios or clinical conditions above. You MUST generate questions on DIFFERENT clinical pathologies, different medications, and different patient presentations within ${topic}.\n`
+    : '';
+
+  const focusSection = focusSubdomain 
+    ? `\nTARGET CLINICAL FOCUS FOR THIS BATCH: ${focusSubdomain}. Ensure all generated questions emphasize this specific domain.\n`
+    : '';
+
   return `You are a senior expert NCLEX-RN and Next Generation NCLEX (NGN) Item Writer.
 
 TASK: Generate ${number} authentic Computer Adaptive Testing (CAT) quality questions specifically on the topic: ${topic}
 TARGET DIFFICULTY LEVEL: ${cfg.name} (${cfg.focus})
-VARIATION SEED: ${randomSeed}
-
+VARIATION SEED: ${randomSeed}-${timestamp}
+${focusSection}${avoidSection}
 SCENARIO SPECIFICATIONS FOR ${cfg.name}:
 - Scenario Depth: ${cfg.scenarioGuidelines}
 - Clinical Judgment Focus: ${cfg.questionType}
-- Every question MUST feature a unique clinical vignette in the 'scenario' field specifically related to ${topic}.
+- Every question MUST feature a unique, realistic clinical vignette in the 'scenario' field specifically related to ${topic}.
 - DIVERSITY REQUIREMENT: Ensure each of the ${number} questions covers a COMPLETELY DIFFERENT clinical pathology, drug, age group, or nursing intervention within ${topic}. DO NOT REPEAT scenarios.
 - CRITICAL: DO NOT include or append option choices (A, B, C, D) inside the 'scenario' or 'question_stem'. Choices MUST ONLY appear in the 'options' array without letter prefixes.
-- Provide a thorough clinical rationale for the correct answer AND explain why distractors are inappropriate.
+- Provide a high-yield 2–4 sentence clinical rationale explaining the exact physiological reasoning for the correct answer.
 
 OUTPUT FORMAT — return ONLY valid JSON matching this schema:
 {
@@ -81,22 +94,35 @@ OUTPUT FORMAT — return ONLY valid JSON matching this schema:
 }`;
 };
 
-const getIndianNursingPrompt = (subject, number = 10, difficulty = 'hard') => {
+const getIndianNursingPrompt = (subject, number = 10, difficulty = 'hard', avoidTopicsOrStems = [], focusSubdomain = '') => {
   const cfg = resolveDiffConfig(difficulty);
   const randomSeed = Math.random().toString(36).substring(7);
+  const timestamp = Date.now();
+
+  const avoidSection = Array.isArray(avoidTopicsOrStems) && avoidTopicsOrStems.length > 0
+    ? `\nCRITICAL ANTI-REPETITION MANDATE:
+The student has ALREADY recently practiced questions on these specific clinical scenarios:
+${avoidTopicsOrStems.slice(0, 8).map(s => `- ${s}`).join('\n')}
+You MUST NOT repeat any of the scenarios or clinical conditions above. You MUST generate questions on DIFFERENT clinical pathologies, different medications, and different patient presentations within ${subject}.\n`
+    : '';
+
+  const focusSection = focusSubdomain 
+    ? `\nTARGET CLINICAL FOCUS FOR THIS BATCH: ${focusSubdomain}. Ensure all generated questions emphasize this specific domain.\n`
+    : '';
+
   return `You are a Chief Item Writer for Indian Nursing Officer recruitment examinations (AIIMS NORCET, ESIC, RRB Staff Nurse, DSSSB, PGIMER, SGPGI).
 
 TASK: Generate ${number} authentic Computer Adaptive Testing (CAT) quality clinical questions specifically on the subject/topic: ${subject}
 TARGET DIFFICULTY LEVEL: ${cfg.name} (${cfg.focus})
-VARIATION SEED: ${randomSeed}
-
+VARIATION SEED: ${randomSeed}-${timestamp}
+${focusSection}${avoidSection}
 MANDATORY RULES:
 1. Scenario: ${cfg.scenarioGuidelines}
 2. Clinical Focus: ${cfg.questionType}
 3. DIVERSITY & NON-REPETITION: Every question MUST cover a DISTINCT, unique clinical condition, nursing situation, or pharmacology entity strictly belonging to ${subject}. Do NOT repeat similar patient vignettes or clinical dilemmas within this test or across generations.
 4. DO NOT APPEND OPTIONS TO SCENARIO OR QUESTION STEM: Option choices (A, B, C, D) MUST NEVER be typed inside 'scenario' or 'question_stem'. They must ONLY appear in the 'options' array.
 5. 4 options (A-D) with exactly ONE correct answer. Do NOT include option letter prefixes inside option text.
-6. Comprehensive 3–5 sentence clinical rationale explaining the exact pathophysiology and why the priority intervention is essential.
+6. High-yield 2–4 sentence clinical rationale explaining the exact pathophysiology and why the priority intervention is essential.
 7. Do NOT include prefixes like 'Q1.' or '[Subject]' in the question stem.
 
 OUTPUT FORMAT — return ONLY valid JSON matching this schema:

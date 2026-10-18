@@ -254,29 +254,29 @@ const stripOptionPrefix = (text) => {
 // Generate adaptive question dynamically via AI or topic-specific bank with strict deduplication
 const generateAdaptiveQuestion = async (subject, difficultyLevel, examType = 'nclex_rn', alreadyAsked = []) => {
   const diffInfo = DIFFICULTY_LEVELS[difficultyLevel] || DIFFICULTY_LEVELS[2];
-  
+
   // Clean already asked stems for prompt avoidance
   const avoidList = Array.isArray(alreadyAsked)
-    ? alreadyAsked.slice(-5).map(s => String(s || '').substring(0, 70).replace(/\n/g, ' ')).filter(Boolean)
+    ? alreadyAsked.slice(-20).map(s => String(s || '').substring(0, 90).replace(/\n/g, ' ')).filter(Boolean)
     : [];
 
   // Pick clinical domain: if specific topic/unit is passed, honor it; otherwise balance domains
-  const isGenericSubject = !subject || 
-                           subject === 'All Subjects' || 
-                           subject.toLowerCase().includes('all mock') || 
-                           subject.toLowerCase().includes('full length');
+  const isGenericSubject = !subject ||
+    subject === 'All Subjects' ||
+    subject.toLowerCase().includes('all mock') ||
+    subject.toLowerCase().includes('full length');
 
   const topicKey = resolveTopicKey(subject);
   const domainList = CLINICAL_DOMAINS[topicKey] || CLINICAL_DOMAINS.medsurg;
   const availableDomains = domainList.filter(d => !alreadyAsked.some(prev => prev && prev.toLowerCase().includes(d.toLowerCase().split(' ')[0])));
-  const chosenDomain = availableDomains.length > 0 
-    ? availableDomains[Math.floor(Math.random() * availableDomains.length)] 
+  const chosenDomain = availableDomains.length > 0
+    ? availableDomains[Math.floor(Math.random() * availableDomains.length)]
     : domainList[Math.floor(Math.random() * domainList.length)];
 
   const targetTopicName = isGenericSubject ? chosenDomain : subject;
 
-  const randomAge = topicKey === 'pediatrics' 
-    ? `${Math.floor(Math.random() * 12) + 1}-year-old` 
+  const randomAge = topicKey === 'pediatrics'
+    ? `${Math.floor(Math.random() * 12) + 1}-year-old`
     : `${Math.floor(Math.random() * 55) + 20}-year-old`;
   const randomGender = Math.random() > 0.5 ? 'female' : 'male';
   const randomSeed = Math.random().toString(36).substring(7);
@@ -352,7 +352,7 @@ MANDATORY JSON OUTPUT SCHEMA:
     const aiResponse = await chat([
       { role: 'system', content: prompt },
       { role: 'user', content: `Generate a fresh, unique ${targetTopicName} clinical case for Level ${diffInfo.level} (${diffInfo.name}) as valid JSON now.` }
-    ], 2500);
+    ], 2500, { temperature: 0.88 });
 
     let jsonString = aiResponse ? aiResponse.trim() : '';
     if (jsonString.includes('```json')) {
@@ -371,15 +371,15 @@ MANDATORY JSON OUTPUT SCHEMA:
       const cleanStem = stripEmbeddedOptions(parsed.questionText);
       const cleanOptions = parsed.options.map(opt => stripOptionPrefix(typeof opt === 'string' ? opt : (opt.text || String(opt))));
 
-      const isDuplicate = alreadyAsked.some(prev => 
+      const isDuplicate = alreadyAsked.some(prev =>
         prev && (prev.includes(cleanStem.substring(0, 40)) || cleanStem.includes(prev.substring(0, 40)))
       );
 
       // Programmatic guard against the overused alcohol withdrawal cliché
       const isBannedCliché = cleanStem.toLowerCase().includes('alcohol use disorder') ||
-                             cleanStem.toLowerCase().includes('alcohol withdrawal') ||
-                             (cleanStem.toLowerCase().includes('blood glucose') && cleanStem.toLowerCase().includes('45 mg/dl')) ||
-                             (cleanStem.toLowerCase().includes('45-year-old') && cleanStem.toLowerCase().includes('tremors'));
+        cleanStem.toLowerCase().includes('alcohol withdrawal') ||
+        (cleanStem.toLowerCase().includes('blood glucose') && cleanStem.toLowerCase().includes('45 mg/dl')) ||
+        (cleanStem.toLowerCase().includes('45-year-old') && cleanStem.toLowerCase().includes('tremors'));
 
       if (!isDuplicate && !isBannedCliché) {
         return {

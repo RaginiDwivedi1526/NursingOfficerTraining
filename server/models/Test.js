@@ -22,6 +22,8 @@ const testSchema = new mongoose.Schema({
   totalQuestions: { type: Number },
   examType: { type: String, enum: ['nursing_officer', 'nclex_rn', 'nclex_pn', 'general'], default: 'general' },
   isFree: { type: Boolean, default: false },
+  isCAT: { type: Boolean, default: false },
+  isCATApproved: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now }
 });
 

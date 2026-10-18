@@ -31,10 +31,10 @@ const QUESTIONS = [
 ];
 
 const QUICK_PRACTICE = [
-  { icon: '📋', bg: '#e0e7ff', name: 'Practice by Topic', desc: 'Select a specific topic' },
-  { icon: '🔀', bg: '#fef3c7', name: 'Random Questions', desc: 'Get random questions' },
-  { icon: '📅', bg: '#ffedd5', name: 'Daily 50 Challenge', desc: '50 Questions Everyday' },
-  { icon: '⚠️', bg: '#fce7f3', name: 'Weak Areas', desc: 'Focus on weak topics' },
+  { icon: '📋', bg: '#e0e7ff', name: 'Practice by Topic', desc: 'Select a specific topic', topic: 'Nursing Foundations' },
+  { icon: '🔀', bg: '#fef3c7', name: 'Random Questions', desc: 'Get random questions', topic: 'Random Mixed Practice' },
+  { icon: '📅', bg: '#ffedd5', name: 'Daily 50 Challenge', desc: '50 Questions Everyday', topic: 'AIIMS NORCET Daily Challenge', count: 50 },
+  { icon: '⚠️', bg: '#fce7f3', name: 'Weak Areas', desc: 'Focus on weak topics', topic: 'High-Yield Clinical Practice' },
 ];
 
 export default function QuestionBank() {
@@ -44,7 +44,7 @@ export default function QuestionBank() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const handlePractice = async (topic, difficulty = 'medium') => {
+  const handlePractice = async (topic, difficulty = 'medium', count = 10) => {
     if (loading) return;
     setLoading(true);
     try {
@@ -56,7 +56,7 @@ export default function QuestionBank() {
       const res = await generateTest({
         topic: topic || 'General Nursing Practice',
         difficulty: diffMapped,
-        numberOfQuestions: 10
+        numberOfQuestions: count || 10
       });
       navigate(`/test/${res.data._id}`);
     } catch (err) {
@@ -284,7 +284,13 @@ export default function QuestionBank() {
           </div>
           <div className="qb-qp-grid">
             {QUICK_PRACTICE.map((a, i) => (
-              <div className="qb-qp-item" key={i}>
+              <div 
+                className="qb-qp-item" 
+                key={i} 
+                onClick={() => handlePractice(a.topic, 'medium', a.count || 10)}
+                style={{ cursor: 'pointer' }}
+                title={`Generate ${a.count || 10} questions for ${a.name}`}
+              >
                 <div className="qb-qp-icon" style={{background: a.bg}}>{a.icon}</div>
                 <div>
                   <div className="qb-qp-name">{a.name}</div>

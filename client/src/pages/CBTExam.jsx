@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { 
+import {
   Clock, X, Check, ArrowLeft, ChevronLeft, ChevronRight, HelpCircle, AlertCircle,
   BrainCircuit, ShieldCheck, TrendingUp, TrendingDown, Layers
 } from 'lucide-react';
@@ -586,11 +586,69 @@ export default function CBTExam() {
     setAbilityTheta(0.0);
     setDifficultyTransition(null);
 
-    const isMongoId = Boolean(id && id !== 'adaptive' && id !== '571' && /^[0-9a-fA-F]{24}$/.test(id));
+    const isExplicitCAT = Boolean(location.state?.isCAT || id === 'adaptive');
 
-    // 1. If taking a database test (Mock test, Test Series, AI Generated Test, PYQ):
+    // 1. If explicitly adaptive CAT mode (Practice Tests follow CAT adaptive standard):
+    if (isExplicitCAT) {
+      setIsCATMode(true);
+      try {
+        const { data } = await startCATSession({
+          title: initialTitle,
+          topic,
+          examType,
+          startingDifficulty: 2,
+          minQuestions: 20,
+          maxQuestions: 25
+        });
+
+        if (data && data.currentQuestion) {
+          setCatSession(data);
+          setCurrentDifficultyLevel(data.currentDifficultyLevel || 2);
+          setCurrentDifficultyName(data.difficultyName || 'Level 2: Base (Standard Passing)');
+          setAbilityTheta(data.abilityTheta || 0.0);
+
+          const firstQ = {
+            _id: data.currentQuestion._id || 'cat_q1',
+            questionText: data.currentQuestion.questionText,
+            options: data.currentQuestion.options,
+            topic: data.currentQuestion.topic || topic,
+            difficultyLevel: data.currentDifficultyLevel || 2,
+            difficultyName: data.difficultyName || 'Level 2: Base',
+            correctAnswer: data.currentQuestion.correctAnswer,
+            explanation: data.currentQuestion.explanation
+          };
+
+          const total = 25;
+          const initialQuestions = new Array(total).fill(null).map((_, i) => ({
+            ...DEFAULT_25_QUESTIONS[i % DEFAULT_25_QUESTIONS.length],
+            _id: `cat_q_${i + 1}`,
+            difficultyLevel: 2,
+            difficultyName: 'Level 2: Base'
+          }));
+          initialQuestions[0] = firstQ;
+          setQuestions(initialQuestions);
+
+          const initialStatus = new Array(total).fill(STATUS.NOT_VISITED);
+          initialStatus[0] = STATUS.VISITED_UNANSWERED;
+          setQuestionStatus(initialStatus);
+
+          setUserAnswers(new Array(total).fill(null));
+          setQuestionTimes(new Array(total).fill(0));
+
+          const totalSeconds = durationMins * 60;
+          setDurationSeconds(totalSeconds);
+          setTimeLeft(totalSeconds);
+          startTimeRef.current = Date.now();
+          return;
+        }
+      } catch (catErr) {
+        console.warn('[CBTExam] CAT start failed, falling back to clinical questions with adaptive engine:', catErr.message);
+      }
+    }
+
+    // 2. If taking a database test (Mock test, Test Series, AI Generated Test, PYQ):
     if (isMongoId) {
-      setIsCATMode(false);
+      setIsCATMode(isExplicitCAT);
       try {
         const { data } = await getTest(id);
         if (data && data.questions && data.questions.length > 0) {
@@ -639,60 +697,8 @@ export default function CBTExam() {
       }
     }
 
-    // 2. If explicitly adaptive mode:
-    if (id === 'adaptive' || location.state?.isCAT) {
-      setIsCATMode(true);
-      try {
-        const { data } = await startCATSession({
-          title: initialTitle,
-          topic,
-          examType,
-          startingDifficulty: 2,
-          minQuestions: 20,
-          maxQuestions: 25
-        });
-
-        if (data && data.currentQuestion) {
-          setCatSession(data);
-          setCurrentDifficultyLevel(data.currentDifficultyLevel || 2);
-          setCurrentDifficultyName(data.difficultyName || 'Level 2: Base (Standard Passing)');
-          setAbilityTheta(data.abilityTheta || 0.0);
-
-          const firstQ = {
-            _id: data.currentQuestion._id || 'cat_q1',
-            questionText: data.currentQuestion.questionText,
-            options: data.currentQuestion.options,
-            topic: data.currentQuestion.topic || topic,
-            difficultyLevel: data.currentDifficultyLevel || 2,
-            difficultyName: data.difficultyName || 'Level 2: Base',
-            correctAnswer: data.currentQuestion.correctAnswer
-          };
-
-          const updatedQuestions = [...DEFAULT_25_QUESTIONS];
-          updatedQuestions[0] = firstQ;
-          setQuestions(updatedQuestions);
-
-          const total = 25;
-          const initialStatus = new Array(total).fill(STATUS.NOT_VISITED);
-          initialStatus[0] = STATUS.VISITED_UNANSWERED;
-          setQuestionStatus(initialStatus);
-
-          setUserAnswers(new Array(total).fill(null));
-          setQuestionTimes(new Array(total).fill(0));
-
-          const totalSeconds = durationMins * 60;
-          setDurationSeconds(totalSeconds);
-          setTimeLeft(totalSeconds);
-          startTimeRef.current = Date.now();
-          return;
-        }
-      } catch (catErr) {
-        console.warn('[CBTExam] CAT start failed, falling back to clinical questions:', catErr.message);
-      }
-    }
-
     // 3. Fallback for Free Practice Test (id === '571' or local default)
-    setIsCATMode(false);
+    setIsCATMode(isExplicitCAT);
     const total = DEFAULT_25_QUESTIONS.length;
     setQuestions(DEFAULT_25_QUESTIONS);
 
@@ -810,7 +816,8 @@ export default function CBTExam() {
               topic: data.nextQuestion.topic || currentQ.topic,
               difficultyLevel: data.currentDifficultyLevel,
               difficultyName: data.difficultyName,
-              correctAnswer: data.nextQuestion.correctAnswer
+              correctAnswer: data.nextQuestion.correctAnswer,
+              explanation: data.nextQuestion.explanation
             };
             setQuestions(prev => {
               const updated = [...prev];
@@ -834,7 +841,7 @@ export default function CBTExam() {
   // Local adaptive engine simulation (IRT Theta estimation)
   const applyLocalAdaptiveStep = (selectedOpt) => {
     const currentQ = questions[currentIdx];
-    const isCorrect = selectedOpt !== null && selectedOpt === currentQ.correctAnswer;
+    const isCorrect = selectedOpt !== null && selectedOpt === currentQ?.correctAnswer;
     let nextLevel = currentDifficultyLevel;
     let trans = 'same';
     let newTheta = abilityTheta;
@@ -864,6 +871,20 @@ export default function CBTExam() {
       4: 'Level 4: Peak Level (High Acuity / Critical Care) 🔥'
     };
     setCurrentDifficultyName(levelLabels[nextLevel] || 'Level 2: Base');
+
+    if (currentIdx + 1 < questions.length) {
+      setQuestions(prev => {
+        const updated = [...prev];
+        if (updated[currentIdx + 1]) {
+          updated[currentIdx + 1] = {
+            ...updated[currentIdx + 1],
+            difficultyLevel: nextLevel,
+            difficultyName: levelLabels[nextLevel] || 'Level 2: Base'
+          };
+        }
+        return updated;
+      });
+    }
   };
 
   // [Save & Next]
@@ -1112,7 +1133,7 @@ export default function CBTExam() {
 
   return (
     <div className="cbt-container" style={{ fontFamily: fontFamilies[selectedFont] || "'DM Sans', sans-serif" }}>
-      
+
       {/* ─── 1. TOP HEADER NAVBAR ─── */}
       <header className="cbt-header">
         <div className="cbt-header-left">
@@ -1132,10 +1153,10 @@ export default function CBTExam() {
 
           {/* Font Selector Dropdown */}
           <div className="cbt-control-group">
-            <select 
+            <select
               id="cbt-font-select"
-              className="cbt-select" 
-              value={selectedFont} 
+              className="cbt-select"
+              value={selectedFont}
               onChange={(e) => setSelectedFont(e.target.value)}
             >
               <option value="Khand">Khand</option>
@@ -1148,10 +1169,10 @@ export default function CBTExam() {
 
           {/* Translate Dropdown */}
           <div className="cbt-control-group">
-            <select 
+            <select
               id="cbt-lang-select"
-              className="cbt-select" 
-              value={selectedLanguage} 
+              className="cbt-select"
+              value={selectedLanguage}
               onChange={(e) => setSelectedLanguage(e.target.value)}
             >
               <option value="en">US English</option>
@@ -1170,9 +1191,9 @@ export default function CBTExam() {
         </div>
 
         <div>
-          <button 
+          <button
             id="cbt-btn-question-list"
-            className="cbt-btn-qlist" 
+            className="cbt-btn-qlist"
             onClick={() => setShowQuestionListModal(true)}
           >
             Question List
@@ -1184,22 +1205,22 @@ export default function CBTExam() {
             {user?.phone || user?.email || '7049924868@pcbtnursing'}
           </span>
           <div className="cbt-font-buttons">
-            <button 
-              className="cbt-font-btn" 
+            <button
+              className="cbt-font-btn"
               title="Decrease Font Size"
               onClick={() => setFontSizeLevel(Math.max(0, fontSizeLevel - 1))}
             >
               A-
             </button>
-            <button 
-              className="cbt-font-btn" 
+            <button
+              className="cbt-font-btn"
               title="Reset Font Size"
               onClick={() => setFontSizeLevel(1)}
             >
               A
             </button>
-            <button 
-              className="cbt-font-btn" 
+            <button
+              className="cbt-font-btn"
               title="Increase Font Size"
               onClick={() => setFontSizeLevel(Math.min(2, fontSizeLevel + 1))}
             >
@@ -1250,11 +1271,11 @@ export default function CBTExam() {
 
       {/* ─── 3. MAIN EXAM BODY ─── */}
       <div className="cbt-body">
-        
+
         {/* Left Column: Question Area */}
         <div className="cbt-question-pane">
           <div className="cbt-q-card">
-            
+
             {/* Question Header */}
             <div className="cbt-q-header" style={{ fontSize: fontSizes[fontSizeLevel].q }}>
               <span className="cbt-q-number">Q. {currentIdx + 1}.</span>
@@ -1267,7 +1288,7 @@ export default function CBTExam() {
                 const optLetter = String.fromCharCode(65 + optIdx);
                 const isSelected = currentSelected === optIdx;
                 return (
-                  <div 
+                  <div
                     key={optIdx}
                     id={`opt-${optIdx}`}
                     className={`cbt-option-item ${isSelected ? 'selected' : ''}`}
@@ -1288,37 +1309,40 @@ export default function CBTExam() {
           {/* Bottom Action Bar */}
           <div className="cbt-action-bar">
             <div className="cbt-action-left">
-              <button 
+              <button
                 id="btn-mark-next"
-                className="cbt-btn cbt-btn-purple" 
+                className="cbt-btn cbt-btn-purple"
                 onClick={handleMarkAndNext}
+                disabled={submittingAnswer}
               >
-                Mark & Next
+                {submittingAnswer ? 'Evaluating...' : 'Mark & Next'}
               </button>
-              <button 
+              <button
                 id="btn-clear-response"
-                className="cbt-btn cbt-btn-coral" 
+                className="cbt-btn cbt-btn-coral"
                 onClick={handleClearResponse}
+                disabled={submittingAnswer}
               >
                 Clear Response
               </button>
             </div>
 
             <div className="cbt-action-right">
-              <button 
+              <button
                 id="btn-back"
-                className="cbt-btn cbt-btn-sky" 
+                className="cbt-btn cbt-btn-sky"
                 onClick={handleBack}
-                disabled={currentIdx === 0}
+                disabled={currentIdx === 0 || submittingAnswer}
               >
                 Back
               </button>
-              <button 
+              <button
                 id="btn-save-next"
-                className="cbt-btn cbt-btn-green" 
+                className="cbt-btn cbt-btn-green"
                 onClick={handleSaveAndNext}
+                disabled={submittingAnswer}
               >
-                Save & Next
+                {submittingAnswer ? 'Evaluating...' : 'Save & Next'}
               </button>
             </div>
           </div>
@@ -1326,9 +1350,9 @@ export default function CBTExam() {
 
         {/* Right Column: Question Palette */}
         <div className={`cbt-palette-pane ${isPaletteCollapsed ? 'collapsed' : ''}`}>
-          
+
           {/* Collapse/Expand Toggle Tab */}
-          <button 
+          <button
             className="cbt-toggle-collapse"
             onClick={() => setIsPaletteCollapsed(!isPaletteCollapsed)}
             title={isPaletteCollapsed ? "Expand Question Palette" : "Collapse Question Palette"}
@@ -1337,13 +1361,13 @@ export default function CBTExam() {
           </button>
 
           <div className="cbt-palette-card">
-            
+
             {/* Status Summary */}
             <div className="cbt-status-summary">
               <div className="cbt-summary-title">Question Status Summary</div>
-              
+
               <div className="cbt-summary-grid">
-                
+
                 {/* 1 Answered */}
                 <div className="cbt-summary-row">
                   <div className="cbt-summary-badge-wrap">
@@ -1401,13 +1425,13 @@ export default function CBTExam() {
             {/* Question Navigation Grid */}
             <div className="cbt-nav-sec">
               <div className="cbt-nav-title">Question Navigation</div>
-              
+
               <div className="cbt-grid">
                 {questions.map((_, i) => {
                   const status = questionStatus[i] || STATUS.NOT_VISITED;
                   const isActive = i === currentIdx;
                   return (
-                    <div 
+                    <div
                       key={i}
                       id={`nav-q-${i + 1}`}
                       className={`cbt-grid-item ${status} ${isActive ? 'active' : ''}`}
@@ -1421,7 +1445,7 @@ export default function CBTExam() {
             </div>
 
             {/* Submit Button */}
-            <button 
+            <button
               id="btn-submit-test"
               className="cbt-btn-submit"
               onClick={() => setShowSubmitConfirmModal(true)}
@@ -1456,8 +1480,8 @@ export default function CBTExam() {
                 };
                 const sObj = statusLabels[status];
                 return (
-                  <div 
-                    key={i} 
+                  <div
+                    key={i}
                     className="cbt-ql-item"
                     onClick={() => {
                       navigateToQuestion(i);
@@ -1468,8 +1492,8 @@ export default function CBTExam() {
                       <strong>Q.{i + 1}</strong>
                       <span>{q.questionText.substring(0, 90)}...</span>
                     </div>
-                    <span 
-                      className="cbt-ql-status" 
+                    <span
+                      className="cbt-ql-status"
                       style={{ background: sObj.bg, color: sObj.color }}
                     >
                       {sObj.label}
@@ -1555,14 +1579,14 @@ export default function CBTExam() {
             </div>
 
             <div className="cbt-confirm-actions">
-              <button 
-                className="cbt-btn" 
+              <button
+                className="cbt-btn"
                 style={{ background: '#f1f5f9', color: '#475569', border: '1px solid #cbd5e1' }}
                 onClick={() => setShowSubmitConfirmModal(false)}
               >
                 Return to Test
               </button>
-              <button 
+              <button
                 id="btn-confirm-submit"
                 className="cbt-btn cbt-btn-green"
                 disabled={isSubmitting}

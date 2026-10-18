@@ -3,13 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getDashboard, getWeeklyProgress, getStatsStrip, chatAI } from '../services/api';
 import { Line } from 'react-chartjs-2';
-import { 
-  Chart as ChartJS, CategoryScale, LinearScale, PointElement, 
-  LineElement, Title, Tooltip, Legend, Filler 
+import {
+  Chart as ChartJS, CategoryScale, LinearScale, PointElement,
+  LineElement, Title, Tooltip, Legend, Filler
 } from 'chart.js';
-import { 
-  Activity, CheckCircle2, BrainCircuit, Shield, 
-  Target, BarChart3, Clock, ArrowRight, Check, Play, BookOpen, 
+import {
+  Activity, CheckCircle2, BrainCircuit, Shield,
+  Target, BarChart3, Clock, ArrowRight, Check, Play, BookOpen,
   Video, Download, FileText, Beaker, Edit3, Send, Sparkles, X, RefreshCw
 } from 'lucide-react';
 import './StudentDashboard.css';
@@ -122,21 +122,21 @@ export default function Dashboard() {
     { topic: 'Pharmacology', accuracy: 67, color: '#ef4444' },
   ];
 
-  const subjectsToDisplay = data?.topicPerformance?.length > 0 
+  const subjectsToDisplay = data?.topicPerformance?.length > 0
     ? data.topicPerformance.map(tp => ({
-        topic: tp.topic,
-        accuracy: tp.accuracy,
-        color: tp.accuracy >= 80 ? '#10b981' : tp.accuracy >= 70 ? '#3b82f6' : tp.accuracy >= 60 ? '#f59e0b' : '#ef4444'
-      }))
+      topic: tp.topic,
+      accuracy: tp.accuracy,
+      color: tp.accuracy >= 80 ? '#10b981' : tp.accuracy >= 70 ? '#3b82f6' : tp.accuracy >= 60 ? '#f59e0b' : '#ef4444'
+    }))
     : defaultSubjects;
 
   // Chart dataset based on real weekly progress or dynamic defaults
-  const chartLabels = weeklyProgress?.length > 0 
-    ? weeklyProgress.map(w => w.week || 'Week') 
+  const chartLabels = weeklyProgress?.length > 0
+    ? weeklyProgress.map(w => w.week || 'Week')
     : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-  const chartScores = weeklyProgress?.length > 0 
-    ? weeklyProgress.map(w => w.score) 
+  const chartScores = weeklyProgress?.length > 0
+    ? weeklyProgress.map(w => w.score)
     : [45, 55, 60, 68, 75, 82, accuracyPct];
 
   const chartData = {
@@ -198,7 +198,7 @@ export default function Dashboard() {
         {/* Readiness Score */}
         <div className="sd-card">
           <div className="sd-card-title">
-            NURSING READINESS SCORE <Shield size={14} color="#94a3b8" style={{ marginLeft: 4 }}/>
+            NURSING READINESS SCORE <Shield size={14} color="#94a3b8" style={{ marginLeft: 4 }} />
           </div>
           <div className="sd-readiness">
             <div className="sd-r-left">
@@ -209,52 +209,52 @@ export default function Dashboard() {
             <div className="sd-r-right">
               <svg width="80" height="80" viewBox="0 0 100 100">
                 <circle cx="50" cy="50" r="40" stroke="#f1f5f9" strokeWidth="12" fill="none" />
-                <circle 
-                  cx="50" cy="50" r="40" 
-                  stroke="#4f46e5" strokeWidth="12" fill="none" 
-                  strokeDasharray="251.2" 
-                  strokeDashoffset={251.2 - (251.2 * readinessScore / 100)} 
-                  strokeLinecap="round" 
-                  transform="rotate(-90 50 50)" 
+                <circle
+                  cx="50" cy="50" r="40"
+                  stroke="#4f46e5" strokeWidth="12" fill="none"
+                  strokeDasharray="251.2"
+                  strokeDashoffset={251.2 - (251.2 * readinessScore / 100)}
+                  strokeLinecap="round"
+                  transform="rotate(-90 50 50)"
                 />
                 <foreignObject x="30" y="30" width="40" height="40">
                   <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4f46e5' }}>
-                    <Shield size={24}/>
+                    <Shield size={24} />
                   </div>
                 </foreignObject>
               </svg>
             </div>
           </div>
           <Link to="/performance" className="sd-card-link" style={{ marginTop: 'auto', paddingTop: 16 }}>
-            View Full Analysis <ArrowRight size={14}/>
+            View Full Analysis <ArrowRight size={14} />
           </Link>
         </div>
 
         {/* 4 Real-time Metrics */}
         <div className="sd-card sd-metrics-4">
           <div className="sd-m4-item">
-            <div className="sd-m4-icon" style={{ background: '#f3e8ff', color: '#8b5cf6' }}><BrainCircuit size={20}/></div>
+            <div className="sd-m4-icon" style={{ background: '#f3e8ff', color: '#8b5cf6' }}><BrainCircuit size={20} /></div>
             <div className="sd-m4-info">
               <span className="sd-m4-label">Concepts Mastered</span>
               <span className="sd-m4-val">86%</span>
             </div>
           </div>
           <div className="sd-m4-item">
-            <div className="sd-m4-icon" style={{ background: '#d1fae5', color: '#10b981' }}><Target size={20}/></div>
+            <div className="sd-m4-icon" style={{ background: '#d1fae5', color: '#10b981' }}><Target size={20} /></div>
             <div className="sd-m4-info">
               <span className="sd-m4-label">Accuracy</span>
               <span className="sd-m4-val">{accuracyPct}%</span>
             </div>
           </div>
           <div className="sd-m4-item">
-            <div className="sd-m4-icon" style={{ background: '#eff6ff', color: '#3b82f6' }}><BarChart3 size={20}/></div>
+            <div className="sd-m4-icon" style={{ background: '#eff6ff', color: '#3b82f6' }}><BarChart3 size={20} /></div>
             <div className="sd-m4-info">
               <span className="sd-m4-label">Tests Attempted</span>
               <span className="sd-m4-val">{totalTestsAttempted}</span>
             </div>
           </div>
           <div className="sd-m4-item">
-            <div className="sd-m4-icon" style={{ background: '#ffedd5', color: '#f97316' }}><Activity size={20}/></div>
+            <div className="sd-m4-icon" style={{ background: '#ffedd5', color: '#f97316' }}><Activity size={20} /></div>
             <div className="sd-m4-info">
               <span className="sd-m4-label">Questions Solved</span>
               <span className="sd-m4-val">{totalQuestionsSolved}</span>
@@ -267,11 +267,11 @@ export default function Dashboard() {
           <div>
             <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span>Your Goal: {userGoal.targetExam}</span>
-              <button 
-                onClick={() => setShowGoalModal(true)} 
+              <button
+                onClick={() => setShowGoalModal(true)}
                 style={{ background: 'none', border: 'none', color: '#4f46e5', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 600 }}
               >
-                <Edit3 size={14}/> Edit
+                <Edit3 size={14} /> Edit
               </button>
             </div>
             <div className="sd-goal-days">
@@ -314,7 +314,7 @@ export default function Dashboard() {
           </p>
         </div>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          <button 
+          <button
             onClick={() => navigate('/tests')}
             style={{
               background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
@@ -333,7 +333,7 @@ export default function Dashboard() {
           >
             Practice Tests <ArrowRight size={16} />
           </button>
-          <button 
+          <button
             onClick={() => navigate('/mock-tests')}
             style={{
               background: 'rgba(255, 255, 255, 0.1)',
@@ -363,7 +363,7 @@ export default function Dashboard() {
           </div>
           {subjectsToDisplay.slice(0, 6).map((sub, idx) => (
             <div key={idx} className="sd-subject-row">
-              <div className="sd-sub-icon"><BookOpen size={12}/></div>
+              <div className="sd-sub-icon"><BookOpen size={12} /></div>
               <div className="sd-sub-name">{sub.topic}</div>
               <div className="sd-sub-track">
                 <div className="sd-sub-fill" style={{ width: `${sub.accuracy}%`, background: sub.color }}></div>
@@ -408,15 +408,15 @@ export default function Dashboard() {
           </div>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
             {tasks.map(t => (
-              <div 
-                key={t.id} 
-                className="sd-plan-item" 
+              <div
+                key={t.id}
+                className="sd-plan-item"
                 onClick={() => toggleTask(t.id)}
                 style={{ cursor: 'pointer', opacity: t.completed ? 0.75 : 1, transition: 'all 0.2s ease' }}
               >
                 <div className="sd-plan-left">
                   {t.completed ? (
-                    <CheckCircle2 size={16} color="#10b981"/>
+                    <CheckCircle2 size={16} color="#10b981" />
                   ) : (
                     <div style={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid #cbd5e1' }} />
                   )}
@@ -424,17 +424,17 @@ export default function Dashboard() {
                 </div>
                 <div className="sd-plan-right">
                   {t.duration}
-                  {t.completed && <CheckCircle2 size={14} color="#10b981" style={{ marginLeft: 4 }}/>}
+                  {t.completed && <CheckCircle2 size={14} color="#10b981" style={{ marginLeft: 4 }} />}
                 </div>
               </div>
             ))}
           </div>
-          <button 
-            className="sd-card-link" 
+          <button
+            className="sd-card-link"
             onClick={() => navigate('/plan')}
             style={{ width: '100%', justifyContent: 'center', border: '1px solid #e2e8f0', borderRadius: 8, padding: 8, marginTop: 12, cursor: 'pointer' }}
           >
-            Manage Full Study Plan <Play size={12}/>
+            Manage Full Study Plan <Play size={12} />
           </button>
         </div>
       </div>
@@ -445,7 +445,7 @@ export default function Dashboard() {
           <div>
             <div className="sd-card-title" style={{ marginBottom: 0 }}>Test Series Progress</div>
             <Link to="/tests" className="sd-card-link" style={{ fontSize: 11, marginBottom: 24 }}>View All Tests</Link>
-            
+
             <svg viewBox="0 0 36 36" className="circular-chart">
               <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
               <path className="circle" stroke="#10b981" strokeDasharray="68, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
@@ -454,10 +454,10 @@ export default function Dashboard() {
             </svg>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 24 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}><span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: 4 }}><CheckCircle2 size={12} color="#10b981"/> Completed Tests</span><span style={{ fontWeight: 700, color: '#0f172a' }}>18</span></div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}><span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: 4 }}><FileText size={12} color="#94a3b8"/> Total Series</span><span style={{ fontWeight: 700, color: '#0f172a' }}>26</span></div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}><span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: 4 }}><BarChart3 size={12} color="#8b5cf6"/> Avg. Accuracy</span><span style={{ fontWeight: 700, color: '#0f172a' }}>{accuracyPct}%</span></div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}><span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: 4 }}><Target size={12} color="#f59e0b"/> Best Score</span><span style={{ fontWeight: 700, color: '#10b981' }}>94%</span></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}><span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: 4 }}><CheckCircle2 size={12} color="#10b981" /> Completed Tests</span><span style={{ fontWeight: 700, color: '#0f172a' }}>18</span></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}><span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: 4 }}><FileText size={12} color="#94a3b8" /> Total Series</span><span style={{ fontWeight: 700, color: '#0f172a' }}>26</span></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}><span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: 4 }}><BarChart3 size={12} color="#8b5cf6" /> Avg. Accuracy</span><span style={{ fontWeight: 700, color: '#0f172a' }}>{accuracyPct}%</span></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}><span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: 4 }}><Target size={12} color="#f59e0b" /> Best Score</span><span style={{ fontWeight: 700, color: '#10b981' }}>94%</span></div>
           </div>
         </div>
 
@@ -473,9 +473,9 @@ export default function Dashboard() {
                 <div><span style={{ color: '#64748b' }}>Accuracy:</span> <span style={{ fontWeight: 600, color: '#10b981' }}>86%</span></div>
                 <div><span style={{ color: '#64748b' }}>Percentile:</span> <span style={{ fontWeight: 600, color: '#0f172a' }}>93.4%</span></div>
               </div>
-              <button 
-                onClick={() => navigate('/performance')} 
-                className="sd-card-link" 
+              <button
+                onClick={() => navigate('/performance')}
+                className="sd-card-link"
                 style={{ border: '1px solid #e2e8f0', padding: '6px 12px', borderRadius: 6, cursor: 'pointer' }}
               >
                 View Detailed Analytics
@@ -494,21 +494,21 @@ export default function Dashboard() {
 
         {/* Live Interactive AI Mentor */}
         <div className="sd-card" style={{ position: 'relative', overflow: 'hidden' }}>
-          <div className="sd-card-title">AI Mentor Tutor <Sparkles size={16} color="#8b5cf6" style={{ marginLeft: 4 }}/></div>
+          <div className="sd-card-title">AI Mentor Tutor <Sparkles size={16} color="#8b5cf6" style={{ marginLeft: 4 }} /></div>
           <div className="sd-ai-inner" style={{ flexDirection: 'column', alignItems: 'stretch' }}>
             <div style={{ flex: 1 }}>
               <div style={{ color: '#4f46e5', fontWeight: 700, fontSize: 14, marginBottom: 2 }}>Ask AI Doubts</div>
               <div style={{ color: '#64748b', fontSize: 12, marginBottom: 12 }}>Get instant explanations for NORCET & NCLEX MCQs</div>
-              
+
               <form onSubmit={handleAiAsk} className="sd-ai-input" style={{ width: '100%' }}>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={aiInput}
                   onChange={(e) => setAiInput(e.target.value)}
-                  placeholder="Ask a question (e.g. Digoxin antidote)..." 
+                  placeholder="Ask a question (e.g. Digoxin antidote)..."
                 />
                 <button type="submit" disabled={aiLoading}>
-                  {aiLoading ? <RefreshCw className="animate-spin" size={14}/> : <Send size={14}/>}
+                  {aiLoading ? <RefreshCw className="animate-spin" size={14} /> : <Send size={14} />}
                 </button>
               </form>
 
@@ -528,25 +528,25 @@ export default function Dashboard() {
           <div className="sd-qa-title">Quick Actions</div>
           <div className="sd-qa-items">
             <div className="sd-qa-item" onClick={() => navigate('/tests')} style={{ cursor: 'pointer' }}>
-              <div className="sd-qa-icon"><BookOpen size={18}/></div> Take Free Test
+              <div className="sd-qa-icon"><BookOpen size={18} /></div> Take Free Test
             </div>
             <div className="sd-qa-item" onClick={() => navigate('/live-classes')} style={{ cursor: 'pointer' }}>
-              <div className="sd-qa-icon"><Video size={18}/></div> Join Live Class
+              <div className="sd-qa-icon"><Video size={18} /></div> Join Live Class
             </div>
             <div className="sd-qa-item" onClick={() => navigate('/ai-learning')} style={{ cursor: 'pointer' }}>
-              <div className="sd-qa-icon"><BrainCircuit size={18}/></div> AI Explain Concept
+              <div className="sd-qa-icon"><BrainCircuit size={18} /></div> AI Explain Concept
             </div>
             <div className="sd-qa-item" onClick={() => navigate('/notes')} style={{ cursor: 'pointer' }}>
-              <div className="sd-qa-icon"><Download size={18}/></div> Download Notes
+              <div className="sd-qa-icon"><Download size={18} /></div> Download Notes
             </div>
             <div className="sd-qa-item" onClick={() => navigate('/pyq')} style={{ cursor: 'pointer' }}>
-              <div className="sd-qa-icon"><FileText size={18}/></div> PYQ Practice
+              <div className="sd-qa-icon"><FileText size={18} /></div> PYQ Practice
             </div>
             <div className="sd-qa-item" onClick={() => navigate('/skill-lab')} style={{ cursor: 'pointer' }}>
-              <div className="sd-qa-icon"><Beaker size={18}/></div> Skill Lab
+              <div className="sd-qa-icon"><Beaker size={18} /></div> Skill Lab
             </div>
             <div className="sd-qa-item" onClick={() => navigate('/clinical-cases')} style={{ cursor: 'pointer' }}>
-              <div className="sd-qa-icon"><Activity size={18}/></div> Clinical Simulator
+              <div className="sd-qa-icon"><Activity size={18} /></div> Clinical Simulator
             </div>
           </div>
         </div>
@@ -569,13 +569,13 @@ export default function Dashboard() {
           <div style={{ background: '#ffffff', borderRadius: 16, padding: 24, width: '90%', maxWidth: 440, boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <h3 style={{ margin: 0, fontSize: 18, color: '#0f172a' }}>Update Exam Target Goal</h3>
-              <button onClick={() => setShowGoalModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}><X size={20}/></button>
+              <button onClick={() => setShowGoalModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}><X size={20} /></button>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div>
                 <label style={{ fontSize: 12, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 4 }}>Target Exam</label>
-                <select 
-                  value={userGoal.targetExam} 
+                <select
+                  value={userGoal.targetExam}
                   onChange={(e) => setUserGoal({ ...userGoal, targetExam: e.target.value })}
                   style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 14 }}
                 >
@@ -589,8 +589,8 @@ export default function Dashboard() {
 
               <div>
                 <label style={{ fontSize: 12, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 4 }}>Target Accuracy Score</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={userGoal.targetScore}
                   onChange={(e) => setUserGoal({ ...userGoal, targetScore: e.target.value })}
                   style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 14 }}
@@ -599,8 +599,8 @@ export default function Dashboard() {
 
               <div>
                 <label style={{ fontSize: 12, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 4 }}>Days Remaining</label>
-                <input 
-                  type="number" 
+                <input
+                  type="number"
                   value={userGoal.daysLeft}
                   onChange={(e) => setUserGoal({ ...userGoal, daysLeft: Number(e.target.value) })}
                   style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 14 }}
@@ -608,13 +608,13 @@ export default function Dashboard() {
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 16 }}>
-                <button 
+                <button
                   onClick={() => setShowGoalModal(false)}
                   style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #cbd5e1', background: '#fff', cursor: 'pointer', fontWeight: 600 }}
                 >
                   Cancel
                 </button>
-                <button 
+                <button
                   onClick={saveGoal}
                   style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#4f46e5', color: '#fff', cursor: 'pointer', fontWeight: 600 }}
                 >

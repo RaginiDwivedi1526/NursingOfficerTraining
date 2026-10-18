@@ -117,7 +117,7 @@ export default function TestSeries() {
                 <div className="sts-hero-pct">35%</div>
               </div>
             </div>
-            <div className="sts-hero-tests" style={{color:'#c4b5fd', fontSize:12}}>7 / 20 Tests Completed</div>
+            <div className="sts-hero-tests" style={{ color: '#c4b5fd', fontSize: 12 }}>7 / 20 Tests Completed</div>
           </div>
         </div>
 
@@ -146,7 +146,7 @@ export default function TestSeries() {
               Every test includes CAT qualities with vitals, labs, prioritization dilemmas, and detailed rationales.
             </p>
           </div>
-          <button 
+          <button
             onClick={() => navigate('/tests')}
             style={{
               background: '#7c3aed',
@@ -168,7 +168,7 @@ export default function TestSeries() {
         <div className="sts-quick-stats">
           {QUICK_STATS.map((s, i) => (
             <div className="sts-qs-card" key={i}>
-              <div className="sts-qs-icon" style={{background: s.bg}}>{s.icon}</div>
+              <div className="sts-qs-icon" style={{ background: s.bg }}>{s.icon}</div>
               <div className="sts-qs-info">
                 <div className="sts-qs-val">{s.val}</div>
                 {s.lbl.split('\n').map((l, j) => <div key={j} className="sts-qs-lbl">{l}</div>)}
@@ -187,13 +187,13 @@ export default function TestSeries() {
         {/* Filters */}
         <div className="sts-filter-row">
           <div className="sts-search">
-            <Search size={16} color="#94a3b8"/>
-            <input type="text" placeholder="Search tests..."/>
+            <Search size={16} color="#94a3b8" />
+            <input type="text" placeholder="Search tests..." />
           </div>
           <select className="sts-select"><option>All Subjects</option></select>
           <select className="sts-select"><option>All Tests</option></select>
           <select className="sts-select"><option>Sort by: Newest</option></select>
-          <button className="sts-filter-btn"><SlidersHorizontal size={14}/> Filters</button>
+          <button className="sts-filter-btn"><SlidersHorizontal size={14} /> Filters</button>
         </div>
 
         {/* Tests Table */}
@@ -220,7 +220,7 @@ export default function TestSeries() {
                 </div>
               </div>
               <div>
-                <span className="sts-type-badge" style={{background: t.typeBg, color: t.typeColor}}>{t.type}</span>
+                <span className="sts-type-badge" style={{ background: t.typeBg, color: t.typeColor }}>{t.type}</span>
               </div>
               <div className="sts-cell-val">{t.questions}</div>
               <div className="sts-cell-val">{t.duration}</div>
@@ -229,15 +229,15 @@ export default function TestSeries() {
                 <div className={`sts-score-cell ${t.scoreClass}`}>{t.score}</div>
                 <div className="sts-score-pct">{t.scorePct}</div>
               </div>
-              <div style={{display:'flex', gap:8, alignItems:'center'}}>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <button className={`sts-action-btn ${t.btnClass}`} onClick={() => handleStartTest(t.title)} disabled={loading}>
                   {loading ? '...' : t.btn}
                 </button>
-                <button style={{background:'none', border:'none', cursor:'pointer', color:'#94a3b8'}}><MoreVertical size={16}/></button>
+                <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8' }}><MoreVertical size={16} /></button>
               </div>
             </div>
           ))}
-          <button className="sts-view-all">View All Tests <ArrowRight size={14}/></button>
+          <button className="sts-view-all">View All Tests <ArrowRight size={14} /></button>
         </div>
       </div>
 
@@ -247,13 +247,13 @@ export default function TestSeries() {
         <div className="sts-side-card">
           <div className="sts-sc-head">
             <div className="sts-sc-title">Your Test Performance</div>
-            <div className="sts-sc-filter">This Month <ChevronDown size={12}/></div>
+            <div className="sts-sc-filter">This Month <ChevronDown size={12} /></div>
           </div>
           <div className="sts-perf-inner">
             <div className="sts-donut-wrap">
               <svg viewBox="0 0 36 36">
-                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#f1f5f9" strokeWidth="3"/>
-                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#4f46e5" strokeWidth="3" strokeDasharray="58, 100" strokeLinecap="round"/>
+                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#f1f5f9" strokeWidth="3" />
+                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#4f46e5" strokeWidth="3" strokeDasharray="58, 100" strokeLinecap="round" />
               </svg>
               <div className="sts-donut-label">
                 <div className="sts-donut-pct">58%</div>
@@ -261,10 +261,10 @@ export default function TestSeries() {
               </div>
             </div>
             <div className="sts-perf-stats">
-              <div className="sts-perf-row"><div className="sts-perf-dot" style={{background:'#4f46e5'}}></div><span>Tests Attempted</span><span className="sts-perf-val">7</span></div>
-              <div className="sts-perf-row"><div className="sts-perf-dot" style={{background:'#10b981'}}></div><span>Tests Completed</span><span className="sts-perf-val">4</span></div>
-              <div className="sts-perf-row"><div className="sts-perf-dot" style={{background:'#f59e0b'}}></div><span>Average Accuracy</span><span className="sts-perf-val">65%</span></div>
-              <div className="sts-perf-row"><div className="sts-perf-dot" style={{background:'#ec4899'}}></div><span>Total Time</span><span className="sts-perf-val">18h 30m</span></div>
+              <div className="sts-perf-row"><div className="sts-perf-dot" style={{ background: '#4f46e5' }}></div><span>Tests Attempted</span><span className="sts-perf-val">7</span></div>
+              <div className="sts-perf-row"><div className="sts-perf-dot" style={{ background: '#10b981' }}></div><span>Tests Completed</span><span className="sts-perf-val">4</span></div>
+              <div className="sts-perf-row"><div className="sts-perf-dot" style={{ background: '#f59e0b' }}></div><span>Average Accuracy</span><span className="sts-perf-val">65%</span></div>
+              <div className="sts-perf-row"><div className="sts-perf-dot" style={{ background: '#ec4899' }}></div><span>Total Time</span><span className="sts-perf-val">18h 30m</span></div>
             </div>
           </div>
         </div>
@@ -273,16 +273,16 @@ export default function TestSeries() {
         <div className="sts-side-card">
           <div className="sts-sc-head">
             <div className="sts-sc-title">Subject Wise Performance</div>
-            <div className="sts-sc-filter">This Month <ChevronDown size={12}/></div>
+            <div className="sts-sc-filter">This Month <ChevronDown size={12} /></div>
           </div>
           {SUBJECT_PERF.map((s, i) => (
             <div className="sts-sw-row" key={i}>
               <div className="sts-sw-head">
                 <div className="sts-sw-name"><span>{s.icon}</span>{s.name}</div>
-                <div className="sts-sw-vals" style={{color: s.color, fontWeight:700}}>{s.pct}% ({s.val})</div>
+                <div className="sts-sw-vals" style={{ color: s.color, fontWeight: 700 }}>{s.pct}% ({s.val})</div>
               </div>
               <div className="sts-sw-track">
-                <div className="sts-sw-fill" style={{width:`${s.pct}%`, background: s.color}}></div>
+                <div className="sts-sw-fill" style={{ width: `${s.pct}%`, background: s.color }}></div>
               </div>
             </div>
           ))}
@@ -296,7 +296,7 @@ export default function TestSeries() {
           </div>
           {RECOS.map((r, i) => (
             <div className="sts-reco-item" key={i}>
-              <div className="sts-reco-icon" style={{background: r.bg, color: r.color}}>{r.icon}</div>
+              <div className="sts-reco-icon" style={{ background: r.bg, color: r.color }}>{r.icon}</div>
               <div className="sts-reco-info">
                 <div className="sts-reco-title">{r.title}</div>
                 <div className="sts-reco-sub">{r.sub}</div>

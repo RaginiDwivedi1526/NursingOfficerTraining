@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
-import { Play, ArrowLeft, Clock, HelpCircle, Trophy, Minus, Info } from 'lucide-react';
-import { getTest } from '../services/api';
+import { Play, ArrowLeft, Clock, HelpCircle, Trophy, Minus, Info, Sparkles, Loader2 } from 'lucide-react';
+import { getTest, generateTest } from '../services/api';
 import logo from '../assets/logo.png';
 import './TestDetail.css';
 
@@ -11,6 +11,7 @@ export default function TestDetail() {
   const location = useLocation();
 
   const [loading, setLoading] = useState(false);
+  const [generatingAi, setGeneratingAi] = useState(false);
   const [testData, setTestData] = useState(null);
 
   useEffect(() => {
@@ -79,7 +80,8 @@ export default function TestDetail() {
   };
 
   const handleStartTest = () => {
-    navigate(`/test/${id || '571'}/instructions`, {
+    const isCAT = location.state?.isCAT !== undefined ? location.state.isCAT : true;
+    navigate(`/test/${id || 'adaptive'}/instructions`, {
       state: {
         test: testData,
         title: testData?.title,
@@ -88,9 +90,44 @@ export default function TestDetail() {
         totalQuestions: testData?.totalQuestions || 25,
         totalMarks: testData?.totalMarks || 25,
         negativeMarking: testData?.negativeMarking || '1/3',
-        examType: testData?.examType || 'nursing_officer'
+        examType: testData?.examType || 'nursing_officer',
+        isCAT
       }
     });
+  };
+
+  const handleStartFreshAITest = async () => {
+    if (generatingAi) return;
+    setGeneratingAi(true);
+    try {
+      const topicToUse = testData?.topic || 'Medical-Surgical Nursing';
+      const res = await generateTest({
+        topic: topicToUse,
+        difficulty: 'hard',
+        numberOfQuestions: 10,
+        examType: testData?.examType || 'nursing_officer'
+      });
+      const newTest = res.data;
+      navigate(`/test/${newTest._id}/instructions`, {
+        state: {
+          test: newTest,
+          title: newTest.title,
+          topic: newTest.topic,
+          duration: 30,
+          totalQuestions: newTest.questions?.length || 10,
+          totalMarks: (newTest.questions?.length || 10) * 1,
+          negativeMarking: '1/3',
+          examType: newTest.examType || testData?.examType || 'nursing_officer',
+          isCAT: true
+        }
+      });
+    } catch (err) {
+      console.error('[TestDetail] Failed to generate fresh AI test:', err);
+      alert('AI question generation encountered an issue. Starting the standard test version.');
+      handleStartTest();
+    } finally {
+      setGeneratingAi(false);
+    }
   };
 
   const currentTest = testData || {
@@ -125,7 +162,7 @@ export default function TestDetail() {
       {/* Main Content Area */}
       <main className="td-main">
         <div className="td-card">
-          
+
           {/* Top Banner Card Header */}
           <div className="td-card-header">
             <div className="td-icon-badge">
@@ -144,10 +181,10 @@ export default function TestDetail() {
 
           {/* Card Body */}
           <div className="td-card-body">
-            
+
             {/* 4 Metric Boxes Grid */}
             <div className="td-metrics-grid">
-              
+
               {/* Duration */}
               <div className="td-metric-box">
                 <div className="td-metric-icon" style={{ color: '#6366f1' }}>
@@ -203,10 +240,46 @@ export default function TestDetail() {
               </div>
             </div>
 
-            {/* Start Test Button */}
-            <button className="td-btn-start" onClick={handleStartTest} id="btn-start-test">
-              <Play size={20} fill="#ffffff" /> Start Test
-            </button>
+            {/* Action Buttons: AI Fresh Questions vs Standard Pool */}
+            <div style={{ display: 'flex', gap: 12, marginTop: 24, flexDirection: 'column' }}>
+              <button
+                className="td-btn-start"
+                onClick={handleStartFreshAITest}
+                disabled={generatingAi}
+                id="btn-start-ai-test"
+                style={{
+                  background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)',
+                  boxShadow: '0 4px 14px rgba(124, 58, 237, 0.35)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 10,
+                  cursor: generatingAi ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {generatingAi ? (
+                  <>
+                    <Loader2 size={20} style={{ animation: 'spin 1s linear infinite' }} />
+                    <span>AI is Generating 10 Brand New Questions...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={20} fill="#ffffff" />
+                    <span>Generate & Practice Fresh AI Questions (New Scenarios)</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                className="td-btn-start"
+                onClick={handleStartTest}
+                disabled={generatingAi}
+                id="btn-start-test"
+                style={{ background: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+              >
+                <Play size={18} fill="#ffffff" /> Start Standard Saved Test
+              </button>
+            </div>
 
           </div>
         </div>

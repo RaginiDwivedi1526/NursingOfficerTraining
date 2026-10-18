@@ -14,9 +14,9 @@ const {
 // POST /api/cat/start - Start a new Computer Adaptive Test (CAT)
 router.post('/start', protect, async (req, res) => {
   try {
-    const { 
-      examType = 'nclex_rn', 
-      topic = 'All Subjects', 
+    const {
+      examType = 'nclex_rn',
+      topic = 'All Subjects',
       title = 'Computer Adaptive Test',
       startingDifficulty = 2,
       minQuestions = 20,
@@ -66,7 +66,9 @@ router.post('/start', protect, async (req, res) => {
         options: firstQuestion.options,
         topic: firstQuestion.topic,
         difficultyLevel: firstQuestion.difficultyLevel,
-        difficultyName: firstQuestion.difficultyName
+        difficultyName: firstQuestion.difficultyName,
+        correctAnswer: firstQuestion.correctAnswer,
+        explanation: firstQuestion.explanation
       },
       currentDifficultyLevel: initialDifficulty,
       difficultyName: DIFFICULTY_LEVELS[initialDifficulty].name,
@@ -142,8 +144,8 @@ router.post('/submit-answer', protect, async (req, res) => {
     const newTheta = updateAbilityTheta(session.abilityTheta, isCorrect, session.currentDifficultyLevel);
 
     // Update subject quota safely
-    const currentSubjectCount = (session.subjectQuotas && session.subjectQuotas.get 
-      ? (session.subjectQuotas.get(currentQ.topic) || 0) 
+    const currentSubjectCount = (session.subjectQuotas && session.subjectQuotas.get
+      ? (session.subjectQuotas.get(currentQ.topic) || 0)
       : ((session.subjectQuotas && session.subjectQuotas[currentQ.topic]) || 0)) + 1;
     if (session.subjectQuotas && session.subjectQuotas.set) {
       session.subjectQuotas.set(currentQ.topic, currentSubjectCount);
@@ -202,8 +204,8 @@ router.post('/submit-answer', protect, async (req, res) => {
     }
 
     // Select next subject & generate next question at target adaptive level
-    const quotasObj = session.subjectQuotas instanceof Map 
-      ? Object.fromEntries(session.subjectQuotas) 
+    const quotasObj = session.subjectQuotas instanceof Map
+      ? Object.fromEntries(session.subjectQuotas)
       : (session.subjectQuotas || {});
     const nextSubject = selectNextSubject(quotasObj, session.topic);
     const prevDifficultyLevel = session.currentDifficultyLevel;
@@ -231,7 +233,9 @@ router.post('/submit-answer', protect, async (req, res) => {
         options: nextQ.options,
         topic: nextQ.topic,
         difficultyLevel: nextQ.difficultyLevel,
-        difficultyName: nextQ.difficultyName
+        difficultyName: nextQ.difficultyName,
+        correctAnswer: nextQ.correctAnswer,
+        explanation: nextQ.explanation
       },
       previousDifficultyLevel: prevDifficultyLevel,
       currentDifficultyLevel: nextDifficultyLevel,

@@ -92,8 +92,8 @@ const AdminRoute = ({ children }) => {
 function AppRoutes() {
   const { user } = useAuth();
   const location = useLocation();
-  const hideNav = location.pathname.startsWith('/admin') || 
-                  ['/dashboard', '/tests', '/test/', '/result/', '/free-tests', '/live-classes', '/recorded', '/ai-learning', '/study-material', '/notes', '/test-series', '/mock-tests', '/pyq-practice', '/question-bank', '/performance', '/mistakes', '/insights', '/my-plan', '/bookmarks', '/downloads', '/certificates', '/skill-lab', '/clinical-cases', '/library', '/cat-test'].some(p => location.pathname.startsWith(p));
+  const hideNav = location.pathname.startsWith('/admin') ||
+    ['/dashboard', '/tests', '/test/', '/result/', '/free-tests', '/live-classes', '/recorded', '/ai-learning', '/study-material', '/notes', '/test-series', '/mock-tests', '/pyq-practice', '/question-bank', '/performance', '/mistakes', '/insights', '/my-plan', '/bookmarks', '/downloads', '/certificates', '/skill-lab', '/clinical-cases', '/library', '/cat-test'].some(p => location.pathname.startsWith(p));
   return (
     <>
       {!hideNav && <Navbar />}
@@ -105,14 +105,14 @@ function AppRoutes() {
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/tests" element={<ProtectedRoute><TestList /></ProtectedRoute>} />
-        
+
         {/* CBT Exam Experience Routes */}
         <Route path="/free-tests/detail/:id" element={<ExamRoute><TestDetail /></ExamRoute>} />
         <Route path="/test/:id/detail" element={<ExamRoute><TestDetail /></ExamRoute>} />
         <Route path="/test/:id/instructions" element={<ExamRoute><TestInstructions /></ExamRoute>} />
         <Route path="/test/:id/take" element={<ExamRoute><CBTExam /></ExamRoute>} />
         <Route path="/test/:id" element={<ExamRoute><TestDetail /></ExamRoute>} />
-        
+
         <Route path="/result/:id" element={<ExamRoute><TestResult /></ExamRoute>} />
         <Route path="/test/:id/result" element={<ExamRoute><TestResult /></ExamRoute>} />
         <Route path="/cat-test" element={<ProtectedRoute><Navigate to="/mock-tests" replace /></ProtectedRoute>} />

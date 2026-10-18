@@ -25,9 +25,11 @@ export default function TestInstructions() {
     minPassPercent: 50.0
   };
 
+  const isCAT = location.state?.isCAT !== undefined ? location.state.isCAT : true;
+
   const handleProceed = () => {
     if (!declarationChecked) return;
-    navigate(`/test/${id || '571'}/take`, {
+    navigate(`/test/${id || 'adaptive'}/take`, {
       state: {
         test: testInfo,
         title: testInfo.title,
@@ -36,7 +38,8 @@ export default function TestInstructions() {
         totalQuestions: testInfo.totalQuestions || 25,
         totalMarks: testInfo.totalMarks || 25,
         negativeMarking: testInfo.negativeMarking || '1/3',
-        examType: testInfo.examType || 'nursing_officer'
+        examType: testInfo.examType || 'nursing_officer',
+        isCAT
       }
     });
   };
@@ -53,8 +56,8 @@ export default function TestInstructions() {
           </div>
         </Link>
         <div>
-          <button 
-            onClick={() => navigate(-1)} 
+          <button
+            onClick={() => navigate(-1)}
             style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 8, background: '#f1f5f9', border: '1px solid #cbd5e1', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: '#475569' }}
           >
             <ArrowLeft size={16} /> Back
@@ -147,11 +150,11 @@ export default function TestInstructions() {
           </div>
 
           <label className="ti-declaration">
-            <input 
-              type="checkbox" 
+            <input
+              type="checkbox"
               id="cb-declaration"
-              checked={declarationChecked} 
-              onChange={(e) => setDeclarationChecked(e.target.checked)} 
+              checked={declarationChecked}
+              onChange={(e) => setDeclarationChecked(e.target.checked)}
             />
             <span>
               I have read and understood the instructions. All computer hardware allotted to me is in proper working condition. I declare that I am not in possession of / not wearing / not carrying any prohibited gadget like mobile phone, bluetooth devices etc. / any prohibited material into the Examination Hall.
@@ -160,7 +163,7 @@ export default function TestInstructions() {
 
           {/* Bottom Action */}
           <div className="ti-bottom-bar">
-            <button 
+            <button
               id="btn-proceed-test"
               className={`ti-btn-proceed ${declarationChecked ? 'active' : 'disabled'}`}
               disabled={!declarationChecked}

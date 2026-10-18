@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { 
   Award, CheckCircle2, XCircle, Timer, ClipboardList, Brain, BarChart3, 
   RotateCcw, Microscope, Pill, HeartPulse, Stethoscope, BookOpen, 
-  AlertTriangle, Check, ShieldCheck, TrendingUp, HelpCircle, Target, Percent
+  AlertTriangle, Check, ShieldCheck, TrendingUp, HelpCircle, Target, Percent,
+  Sparkles, Loader2
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { generateTest } from '../../services/api';
 import './TestResultSummary.css';
 
 const topicIcons = {
@@ -18,6 +20,9 @@ const topicIcons = {
 };
 
 export default function TestResultSummary({ result, testId, testTitle }) {
+  const navigate = useNavigate();
+  const [generatingFresh, setGeneratingFresh] = useState(false);
+
   if (!result) return null;
 
   // 1. Precise Quantitative Scoring
@@ -345,9 +350,66 @@ export default function TestResultSummary({ result, testId, testTitle }) {
       )}
 
       {/* ─── 8. ACTIONS ─── */}
-      <div className="trs-action-row">
+      <div className="trs-action-row" style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+        <button 
+          onClick={async () => {
+            if (generatingFresh) return;
+            setGeneratingFresh(true);
+            try {
+              const subjectToUse = result.test?.topic || result.topic || testTitle || 'Medical-Surgical Nursing';
+              const res = await generateTest({
+                topic: subjectToUse,
+                difficulty: 'hard',
+                numberOfQuestions: 10
+              });
+              const newTest = res.data;
+              navigate(`/test/${newTest._id}/take`, {
+                state: {
+                  test: newTest,
+                  title: newTest.title,
+                  topic: newTest.topic,
+                  duration: 30,
+                  totalQuestions: newTest.questions?.length || 10,
+                  totalMarks: (newTest.questions?.length || 10) * 1,
+                  negativeMarking: '1/3'
+                }
+              });
+            } catch (err) {
+              console.error('Failed to generate fresh AI test:', err);
+              alert('Could not generate new AI questions. Please try again.');
+            } finally {
+              setGeneratingFresh(false);
+            }
+          }} 
+          disabled={generatingFresh}
+          className="trs-btn"
+          style={{ 
+            background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)', 
+            color: '#ffffff',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            border: 'none',
+            padding: '12px 20px',
+            borderRadius: 8,
+            fontWeight: 700,
+            cursor: generatingFresh ? 'not-allowed' : 'pointer',
+            boxShadow: '0 4px 12px rgba(124, 58, 237, 0.35)'
+          }}
+        >
+          {generatingFresh ? (
+            <>
+              <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> Generating 10 New Questions...
+            </>
+          ) : (
+            <>
+              <Sparkles size={16} fill="#ffffff" /> Practice 10 New AI Questions (Fresh)
+            </>
+          )}
+        </button>
+
         <Link to={testId ? `/test/${testId}/take` : '/tests'} className="trs-btn trs-btn-primary">
-          <RotateCcw size={16} /> Retake Test
+          <RotateCcw size={16} /> Retake Same Test
         </Link>
         <Link to="/dashboard" className="trs-btn trs-btn-outline">
           <BarChart3 size={16} /> Student Dashboard

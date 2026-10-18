@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getTests, generateTest } from '../services/api';
-import { Search, BookOpen, Stethoscope, ChevronRight, Target, Loader2 } from 'lucide-react';
+import { Search, BookOpen, Stethoscope, ChevronRight, Target, Loader2, BrainCircuit, Sparkles } from 'lucide-react';
 
 const CORE_SUBJECTS = [
   { name: "All Subjects" },
-  { 
+  {
     name: "Nursing Foundations (Fundamentals of Nursing)",
     units: [
       "Introduction to Nursing",
@@ -32,7 +32,7 @@ const CORE_SUBJECTS = [
   },
   { name: "Anatomy & Physiology" },
   { name: "Microbiology" },
-  { 
+  {
     name: "Pharmacology",
     units: [
       "Introduction to Pharmacology",
@@ -60,8 +60,8 @@ const CORE_SUBJECTS = [
   { name: "Nutrition & Dietetics" },
   { name: "Psychology" },
   { name: "Sociology" },
-  { 
-    name: "Medical-Surgical Nursing", 
+  {
+    name: "Medical-Surgical Nursing",
     units: [
       "Introduction to Medical-Surgical Nursing",
       "Nursing Assessment",
@@ -91,7 +91,7 @@ const CORE_SUBJECTS = [
     ]
   },
   { name: "Community Health Nursing" },
-  { 
+  {
     name: "Child Health (Pediatric) Nursing",
     units: [
       "Introduction to Pediatric Nursing",
@@ -120,7 +120,7 @@ const CORE_SUBJECTS = [
       "Rehabilitation and Palliative Care"
     ]
   },
-  { 
+  {
     name: "Mental Health (Psychiatric) Nursing",
     units: [
       "Introduction to Psychiatric Nursing",
@@ -145,7 +145,7 @@ const CORE_SUBJECTS = [
       "Rehabilitation in Psychiatry"
     ]
   },
-  { 
+  {
     name: "Obstetrics & Gynecological Nursing",
     units: [
       "Introduction to Obstetric & Gynecological Nursing",
@@ -168,7 +168,7 @@ const CORE_SUBJECTS = [
       "Legal and Ethical Aspects in Obstetric & Gynecological Nursing"
     ]
   },
-  { 
+  {
     name: "Nursing Research & Statistics",
     units: [
       "Introduction to Nursing Research",
@@ -215,9 +215,44 @@ function TestList({ defaultTab }) {
   const [selectedMockExam, setSelectedMockExam] = useState('All Mock Exams');
   const [searchQuery, setSearchQuery] = useState('');
   const [isAutoGenerating, setIsAutoGenerating] = useState(false);
+  const [manualAiGenerating, setManualAiGenerating] = useState(false);
   const [startingTestId, setStartingTestId] = useState(null);
   const autoGenRef = useRef(new Set()); // track which topics have already been auto-generated
   const navigate = useNavigate();
+
+  const handleGenerateFreshSubjectTest = async (subjectName) => {
+    if (manualAiGenerating) return;
+    setManualAiGenerating(true);
+    try {
+      const topicToUse = subjectName === 'All Subjects' ? 'Medical-Surgical Nursing' : subjectName;
+      const res = await generateTest({
+        topic: topicToUse,
+        difficulty: 'hard',
+        numberOfQuestions: 10,
+        examType: activeTab === 'mock' ? 'nursing_officer' : 'nclex_rn'
+      });
+      const newTest = res.data;
+      navigate(`/test/${newTest._id}/instructions`, {
+        state: {
+          test: newTest,
+          title: newTest.title,
+          topic: newTest.topic,
+          duration: 30,
+          totalQuestions: newTest.questions?.length || 10,
+          totalMarks: (newTest.questions?.length || 10) * 1,
+          negativeMarking: '1/3',
+          examType: newTest.examType || (activeTab === 'mock' ? 'nursing_officer' : 'nclex_rn')
+        }
+      });
+    } catch (err) {
+      console.error('Failed to generate fresh AI test:', err);
+      alert('Failed to generate fresh AI questions: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setManualAiGenerating(false);
+    }
+  };
+
+
 
   const handleStartTestClick = (test) => {
     const topicToUse = test?.topic || (activeTab === 'practice' && selectedSubject !== 'All Subjects' ? selectedSubject : 'All Subjects');
@@ -234,6 +269,7 @@ function TestList({ defaultTab }) {
         totalMarks: (test?.questions?.length || test?.totalQuestions || 25) * 1,
         negativeMarking: '1/3',
         startingDifficulty: 2,
+        isCAT: activeTab === 'practice',
         examType: examTypeToUse
       }
     });
@@ -278,7 +314,7 @@ function TestList({ defaultTab }) {
 
       // Check if any tests exist for this topic
       const hasTests = tests.some(t => {
-        const isMock = t.title.toLowerCase().includes('mock') || 
+        const isMock = t.title.toLowerCase().includes('mock') ||
           MOCK_EXAMS.some(exam => exam !== "All Mock Exams" && (t.topic.includes(exam) || t.title.includes(exam)));
         if (isMock) return false;
         return t.topic === selectedSubject || selectedSubject.toLowerCase().includes(t.topic.toLowerCase());
@@ -314,22 +350,24 @@ function TestList({ defaultTab }) {
       return false;
     }
 
-    // 2. Filter by Tab (Practice vs Mock)
-    // We check if the test topic/title indicates it is a mock test.
-    const isMock = test.title.toLowerCase().includes('mock') || 
-                   MOCK_EXAMS.some(exam => exam !== "All Mock Exams" && (test.topic.includes(exam) || test.title.includes(exam)));
-                   
-    if (activeTab === 'mock' && !isMock) return false;
-    if (activeTab === 'practice' && isMock) return false;
+    const isMock = test.title.toLowerCase().includes('mock') ||
+      MOCK_EXAMS.some(exam => exam !== "All Mock Exams" && (test.topic.includes(exam) || test.title.includes(exam)));
 
-    // 3. Filter by Subject (Practice Tests)
-    if (activeTab === 'practice' && selectedSubject !== 'All Subjects') {
+    // 2. Filter by Tab (Practice vs Mock)
+    if (activeTab === 'mock') {
+      if (!isMock) return false;
+    } else if (activeTab === 'practice') {
+      if (isMock) return false;
+    }
+
+    // 3. Filter by Subject (Practice & CAT Tests)
+    if (activeTab !== 'mock' && selectedSubject !== 'All Subjects') {
       const mainSubject = CORE_SUBJECTS.find(s => s.name === selectedSubject);
       let isValid = false;
 
       if (test.topic === selectedSubject) {
         isValid = true;
-      } else if (selectedSubject.toLowerCase().includes(test.topic.toLowerCase())) {
+      } else if (selectedSubject.toLowerCase().includes(test.topic.toLowerCase()) || (test.topic && test.topic.toLowerCase().includes(selectedSubject.toLowerCase()))) {
         isValid = true;
       } else if (mainSubject && mainSubject.units && mainSubject.units.includes(test.topic)) {
         // If a main subject is selected, include all tests that belong to its units
@@ -353,7 +391,7 @@ function TestList({ defaultTab }) {
 
   return (
     <div className="page-container bg-off-white" style={{ minHeight: '100vh' }}>
-      
+
       {/* Header Banner */}
       <div className="tests-header-banner">
         <div className="tests-header-content">
@@ -363,19 +401,20 @@ function TestList({ defaultTab }) {
       </div>
 
       <div className="tests-layout">
-        
+
         {/* Main Content Area */}
         <div className="tests-main">
-          
+
           {/* Tabs */}
           <div className="test-tabs">
-            <button 
+            <button
               className={`test-tab ${activeTab === 'practice' ? 'active' : ''}`}
               onClick={() => setActiveTab('practice')}
             >
               <BookOpen size={18} /> Practice Tests
             </button>
-            <button 
+
+            <button
               className={`test-tab ${activeTab === 'mock' ? 'active' : ''}`}
               onClick={() => setActiveTab('mock')}
             >
@@ -385,8 +424,8 @@ function TestList({ defaultTab }) {
 
           <div className="tests-search-bar">
             <Search size={20} className="search-icon" />
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder={`Search ${activeTab} tests...`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -403,6 +442,8 @@ function TestList({ defaultTab }) {
             </div>
           )}
 
+
+
           <div className="tests-grid">
             {filteredTests.map(test => (
               <div className="test-card-modern" key={test._id}>
@@ -418,7 +459,7 @@ function TestList({ defaultTab }) {
                 <h3>{test.title}</h3>
                 <p>{test.description}</p>
                 <div className="test-meta-modern">
-                  <span>📚 {test.totalQuestions || 10} Questions</span>
+                  <span>📚 {test.totalQuestions || 20} Questions</span>
                   <span>⏱ {test.duration || 30} mins</span>
                   {activeTab === 'mock' && test.difficulty && (
                     <span style={{ fontWeight: 700, color: '#4f46e5' }}>
@@ -426,14 +467,13 @@ function TestList({ defaultTab }) {
                     </span>
                   )}
                 </div>
-
-                <button 
-                  className="test-start-btn" 
+                <button
+                  className="test-start-btn"
                   onClick={() => handleStartTestClick(test)}
                   disabled={startingTestId === test._id}
-                  style={{ marginTop: 12 }}
+                  style={{ marginTop: 14 }}
                 >
-                  {startingTestId === test._id ? 'Preparing Test...' : `Start ${activeTab === 'practice' ? 'Practice' : 'Exam'}`} <ChevronRight size={18} />
+                  {startingTestId === test._id ? 'Loading...' : 'Start Test'}
                 </button>
               </div>
             ))}
@@ -467,21 +507,21 @@ function TestList({ defaultTab }) {
                   const subjectName = subject.name || subject;
                   const hasUnits = subject.units && subject.units.length > 0;
                   const isExpanded = selectedSubject === subjectName || (hasUnits && subject.units.includes(selectedSubject));
-                  
+
                   return (
                     <div key={subjectName} className="subject-group">
-                      <button 
+                      <button
                         className={`subject-btn ${isExpanded ? 'active' : ''}`}
                         onClick={() => setSelectedSubject(subjectName)}
                       >
                         <div className="subject-name">{subjectName}</div>
                         {isExpanded ? <ChevronRight size={16} style={{ transform: 'rotate(90deg)', transition: '0.2s' }} /> : <ChevronRight size={16} style={{ transition: '0.2s' }} />}
                       </button>
-                      
+
                       {hasUnits && isExpanded && (
                         <div className="sub-units-container" style={{ paddingLeft: '16px', marginTop: '4px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                           {subject.units.map(unit => (
-                            <button 
+                            <button
                               key={unit}
                               className={`subject-btn ${selectedSubject === unit ? 'active' : ''}`}
                               onClick={() => setSelectedSubject(unit)}
@@ -502,7 +542,7 @@ function TestList({ defaultTab }) {
               <h3 className="sidebar-title">Mock Exams</h3>
               <div className="subject-list">
                 {MOCK_EXAMS.map(exam => (
-                  <button 
+                  <button
                     key={exam}
                     className={`subject-btn ${selectedMockExam === exam ? 'active' : ''}`}
                     onClick={() => setSelectedMockExam(exam)}

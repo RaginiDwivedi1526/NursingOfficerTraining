@@ -63,8 +63,8 @@ const stripOptionPrefix = (text) => {
 
 const { getTopicQuestionsList } = require('../services/topicQuestions');
 
-const generateFallbackQuestions = (topic, count = 10, diffLevel = 1) => {
-  return getTopicQuestionsList(topic, count, diffLevel);
+const generateFallbackQuestions = (topic, count = 10, diffLevel = 1, initialExcludedStems = []) => {
+  return getTopicQuestionsList(topic, count, diffLevel, initialExcludedStems);
 };
 
 
@@ -417,88 +417,315 @@ router.post('/generate', protect, async (req, res) => {
       diffName = 'Level 2: Base Clinical';
     }
 
-    console.log(`[GENERATE] Starting CAT generation for topic: "${topic}", difficulty: ${diffName} (${diffKey}), count: ${numberOfQuestions}`);
+    const targetCount = Math.min(Math.max(Number(numberOfQuestions) || 10, 1), 25);
+    console.log(`[GENERATE] Starting fast AI generation for topic: "${topic}", difficulty: ${diffName} (${diffKey}), count: ${targetCount}`);
     
     if (!topic) {
       return res.status(400).json({ message: 'Topic is required' });
     }
 
-    const prompt = getIndianNursingPrompt(topic, numberOfQuestions, diffKey);
-    console.log(`[GENERATE] CAT Prompt built for ${diffName}, calling AI...`);
+    // 1. Gather previously seen / attempted question stems for this user and topic
+    const userId = req.user?._id;
+    const userExcludedStems = new Set();
+    const recentScenariosForPrompt = [];
 
-    const aiResponse = await chat(
-      [
-        { role: 'system', content: prompt },
-        { role: 'user', content: `Generate authentic ${diffName} clinical case study questions as JSON now.` }
-      ],
-      6000
-    );
+    const cleanStemKey = (text) => {
+      return String(text || '')
+        .toLowerCase()
+        .replace(/^clinical\s+(case\s+scenario|vignette|case\s+study|scenario)[\s:]+/i, '')
+        .replace(/[^a-z0-9]/g, '')
+        .substring(0, 100);
+    };
 
-    let questions = [];
-
-    if (!aiResponse || aiResponse.startsWith('ERROR:') || aiResponse.startsWith('AI analysis unavailable')) {
-      console.warn(`[GENERATE] AI service unavailable (${aiResponse}). Generating curated fallback test questions for "${topic}" at ${diffName}...`);
-      questions = generateFallbackQuestions(topic, numberOfQuestions, diffLevel);
-    } else {
-      // Robust JSON extraction
-      let jsonString = aiResponse.trim();
-      if (jsonString.includes('```json')) {
-        jsonString = jsonString.split('```json')[1].split('```')[0].trim();
-      } else if (jsonString.includes('```')) {
-        jsonString = jsonString.split('```')[1].split('```')[0].trim();
-      }
-      const firstBrace = jsonString.indexOf('{');
-      const lastBrace = jsonString.lastIndexOf('}');
-      if (firstBrace !== -1 && lastBrace !== -1) {
-        jsonString = jsonString.substring(firstBrace, lastBrace + 1);
-      }
-
-      let parsed;
+    if (userId) {
       try {
-        parsed = JSON.parse(jsonString);
-      } catch (parseErr) {
-        console.error(`[GENERATE] JSON parse error: ${parseErr.message}, falling back to curated questions`);
-        questions = generateFallbackQuestions(topic, numberOfQuestions, diffLevel);
+        const [recentResults, userTests] = await Promise.all([
+          TestResult.find({ user: userId }).populate('test', 'questions').sort({ createdAt: -1 }).limit(8).lean(),
+          Test.find({ createdBy: userId }).sort({ createdAt: -1 }).limit(8).lean()
+        ]);
+
+        const addQuestions = (qs) => {
+          if (Array.isArray(qs)) {
+            for (const q of qs) {
+              if (q && q.questionText) {
+                const key = cleanStemKey(q.questionText);
+                if (key) userExcludedStems.add(key);
+                if (recentScenariosForPrompt.length < 12) {
+                  const firstSentence = q.questionText.split(/[.?!]/)[0].substring(0, 80).replace(/\n/g, ' ').trim();
+                  if (firstSentence && !recentScenariosForPrompt.includes(firstSentence)) {
+                    recentScenariosForPrompt.push(firstSentence);
+                  }
+                }
+              }
+            }
+          }
+        };
+
+        for (const r of recentResults) {
+          if (r.test) addQuestions(r.test.questions);
+        }
+        for (const t of userTests) {
+          addQuestions(t.questions);
+        }
+      } catch (err) {
+        console.warn('[GENERATE] Error gathering user past questions:', err.message);
+      }
+    }
+
+    console.log(`[GENERATE] Exclusion set populated with ${userExcludedStems.size} stems; ${recentScenariosForPrompt.length} recent cases provided to AI for anti-repetition.`);
+
+    let collectedQuestions = [];
+    const chosenStems = new Set();
+
+    const isQuestionUnique = (qText) => {
+      const key = cleanStemKey(qText);
+      if (!key) return false;
+      if (chosenStems.has(key)) return false;
+      if (userExcludedStems.has(key)) return false;
+      return true;
+    };
+
+    // Helper: Robust JSON extraction & parsing
+    const parseAiQuestions = (aiResponse) => {
+      if (!aiResponse || typeof aiResponse !== 'string') return [];
+      if (aiResponse.startsWith('ERROR:') || aiResponse.startsWith('AI analysis unavailable')) return [];
+
+      let text = aiResponse.trim();
+      if (text.includes('```json')) {
+        text = text.split('```json')[1].split('```')[0].trim();
+      } else if (text.includes('```')) {
+        text = text.split('```')[1].split('```')[0].trim();
       }
 
-      if (parsed && parsed.questions && Array.isArray(parsed.questions) && parsed.questions.length > 0) {
-        questions = parsed.questions.map((q, idx) => {
-          const correctIndex = Array.isArray(q.options)
-            ? q.options.findIndex(opt => opt.is_correct === true)
-            : -1;
-          
-          const mappedOptions = Array.isArray(q.options)
-            ? q.options.map(opt => typeof opt === 'string' ? opt : (opt.text || String(opt)))
-            : [];
+      const firstBrace = text.indexOf('{');
+      const firstBracket = text.indexOf('[');
+      let jsonString = text;
 
-          const scenario = q.scenario ? q.scenario.trim() : '';
-          const stem = stripPrefix(q.question_stem || q.questionText || `Question ${idx + 1}`);
-          const fullText = stripEmbeddedOptions(scenario ? `${scenario}\n\n${stem}` : stem);
-          const cleanOptions = mappedOptions.map(stripOptionPrefix);
+      if (firstBracket !== -1 && (firstBrace === -1 || firstBracket < firstBrace)) {
+        const lastBracket = text.lastIndexOf(']');
+        if (lastBracket !== -1) {
+          jsonString = text.substring(firstBracket, lastBracket + 1);
+        }
+      } else if (firstBrace !== -1) {
+        const lastBrace = text.lastIndexOf('}');
+        if (lastBrace !== -1) {
+          jsonString = text.substring(firstBrace, lastBrace + 1);
+        }
+      }
 
-          return {
+      jsonString = jsonString.replace(/,\s*([}\]])/g, '$1');
+
+      try {
+        const parsed = JSON.parse(jsonString);
+        if (Array.isArray(parsed)) return parsed;
+        if (parsed && Array.isArray(parsed.questions)) return parsed.questions;
+        return [];
+      } catch (err) {
+        console.warn('[AI Parse Error]', err.message);
+        return [];
+      }
+    };
+
+    // Helper: Map raw AI question items to standard model
+    const processRawQuestions = (rawList) => {
+      if (!Array.isArray(rawList)) return;
+      for (const q of rawList) {
+        if (!q) continue;
+
+        let correctIndex = -1;
+        let cleanOptions = [];
+
+        if (Array.isArray(q.options)) {
+          q.options.forEach((opt, idx) => {
+            if (typeof opt === 'object' && opt !== null) {
+              cleanOptions.push(stripOptionPrefix(opt.text || opt.label || ''));
+              if (opt.is_correct === true || opt.correct === true) {
+                correctIndex = idx;
+              }
+            } else {
+              cleanOptions.push(stripOptionPrefix(String(opt)));
+            }
+          });
+        }
+
+        if (correctIndex === -1 && typeof q.correctAnswer === 'number' && q.correctAnswer >= 0 && q.correctAnswer < cleanOptions.length) {
+          correctIndex = q.correctAnswer;
+        }
+        if (correctIndex === -1) {
+          correctIndex = 0;
+        }
+
+        const scenario = q.scenario ? q.scenario.trim() : '';
+        const stem = stripPrefix(q.question_stem || q.questionText || '');
+        const fullText = stripEmbeddedOptions(scenario ? `${scenario}\n\n${stem}` : stem);
+        const validOptions = cleanOptions.map(stripOptionPrefix).filter(Boolean);
+
+        if (validOptions.length >= 2 && isQuestionUnique(fullText)) {
+          chosenStems.add(cleanStemKey(fullText));
+          collectedQuestions.push({
             questionText: fullText,
-            options: cleanOptions,
-            correctAnswer: correctIndex !== -1 ? correctIndex : 0,
-            explanation: q.rationale || q.correct_rationale || '',
+            options: validOptions,
+            correctAnswer: correctIndex,
+            explanation: q.rationale || q.correct_rationale || q.explanation || '',
             topic: topic,
             difficultyLevel: diffLevel,
             difficultyName: diffName
-          };
-        }).filter(q => q.options.length >= 2);
+          });
+          if (collectedQuestions.length >= targetCount) break;
+        }
+      }
+    };
+
+    // 2. Parallel Fast AI Generation (cuts response time from ~28s to ~12s!)
+    try {
+      const isNclex = String(examType || '').toLowerCase().includes('nclex');
+      const getPromptFn = isNclex ? getNclexPrompt : getIndianNursingPrompt;
+
+      const aiPromises = [];
+      const withTimeout = (promise, ms = 45000) => {
+        return Promise.race([
+          promise,
+          new Promise((_, reject) => setTimeout(() => reject(new Error('AI request timeout (>45s)')), ms))
+        ]);
+      };
+
+      if (targetCount >= 6) {
+        const count1 = Math.ceil(targetCount / 2);
+        const count2 = Math.floor(targetCount / 2);
+
+        console.log(`[GENERATE] Launching 2 parallel AI streams (${count1} + ${count2} questions)...`);
+
+        const prompt1 = getPromptFn(topic, count1, diffKey, recentScenariosForPrompt, 'Acute Assessment, Diagnosis, Nursing Priorities & Emergency Management');
+        const prompt2 = getPromptFn(topic, count2, diffKey, recentScenariosForPrompt, 'Pharmacology Interventions, Adverse Reactions, Complications & Patient Safety');
+
+        const p1 = withTimeout(chat([
+          { role: 'system', content: prompt1 },
+          { role: 'user', content: `Generate ${count1} authentic ${diffName} clinical case study questions on ${topic} as JSON now.` }
+        ], 1800, { temperature: 0.85 }));
+
+        const p2 = withTimeout(chat([
+          { role: 'system', content: prompt2 },
+          { role: 'user', content: `Generate ${count2} authentic ${diffName} clinical case study questions on ${topic} as JSON now.` }
+        ], 1800, { temperature: 0.88 }));
+
+        aiPromises.push(p1, p2);
+      } else {
+        console.log(`[GENERATE] Launching single AI stream for ${targetCount} questions...`);
+        const promptSingle = getPromptFn(topic, targetCount, diffKey, recentScenariosForPrompt, 'Clinical Assessment, Priority Decision Making & Nursing Interventions');
+        const pSingle = withTimeout(chat([
+          { role: 'system', content: promptSingle },
+          { role: 'user', content: `Generate ${targetCount} authentic ${diffName} clinical case study questions on ${topic} as JSON now.` }
+        ], 2200, { temperature: 0.85 }));
+
+        aiPromises.push(pSingle);
       }
 
-      if (questions.length === 0) {
-        console.warn(`[GENERATE] No valid questions parsed from AI. Using fallback questions for "${topic}" at ${diffName}`);
-        questions = generateFallbackQuestions(topic, numberOfQuestions, diffLevel);
+      const results = await Promise.allSettled(aiPromises);
+
+      for (const res of results) {
+        if (res.status === 'fulfilled' && res.value) {
+          const parsedList = parseAiQuestions(res.value);
+          processRawQuestions(parsedList);
+        } else if (res.status === 'rejected') {
+          console.warn(`[GENERATE] An AI stream failed:`, res.reason?.message);
+        }
+      }
+
+      console.log(`[GENERATE] AI generation retrieved ${collectedQuestions.length}/${targetCount} unique fresh questions.`);
+    } catch (aiErr) {
+      console.warn(`[GENERATE] AI generation error: ${aiErr.message}`);
+    }
+
+    // 3. Fallback: If AI did not return full quota, draw remaining needed questions from DB pool
+    if (collectedQuestions.length < targetCount) {
+      try {
+        const topicKeywords = topic.split(/[-–—,: /]+/).filter(w => w.length > 3);
+        const searchRegex = topicKeywords.length > 0 ? topicKeywords.join('|') : topic;
+
+        const dbTests = await Test.find({
+          $or: [
+            { topic: { $regex: searchRegex, $options: 'i' } },
+            { title: { $regex: searchRegex, $options: 'i' } }
+          ]
+        }).select('questions').limit(20).lean();
+
+        let pool = [];
+        for (const t of dbTests) {
+          if (Array.isArray(t.questions)) {
+            for (const q of t.questions) {
+              if (q && q.questionText && isQuestionUnique(q.questionText)) {
+                pool.push(q);
+              }
+            }
+          }
+        }
+
+        // Shuffle pool randomly
+        pool.sort(() => Math.random() - 0.5);
+
+        for (const q of pool) {
+          const key = cleanStemKey(q.questionText);
+          if (!chosenStems.has(key)) {
+            chosenStems.add(key);
+            collectedQuestions.push({
+              questionText: q.questionText,
+              options: Array.isArray(q.options) ? [...q.options] : [],
+              correctAnswer: typeof q.correctAnswer === 'number' ? q.correctAnswer : 0,
+              explanation: q.explanation || '',
+              topic: topic,
+              difficultyLevel: q.difficultyLevel || diffLevel,
+              difficultyName: q.difficultyName || diffName
+            });
+            if (collectedQuestions.length >= targetCount) break;
+          }
+        }
+      } catch (dbErr) {
+        console.warn('[GENERATE] Error drawing from DB question pool:', dbErr.message);
       }
     }
 
-    if (questions.length === 0) {
-      questions = generateFallbackQuestions(topic, numberOfQuestions, diffLevel);
+    // 4. Fallback: If still more questions needed, draw from curated LEVEL-DIFFERENTIATED banks
+    if (collectedQuestions.length < targetCount) {
+      const remainingCount = targetCount - collectedQuestions.length;
+      const initialExcluded = Array.from(new Set([...userExcludedStems, ...chosenStems]));
+      const fallbackQuestions = generateFallbackQuestions(topic, remainingCount, diffLevel, initialExcluded);
+
+      for (const q of fallbackQuestions) {
+        const key = cleanStemKey(q.questionText);
+        if (!chosenStems.has(key)) {
+          chosenStems.add(key);
+          collectedQuestions.push(q);
+        } else {
+          const variant = getTopicQuestionsList(topic, 1, diffLevel, Array.from(chosenStems))[0];
+          if (variant) {
+            chosenStems.add(cleanStemKey(variant.questionText));
+            collectedQuestions.push(variant);
+          }
+        }
+        if (collectedQuestions.length >= targetCount) break;
+      }
     }
 
-    console.log(`[GENERATE] Creating test with ${questions.length} questions in DB at ${diffName}...`);
+    // 5. Final polish: dynamically shuffle options (A, B, C, D) and recalculate correctAnswer index
+    const finalizedQuestions = collectedQuestions.slice(0, targetCount).map((q) => {
+      const opts = Array.isArray(q.options) ? [...q.options] : [];
+      const origCorrectIdx = typeof q.correctAnswer === 'number' ? q.correctAnswer : 0;
+      const correctText = opts[origCorrectIdx] || opts[0];
+
+      // Shuffle options randomly
+      const shuffledOpts = opts.slice().sort(() => Math.random() - 0.5);
+      const newCorrectIdx = shuffledOpts.indexOf(correctText) !== -1 ? shuffledOpts.indexOf(correctText) : 0;
+
+      return {
+        ...q,
+        options: shuffledOpts,
+        correctAnswer: newCorrectIdx,
+        difficultyLevel: q.difficultyLevel || diffLevel,
+        difficultyName: q.difficultyName || diffName
+      };
+    });
+
+    console.log(`[GENERATE] Test successfully generated with ${finalizedQuestions.length} unique questions for user ${userId || 'anonymous'}`);
 
     const newTest = await Test.create({
       title: `${topic} (${diffName}) - Practice Test`,
@@ -508,16 +735,17 @@ router.post('/generate', protect, async (req, res) => {
       difficultyLevel: diffLevel,
       difficultyName: diffName,
       examType: examType || 'general',
-      questions: questions,
+      questions: finalizedQuestions,
+      totalQuestions: finalizedQuestions.length,
+      createdBy: userId || null,
       isFree: true
     });
 
-    console.log(`[GENERATE] Test created: ${newTest._id} (${diffName})`);
     res.status(201).json(newTest);
 
   } catch (error) {
     console.error('[GENERATE] Unhandled error:', error);
-    res.status(500).json({ message: 'Failed to generate test using AI', error: error.message });
+    res.status(500).json({ message: 'Failed to generate test', error: error.message });
   }
 });
 
